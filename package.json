@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@fluentui/react": "^8.66.2",
+    "@reduxjs/toolkit": "^1.8.1",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.1.1",
     "@testing-library/user-event": "^13.5.0",
@@ -14,7 +15,11 @@
     "firebase": "^9.6.11",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "react-hook-form": "^7.30.0",
+    "react-redux": "^8.0.1",
+    "react-redux-firebase": "^3.11.0",
     "react-scripts": "5.0.1",
+    "react-transition-group": "^4.4.2",
     "typescript": "^4.6.3",
     "web-vitals": "^2.1.4"
   },
@@ -41,5 +46,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "react-router-dom": "^6.3.0"
   }
 }

@@ -1,0 +1,96 @@
+.main-div {
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(30px) saturate(125%);
+  background-color: rgba(0, 0, 0, 0.3);
+  width: 20vw;
+  padding: 7rem;
+  border-radius: 5px;
+  margin-bottom: 0;
+  overflow-x: hidden;
+}
+
+.backdrop {
+  background-image: url("../../../public/images/login-backdrop.jpg");
+  background-size: cover;
+}
+
+.error-text {
+    color: rgb(164, 38, 44);
+    animation: ms-motion-slideDownIn 300ms cubic-bezier(0.8, 0, 0.2, 1);
+}
+
+.slideOut {
+  animation: ms-motion-slideRightOut 300ms cubic-bezier(0.9, 0.1, 1, 0.2);
+}
+
+.slideIn {
+    animation: ms-motion-slideRightIn 300ms cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+.link {
+    color: dodgerblue;
+}
+
+.link:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+@-webkit-keyframes ms-motion-slideRightOut {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(70vw, 0, 0);
+  }
+}
+
+@keyframes ms-motion-slideRightOut {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(70vw, 0, 0);
+  }
+}
+
+@-webkit-keyframes ms-motion-slideRightIn {
+    from {
+      transform: translate3d(-70vw, 0, 0);
+    }
+  
+    to {
+      transform: translate3d(0px, 0, 0);
+    }
+  }
+  
+  @keyframes ms-motion-slideRightIn {
+    from {
+      transform: translate3d(-70vw, 0, 0);
+    }
+  
+    to {
+      transform: translate3d(0px, 0, 0);
+    }
+  }
+
+  @-webkit-keyframes ms-motion-slideDownIn {
+    from {
+      transform: translate3d(0, -20px, 0);
+    }
+  
+    to {
+      transform: translate3d(0px, 0, 0);
+    }
+  }
+  
+  @keyframes ms-motion-slideDownIn {
+    from {
+      transform: translate3d(0, -20px, 0);
+    }
+  
+    to {
+      transform: translate3d(0px, 0, 0);
+    }
+  }
