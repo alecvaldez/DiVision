@@ -18,6 +18,7 @@ export const ControlledTextField: React.FC<HookFormProps & ITextFieldProps> = (
       }) => (
         <TextField
           {...props}
+          autoComplete={"on"}
           onChange={onChange}
           value={value}
           onBlur={onBlur}

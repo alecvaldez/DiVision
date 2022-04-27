@@ -4,7 +4,7 @@ import { Text } from "@fluentui/react/lib/Text";
 import { User } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { DeepMap, FieldError, useForm } from "react-hook-form";
-import { NavigateFunction } from "react-router-dom";
+import { NavigateFunction, useNavigate } from "react-router-dom";
 import {
   firebaseEmailCreate,
   firebaseEmailSigin,
@@ -15,7 +15,6 @@ import "./Login.css";
 const stackTokens: IStackTokens = { childrenGap: 40 };
 
 interface LoginProps {
-  navigate: NavigateFunction;
   user: User | null;
 }
 
@@ -26,7 +25,8 @@ type Form = {
 
 export const nameof = <T extends {}>(name: keyof T) => name;
 
-const Login: React.FC<LoginProps> = ({ navigate, user }: LoginProps) => {
+const Login: React.FC<LoginProps> = ({ user }: LoginProps) => {
+  const navigate = useNavigate();
 
   const [siginClass, setSiginClass] = useState("main-div");
   const [createClass, setCreateClass] = useState("main-div");

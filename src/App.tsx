@@ -63,13 +63,13 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
         <Routes location={location}>
           <Route
             path="/login"
-            element={<Login navigate={navigate} user={currentUser} />}
+            element={<Login user={currentUser} />}
           />
           <Route
             index={false}
             path="dashboard"
             element={
-                <Dashboard navigate={navigate} user={currentUser} />
+                <Dashboard user={currentUser} />
             }
           />
         </Routes>
