@@ -1,23 +1,14 @@
-import React, { useState } from "react";
-import "./Login.css";
-import {
-  Stack,
-  IStackTokens,
-  Dialog,
-  DialogFooter,
-  Callout,
-} from "@fluentui/react";
+import { DefaultEffects, IStackTokens, Stack } from "@fluentui/react";
 import { PrimaryButton } from "@fluentui/react/lib/Button";
-import { DefaultEffects } from "@fluentui/react";
-import { TextField } from "@fluentui/react/lib/TextField";
 import { Text } from "@fluentui/react/lib/Text";
+import React, { KeyboardEventHandler, useState } from "react";
+import { DeepMap, FieldError, useForm } from "react-hook-form";
 import {
   firebaseEmailCreate,
-  firebaseEmailSigin,
+  firebaseEmailSigin
 } from "../../firebase/FirebaseUtils";
-import { Controller, DeepMap, FieldError, useForm } from "react-hook-form";
 import { ControlledTextField } from "../textfield/ControlledTextField";
-import { useBoolean, useId } from "@fluentui/react-hooks";
+import "./Login.css";
 
 const stackTokens: IStackTokens = { childrenGap: 40 };
 
@@ -106,6 +97,18 @@ const Login: React.FC<{}> = () => {
     )();
   };
 
+  const siginKeyDown = (e: any) => {
+    if(e.key === 'Enter') {
+      onSignIn();
+    }
+  }
+
+  const accountKeyDown = (e: any) => {
+    if(e.key === 'Enter') {
+      onCreateAccount();
+    }
+  }
+
   const onCreateAccount = () => {
     setAccountValidationError(undefined);
     setValidAccountFormData(undefined);
@@ -147,6 +150,7 @@ const Login: React.FC<{}> = () => {
               <ControlledTextField
                 required={true}
                 label="Email"
+                onKeyDown={siginKeyDown}
                 control={controlSigin}
                 name={nameof<Form>("email")}
                 rules={{
@@ -159,6 +163,7 @@ const Login: React.FC<{}> = () => {
               />
               <ControlledTextField
                 required={true}
+                onKeyDown={siginKeyDown}
                 label="Password"
                 control={controlSigin}
                 name={nameof<Form>("password")}
@@ -195,55 +200,57 @@ const Login: React.FC<{}> = () => {
           className={createClass}
           style={{ boxShadow: DefaultEffects.elevation16 }}
         >
-            <Stack tokens={stackTokens}>
-              <Text variant={"xxLarge"} nowrap block>
-                Create Account
-              </Text>
+          <Stack tokens={stackTokens}>
+            <Text variant={"xxLarge"} nowrap block>
+              Create Account
+            </Text>
 
-              <ControlledTextField
-                required={true}
-                label="Email"
-                control={controlAccount}
-                name={nameof<Form>("email")}
-                rules={{
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: "This is not a valid email address",
-                  },
-                  required: "This field is required",
-                }}
+            <ControlledTextField
+              required={true}
+              label="Email"
+              control={controlAccount}
+              onKeyDown={accountKeyDown}
+              name={nameof<Form>("email")}
+              rules={{
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: "This is not a valid email address",
+                },
+                required: "This field is required",
+              }}
+            />
+            <ControlledTextField
+              required={true}
+              label="Password"
+              onKeyDown={accountKeyDown}
+              control={controlAccount}
+              name={nameof<Form>("password")}
+              type="password"
+              canRevealPassword
+              revealPasswordAriaLabel="Show password"
+              rules={{ required: "This field is required" }}
+            />
+            <Stack horizontal>
+              <PrimaryButton
+                text="Create Account"
+                onClick={onCreateAccount}
+                allowDisabledFocus
               />
-              <ControlledTextField
-                required={true}
-                label="Password"
-                control={controlAccount}
-                name={nameof<Form>("password")}
-                type="password"
-                canRevealPassword
-                revealPasswordAriaLabel="Show password"
-                rules={{ required: "This field is required" }}
-              />
-              <Stack horizontal>
-                <PrimaryButton
-                  text="Create Account"
-                  onClick={onCreateAccount}
-                  allowDisabledFocus
-                />
-              </Stack>
-              {accountError ? (
-                <Text className="error-text" block variant="large">
-                  Error creating account. Please try again
-                </Text>
-              ) : (
-                <Stack style={{ height: "64px", margin: 0 }}> </Stack>
-              )}
-              <Text variant={"medium"} nowrap block>
-                Already have an account?{" "}
-                <a className="link" onClick={slideSigin}>
-                  Sign In!
-                </a>
-              </Text>
             </Stack>
+            {accountError ? (
+              <Text className="error-text" block variant="large">
+                Error creating account. Please try again
+              </Text>
+            ) : (
+              <Stack style={{ height: "64px", margin: 0 }}> </Stack>
+            )}
+            <Text variant={"medium"} nowrap block>
+              Already have an account?{" "}
+              <a className="link" onClick={slideSigin}>
+                Sign In!
+              </a>
+            </Text>
+          </Stack>
         </div>
       )}
     </div>

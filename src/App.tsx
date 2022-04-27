@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Stack,
   Text,
@@ -9,12 +9,15 @@ import {
   ITextStyles,
 } from "@fluentui/react";
 import {
-  BrowserRouter,
   Routes,
   Route,
-} from "react-router-dom";  
+  useNavigate,
+  NavigateFunction,
+} from "react-router-dom";
+import { browserLocalPersistence, getAuth, onAuthStateChanged, setPersistence, User } from "firebase/auth";
 import "./App.css";
 import Login from "./components/login/Login";
+import Dashboard from "./components/dashboard/Dashboard";
 
 const boldStyle: Partial<ITextStyles> = {
   root: { fontWeight: FontWeights.semibold },
@@ -29,10 +32,31 @@ const stackStyles: Partial<IStackStyles> = {
   },
 };
 
+
+
 const App: React.FC<{}> = () => {
+  const navigate: NavigateFunction = useNavigate();
+
+  useEffect(() => {
+    console.log("test")
+    const auth = getAuth();
+    (async () => {
+      await setPersistence(auth, browserLocalPersistence);
+    })();
+    onAuthStateChanged(auth, (user: User | null) => {
+        console.log(user)
+      if (user != undefined) {
+        navigate("/dashboard");
+      } else {
+        navigate("/login");
+      }
+    });
+  }, []);
+
   return (
     <Routes>
       <Route path="login" element={<Login />} />
+      <Route path="dashboard" element={<Dashboard navigate={navigate} />} />
     </Routes>
   );
 };

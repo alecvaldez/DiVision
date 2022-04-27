@@ -6,11 +6,12 @@ import reportWebVitals from "./reportWebVitals";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { mergeStyles, PartialTheme, ThemeProvider } from "@fluentui/react";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, useNavigate } from "react-router-dom";
 import { initializeIcons } from "@fluentui/react/lib/Icons";
+import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged } from "firebase/auth";
 
 initializeIcons();
-// Inject some global styles
+
 mergeStyles({
   ":global(body,html,#root)": {
     margin: 0,
@@ -59,6 +60,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
+
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement

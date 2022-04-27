@@ -42,3 +42,8 @@ export const firebaseEmailCreate = (
       return true;
     });
 };
+
+export const firebaseLogout = (): Promise<void> => {
+  const auth = getAuth();
+  return auth.signOut();
+}
