@@ -1,16 +1,23 @@
 import { DefaultEffects, IStackTokens, Stack } from "@fluentui/react";
 import { PrimaryButton } from "@fluentui/react/lib/Button";
 import { Text } from "@fluentui/react/lib/Text";
-import React, { KeyboardEventHandler, useState } from "react";
+import { User } from "firebase/auth";
+import React, { useEffect, useState } from "react";
 import { DeepMap, FieldError, useForm } from "react-hook-form";
+import { NavigateFunction } from "react-router-dom";
 import {
   firebaseEmailCreate,
-  firebaseEmailSigin
+  firebaseEmailSigin,
 } from "../../firebase/FirebaseUtils";
 import { ControlledTextField } from "../textfield/ControlledTextField";
 import "./Login.css";
 
 const stackTokens: IStackTokens = { childrenGap: 40 };
+
+interface LoginProps {
+  navigate: NavigateFunction;
+  user: User | null;
+}
 
 type Form = {
   email: string;
@@ -19,7 +26,8 @@ type Form = {
 
 export const nameof = <T extends {}>(name: keyof T) => name;
 
-const Login: React.FC<{}> = () => {
+const Login: React.FC<LoginProps> = ({ navigate, user }: LoginProps) => {
+
   const [siginClass, setSiginClass] = useState("main-div");
   const [createClass, setCreateClass] = useState("main-div");
   const [siginError, setSiginError] = useState(false);
@@ -89,6 +97,9 @@ const Login: React.FC<{}> = () => {
         setValidSiginFormData(data);
         firebaseEmailSigin(data.email, data.password).then((bool) => {
           setSiginError(bool);
+          if (!bool) {
+            navigate("/dashboard");
+          }
         });
       },
       (err) => {
@@ -98,16 +109,16 @@ const Login: React.FC<{}> = () => {
   };
 
   const siginKeyDown = (e: any) => {
-    if(e.key === 'Enter') {
+    if (e.key === "Enter") {
       onSignIn();
     }
-  }
+  };
 
   const accountKeyDown = (e: any) => {
-    if(e.key === 'Enter') {
+    if (e.key === "Enter") {
       onCreateAccount();
     }
-  }
+  };
 
   const onCreateAccount = () => {
     setAccountValidationError(undefined);
@@ -133,8 +144,11 @@ const Login: React.FC<{}> = () => {
       style={{
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
+        position: "absolute",
+        width: "100vw",
         height: "100vh",
+        zIndex: 10000,
+        alignItems: "center",
       }}
     >
       {sigin ? (

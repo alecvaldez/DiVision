@@ -1,63 +1,80 @@
-import React, { useEffect } from "react";
 import {
-  Stack,
-  Text,
-  Link,
   FontWeights,
-  IStackTokens,
   IStackStyles,
+  IStackTokens,
   ITextStyles,
 } from "@fluentui/react";
 import {
-  Routes,
-  Route,
-  useNavigate,
+  Auth,
+  browserLocalPersistence,
+  onAuthStateChanged,
+  setPersistence,
+  User,
+} from "firebase/auth";
+import React, { ReactElement, useEffect, useState } from "react";
+import {
+  Navigate,
   NavigateFunction,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
 } from "react-router-dom";
-import { browserLocalPersistence, getAuth, onAuthStateChanged, setPersistence, User } from "firebase/auth";
 import "./App.css";
-import Login from "./components/login/Login";
 import Dashboard from "./components/dashboard/Dashboard";
+import Login from "./components/login/Login";
+import {
+  SwitchTransition,
+  Transition,
+  TransitionGroup,
+} from "react-transition-group";
+import { CSSTransition } from "react-transition-group";
 
-const boldStyle: Partial<ITextStyles> = {
-  root: { fontWeight: FontWeights.semibold },
-};
-const stackTokens: IStackTokens = { childrenGap: 15 };
-const stackStyles: Partial<IStackStyles> = {
-  root: {
-    width: "960px",
-    margin: "0 auto",
-    textAlign: "center",
-    color: "#605e5c",
-  },
-};
+interface AppProps {
+  auth: Auth;
+}
 
-
-
-const App: React.FC<{}> = () => {
+const App: React.FC<AppProps> = ({ auth }: AppProps) => {
   const navigate: NavigateFunction = useNavigate();
+  const [currentUser, setCurrentUser] = useState(auth.currentUser);
+  const location = useLocation();
 
   useEffect(() => {
-    console.log("test")
-    const auth = getAuth();
     (async () => {
       await setPersistence(auth, browserLocalPersistence);
     })();
     onAuthStateChanged(auth, (user: User | null) => {
-        console.log(user)
       if (user != undefined) {
-        navigate("/dashboard");
+        setCurrentUser(user);
       } else {
-        navigate("/login");
+        setCurrentUser(null);
       }
     });
   }, []);
 
   return (
-    <Routes>
-      <Route path="login" element={<Login />} />
-      <Route path="dashboard" element={<Dashboard navigate={navigate} />} />
-    </Routes>
+    <TransitionGroup component={null}>
+      <CSSTransition
+        key={location.key}
+        classNames="slide"
+        timeout={300}
+        unmountOnExit
+      >
+        <Routes location={location}>
+          <Route
+            path="/login"
+            element={<Login navigate={navigate} user={currentUser} />}
+          />
+          <Route
+            index={false}
+            path="dashboard"
+            element={
+                <Dashboard navigate={navigate} user={currentUser} />
+            }
+          />
+        </Routes>
+      </CSSTransition>
+    </TransitionGroup>
   );
 };
 

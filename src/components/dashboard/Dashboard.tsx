@@ -1,16 +1,27 @@
-import { ContextualMenu, DefaultButton, FontWeights, getTheme, IContextualMenuItem, IContextualMenuProps, IPersonaSharedProps, mergeStyleSets, Persona, PersonaPresence, PrimaryButton, Stack } from "@fluentui/react";
-import React, { useMemo, useRef, useState } from "react";
-import { NavigateFunction } from "react-router-dom";
-import { Icon } from '@fluentui/react/lib/Icon';
+import { ContextualMenu, IContextualMenuItem, IPersonaSharedProps, Persona, PersonaPresence, PrimaryButton, Stack } from "@fluentui/react";
+import { getAuth, User } from "firebase/auth";
+import React, { ReactElement, useEffect } from "react";
+import { Navigate, NavigateFunction } from "react-router-dom";
 import { firebaseLogout } from "../../firebase/FirebaseUtils";
 import "./Dashboard.css";
-import { getAuth, User } from "firebase/auth";
-import { useBoolean, useId } from "@fluentui/react-hooks";
-import { Text } from "@fluentui/react/lib/Text";
 
 interface DashboardProps {
     navigate: NavigateFunction;
+    user: User | null;
 }
+
+interface ProtectedRouteProps {
+    user: User | null;
+    children: ReactElement<any, any>;
+  }
+  
+  const ProtectedRoute = ({ user, children }: ProtectedRouteProps) => {
+    if (!user) {
+      return <Navigate to="/login" replace />;
+    }
+  
+    return children;
+  };
 
 const menuItems: IContextualMenuItem[] = [
     {
@@ -20,10 +31,11 @@ const menuItems: IContextualMenuItem[] = [
     },
     {
         key: 'logout',
-        text: 'logout'
+        text: 'Logout'
     }
 ]
-const Dashboard: React.FC<DashboardProps> = ({ navigate }: DashboardProps) => {
+const Dashboard: React.FC<DashboardProps> = ({ navigate, user }: DashboardProps) => {
+      
     const linkRef = React.useRef(null);
     const [showContextualMenu, setShowContextualMenu] = React.useState(false);
     const onShowContextualMenu = React.useCallback((ev: React.MouseEvent<HTMLElement>) => {
@@ -33,14 +45,13 @@ const Dashboard: React.FC<DashboardProps> = ({ navigate }: DashboardProps) => {
 
     const onHideContextualMenu = React.useCallback(() => setShowContextualMenu(false), []);
 
-
     const logout = (): void => {
         firebaseLogout().then(() => {
             navigate("/login");
         })
     }
 
-    const email = getAuth().currentUser?.email;
+    const email = user?.email;
 
     const persona: IPersonaSharedProps = {
         imageUrl: "",
@@ -50,12 +61,15 @@ const Dashboard: React.FC<DashboardProps> = ({ navigate }: DashboardProps) => {
     };
 
     return (
-        <div>
+        // <ProtectedRoute user={user}>
+
+        <div style={{ position: "absolute"}}>
             <Stack horizontal>
                 <PrimaryButton onClick={logout}>
                     Logout
                 </PrimaryButton>
                 <Persona
+                onClick={onShowContextualMenu}
                     {...persona}
                     presence={PersonaPresence.busy}
                     imageAlt=""
@@ -66,7 +80,7 @@ const Dashboard: React.FC<DashboardProps> = ({ navigate }: DashboardProps) => {
                 </a>
             </Stack>
             <ContextualMenu
-                doNotLayer={true}
+                // doNotLayer={true}
                 items={menuItems}
                 hidden={!showContextualMenu}
                 target={linkRef}
@@ -74,6 +88,8 @@ const Dashboard: React.FC<DashboardProps> = ({ navigate }: DashboardProps) => {
                 onDismiss={onHideContextualMenu}
             />
         </div>
+        // </ProtectedRoute>
+
     );
 };
 

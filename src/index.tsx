@@ -8,7 +8,12 @@ import { getAnalytics } from "firebase/analytics";
 import { mergeStyles, PartialTheme, ThemeProvider } from "@fluentui/react";
 import { BrowserRouter, useNavigate } from "react-router-dom";
 import { initializeIcons } from "@fluentui/react/lib/Icons";
-import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged } from "firebase/auth";
+import {
+  getAuth,
+  setPersistence,
+  browserLocalPersistence,
+  onAuthStateChanged,
+} from "firebase/auth";
 
 initializeIcons();
 
@@ -60,7 +65,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-
+const auth = getAuth();
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -69,7 +74,7 @@ root.render(
   <React.StrictMode>
     <ThemeProvider theme={appTheme}>
       <BrowserRouter>
-          <App />
+        <App auth={auth} />
       </BrowserRouter>
     </ThemeProvider>
   </React.StrictMode>
