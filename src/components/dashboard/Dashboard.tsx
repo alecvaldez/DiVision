@@ -1,5 +1,6 @@
 import {
   ContextualMenu,
+  DefaultEffects,
   IContextualMenuItem,
   IPersonaSharedProps,
   Persona,
@@ -71,10 +72,18 @@ const Dashboard: React.FC<DashboardProps> = ({
   };
 
   return (
-    <div style={{ position: "absolute" }}>
+    <div style={{
+        display: "flex",
+        justifyContent: "center",
+        position: "absolute",
+        width: "100vw",
+        height: "100vh",
+        alignItems: "center",
+      }}>
       {user !== null && (
         <>
-          <Stack horizontal>
+        <Stack>
+        <Stack horizontal>
             <PrimaryButton onClick={logout}>Logout</PrimaryButton>
             <Persona
               onClick={onShowContextualMenu}
@@ -95,6 +104,11 @@ const Dashboard: React.FC<DashboardProps> = ({
             onItemClick={onHideContextualMenu}
             onDismiss={onHideContextualMenu}
           />
+          <div style={{ backgroundColor: "gray", boxShadow: DefaultEffects.elevation64 }}>
+        Hello
+          </div>
+        </Stack>
+
         </>
       )}
     </div>

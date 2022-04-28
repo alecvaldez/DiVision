@@ -44,7 +44,8 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
       await setPersistence(auth, browserLocalPersistence);
     })();
     onAuthStateChanged(auth, (user: User | null) => {
-      if (user != undefined) {
+      if (user != null) {
+        console.log(user)
         setCurrentUser(user);
       } else {
         setCurrentUser(null);
