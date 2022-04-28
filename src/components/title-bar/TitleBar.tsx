@@ -44,12 +44,12 @@ const TitleBar: React.FC<TitleBarProps> = ({ user, photoUrl }: TitleBarProps) =>
       onClick: () => {
         navigate("/account");
       },
-      iconProps: { iconName: "Contact", style: { color: "dodgerblue" } },
+      iconProps: { iconName: "Contact", style: { color: "red" } },
     },
     {
       key: "logout",
       text: "Logout",
-      iconProps: { iconName: "Leave", style: { color: "dodgerblue" } },
+      iconProps: { iconName: "Leave", style: { color: "red" } },
       onClick: () => {
         logout();
       },

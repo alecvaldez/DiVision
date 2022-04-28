@@ -57,7 +57,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user, photoUrl }: DashboardProps)
           <div
             style={{
               display: "flex",
-              backgroundColor: "#121212",
               width: "100vw",
               height: "100vh",
               alignItems: "center",

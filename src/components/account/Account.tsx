@@ -1,5 +1,6 @@
 import {
   CommandBarButton,
+  DefaultButton,
   DefaultEffects,
   IPersonaSharedProps,
   IStackTokens,
@@ -7,7 +8,9 @@ import {
   Persona,
   PersonaInitialsColor,
   PersonaPresence,
+  PrimaryButton,
   Spinner,
+  SpinnerSize,
   Stack,
 } from "@fluentui/react";
 import { Text } from "@fluentui/react/lib/Text";
@@ -26,6 +29,7 @@ interface AccountProps {
 
 type Form = {
   alias: string;
+  descriptor: string;
 };
 
 const verticalGapStackTokens: IStackTokens = {
@@ -52,6 +56,7 @@ const Account: React.FC<AccountProps> = ({ user, photoUrl }: AccountProps) => {
   } = useForm<Form, any>({
     defaultValues: {
       alias: "",
+      descriptor: "",
     },
     reValidateMode: "onSubmit",
     mode: "all",
@@ -78,14 +83,6 @@ const Account: React.FC<AccountProps> = ({ user, photoUrl }: AccountProps) => {
     const fileUrl = URL.createObjectURL(file);
     setTmpPhotoUrl(fileUrl);
     console.log(event.target.files[0]);
-
-    // updateUserProfilePhoto(event.target.files[0])
-    //   .then((snapshot) => {
-    //     setLoadPhoto(false);
-    //   })
-    //   .catch((err) => {
-    //     setLoadPhoto(false);
-    //   });
   };
 
   return (
@@ -98,6 +95,7 @@ const Account: React.FC<AccountProps> = ({ user, photoUrl }: AccountProps) => {
         height: "100vh",
         zIndex: 10000,
         alignItems: "center",
+        backgroundImage: "red"
       }}
     >
       {user !== null && (
@@ -106,7 +104,6 @@ const Account: React.FC<AccountProps> = ({ user, photoUrl }: AccountProps) => {
           <div
             style={{
               display: "flex",
-              backgroundColor: "#121212",
               width: "100vw",
               height: "100vh",
               alignItems: "center",
@@ -117,68 +114,77 @@ const Account: React.FC<AccountProps> = ({ user, photoUrl }: AccountProps) => {
               className="account-card"
               style={{ boxShadow: DefaultEffects.elevation16 }}
             >
-                <Stack style={{height: "100%"}}>
-                <Text variant={"xxLarge"}   nowrap block>
-                    Profile Settings
-                  </Text>
-              <Stack horizontal style={{height: "100%"}}>
-                <Stack
-                  tokens={verticalGapStackTokens}
-                  style={{ width: window.innerHeight * 0.3, height: "100%", alignContent: "center",         display: "flex",
-                  justifyContent: "center"}}
-                >
+              <Stack style={{ width: "100%" }} tokens={verticalGapStackTokens}>
+                <Text variant={"xxLarge"} nowrap block>
+                  Profile Settings
+                </Text>
 
+
+                <div style={{ width: "100%", alignItems: "center", textAlign: "center", justifyContent: "center " }}>
 
                   <Persona
                     {...persona}
                     presence={PersonaPresence.none}
                     className="account-picture"
                     initialsColor={PersonaInitialsColor.gold}
-                    coinSize={window.innerHeight * 0.25}
+                    coinSize={window.innerWidth / 5}
                     imageAlt=""
-                  />
-                  {loadPhoto && (
-                    <Spinner
-                      style={{
-                        position: "absolute",
-                        marginTop: 100,
-                        transform: "scale(3)",
-                      }}
-                      size={3}
-                    />
-                  )}
-
-                  <CommandBarButton
-                    iconProps={{ iconName: "Upload" }}
-                    text="Upload Picture"
-                    type="file"
-                    style={{
-                      width: window.innerHeight * 0.18,
-                      height: 30,
+                    styles={{
+                      root: {
+                        width: 0,
+                        margin: "auto",
+                        display: "block"
+                      }
                     }}
-                    onClick={() => fileInputRef.current.click()}
                   />
-                  <input
-                    id="photo-upload"
-                    type="file"
-                    name="file"
-                    ref={fileInputRef}
-                    accept="image/*"
-                    onChange={changeHandler}
+                </div>
+                
+                <div style={{ width: "100%", alignItems: "center", textAlign: "center", justifyContent: "center " }}>
+
+                <CommandBarButton
+                  iconProps={{ iconName: "Upload" }}
+                  text="Upload Picture"
+                  type="file"
+                  style={{
+                    height: 30,
+                    width: "40%",
+                  }}
+                  onClick={() => fileInputRef.current.click()}
+                />
+                </div>
+                <input
+                  id="photo-upload"
+                  type="file"
+                  name="file"
+                  ref={fileInputRef}
+                  accept="image/*"
+                  onChange={changeHandler}
+                />
+                <form style={{marginTop: "auto", marginBottom: "10%"}}>
+                  <ControlledTextField
+                    // onKeyDown={siginKeyDown}
+                    label="Alias"
+                    control={controlProfile}
+                    name={nameof<Form>("alias")}
                   />
-                </Stack>
-                <Stack style={{ width: "70%", height: "100%" }}>
-                  <form>
-                    <ControlledTextField
-                      // onKeyDown={siginKeyDown}
-                      label="Alias"
-                      control={controlProfile}
-                      name={nameof<Form>("alias")}
-                    />
-                  </form>
-                </Stack>
+                              <ControlledTextField
+                    // onKeyDown={siginKeyDown}
+                    label="Descriptor"
+                    control={controlProfile}
+                    name={nameof<Form>("descriptor")}
+                  />
+                  <Stack horizontal tokens={{
+                    childrenGap: 10
+                  }}>
+                    
+                  <PrimaryButton style={{marginTop: 20}}>
+                    Save
+                  </PrimaryButton>
+                  <Spinner size={SpinnerSize.large} style={{marginTop: 20}} />
+                  </Stack>
+                </form>
               </Stack>
-              </Stack>
+
 
             </div>
           </div>
