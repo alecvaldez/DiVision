@@ -29,6 +29,7 @@ import {
   TransitionGroup,
 } from "react-transition-group";
 import { CSSTransition } from "react-transition-group";
+import Account from "./components/account/Account";
 
 interface AppProps {
   auth: Auth;
@@ -45,7 +46,7 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
     })();
     onAuthStateChanged(auth, (user: User | null) => {
       if (user != null) {
-        console.log(user)
+        console.log(user);
         setCurrentUser(user);
       } else {
         setCurrentUser(null);
@@ -62,16 +63,14 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
         unmountOnExit
       >
         <Routes location={location}>
+          <Route path="login" element={<Login user={currentUser} />} />
           <Route
-            path="/login"
-            element={<Login user={currentUser} />}
+            path="dashboard"
+            element={<Dashboard user={currentUser} />}
           />
           <Route
-            index={false}
-            path="dashboard"
-            element={
-                <Dashboard user={currentUser} />
-            }
+            path="account"
+            element={<Account user={currentUser} />}
           />
         </Routes>
       </CSSTransition>
