@@ -22,16 +22,17 @@ import "./App.css";
 import Account from "./components/account/Account";
 import Dashboard from "./components/dashboard/Dashboard";
 import Login from "./components/login/Login";
+import { getUserProfilePhoto } from "./firebase/FirebaseUtils";
 
 interface AppProps {
   auth: Auth;
 }
 
 const App: React.FC<AppProps> = ({ auth }: AppProps) => {
-  const navigate: NavigateFunction = useNavigate();
   const [currentUser, setCurrentUser] = useState(auth.currentUser);
   const location = useLocation();
   const [userLoaded, setUserLoaded] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -40,11 +41,11 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
       });
     })();
     onAuthStateChanged(auth, (user: User | null) => {
-      if (user != null) {
-        console.log(user);
-        setCurrentUser(user);
-      } else {
-        setCurrentUser(null);
+      setCurrentUser(user);
+      if(user !== null) {
+        getUserProfilePhoto().then((url) => {
+          setPhotoUrl(url);
+        });
       }
     });
   }, []);
@@ -61,11 +62,11 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
           <Route path="login" element={<Login user={currentUser} />} />
           <Route
             path="dashboard"
-            element={<>{userLoaded && <Dashboard user={currentUser} />}</>}
+            element={<>{userLoaded && <Dashboard photoUrl={photoUrl} user={currentUser} />}</>}
           />
           <Route
             path="account"
-            element={<>{userLoaded && <Account user={currentUser} />}</>}
+            element={<>{userLoaded && <Account photoUrl={photoUrl} user={currentUser} />}</>}
           />
         </Routes>
       </CSSTransition>

@@ -28,9 +28,10 @@ import "./Dashboard.css";
 
 interface DashboardProps {
   user: User | null;
+  photoUrl: string;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ user }: DashboardProps) => {
+const Dashboard: React.FC<DashboardProps> = ({ user, photoUrl }: DashboardProps) => {
   const navigate = useNavigate();
   useEffect(() => {
     if (user == null) {
@@ -52,7 +53,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }: DashboardProps) => {
     >
       {user !== null && (
         <>
-          <TitleBar user={user} />
+          <TitleBar photoUrl={photoUrl} user={user} />
           <div
             style={{
               display: "flex",

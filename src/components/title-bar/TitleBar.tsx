@@ -19,15 +19,16 @@ import "./TitleBar.css";
 
 interface TitleBarProps {
   user: User | null;
+  photoUrl: string;
 }
 
-const TitleBar: React.FC<TitleBarProps> = ({ user }: TitleBarProps) => {
+const TitleBar: React.FC<TitleBarProps> = ({ user, photoUrl }: TitleBarProps) => {
   const navigate = useNavigate();
 
   const email = user?.email;
 
   const persona: IPersonaSharedProps = {
-    imageUrl: "",
+    imageUrl: photoUrl,
     imageInitials: email?.slice(0, 2).toUpperCase() || "AA",
     text: email || "",
     secondaryText: "Game Master",

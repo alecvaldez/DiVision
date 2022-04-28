@@ -2,14 +2,16 @@
     background-color: rgba(255,255,255,0.05);
     width: 60%;
     height: 50%;
+    min-height: 300px;
     border-radius: 5px;
     padding: 3vh;
 }
 
-.avatar-div {
-    background-color: red;
-}
 
 .account-picure {
     transform: scale(2);
+}
+
+input[type="file"] {
+    display: none;
 }
