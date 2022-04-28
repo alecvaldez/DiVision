@@ -43,37 +43,41 @@ const Dashboard: React.FC<DashboardProps> = ({ user }: DashboardProps) => {
       style={{
         display: "flex",
         justifyContent: "center",
-        backgroundColor: "#121212",
         position: "absolute",
         width: "100vw",
         height: "100vh",
+        zIndex: 10000,
         alignItems: "center",
       }}
     >
       {user !== null && (
-        <Stack
-          style={{
-            width: "100%",
-            height: "100%",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+        <>
           <TitleBar user={user} />
-          <div className="games-div">
-            <Stack>
-              <div
-                className="game-card"
-                style={{
-                  backgroundColor: "rgba(255,255,255,0.05)",
-                  boxShadow: DefaultEffects.elevation16,
-                }}
-              >
-                Hello
+          <div
+            style={{
+              display: "flex",
+              backgroundColor: "#121212",
+              width: "100vw",
+              height: "100vh",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+              <div className="games-div">
+                <Stack>
+                  <div
+                    className="game-card"
+                    style={{
+                      backgroundColor: "rgba(255,255,255,0.05)",
+                      boxShadow: DefaultEffects.elevation16,
+                    }}
+                  >
+                    Hello
+                  </div>
+                </Stack>
               </div>
-            </Stack>
           </div>
-        </Stack>
+        </>
       )}
     </div>
   );

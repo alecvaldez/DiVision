@@ -1,21 +1,16 @@
 .title-bar {
-    overflow: hidden;
-    background-color: rgba(255,255,255,0.07);
-    padding: 0 32px 0 32px!important;;
-    height: 56px;
-    width: 100vw;
-    animation: none !important;
-    -o-transform: none !important;
-    -moz-transform: none !important;
-    -ms-transform: none !important;
-    -webkit-transform: none !important;
-    transform: none !important;
-    transition: unset;
-    translate: none;
+  /* overflow: hidden; */
+  background-color: rgba(255, 255, 255, 0.07);
+  padding: 0 32px 0 32px !important;
+  height: 56px;
+  width: 100vw;
+  top:0;
+  position: absolute;
+  box-sizing: border-box;
 }
 
 .logo {
-    color:dodgerblue;
-    margin-right: 10px;
-    vertical-align:-0.1875em;
+  color: dodgerblue;
+  margin-right: 10px;
+  vertical-align: -0.1875em;
 }

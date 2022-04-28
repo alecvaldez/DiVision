@@ -1,35 +1,27 @@
 import {
-  FontWeights,
-  IStackStyles,
-  IStackTokens,
-  ITextStyles,
-} from "@fluentui/react";
-import {
   Auth,
   browserLocalPersistence,
   onAuthStateChanged,
   setPersistence,
   User,
 } from "firebase/auth";
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Navigate,
   NavigateFunction,
   Route,
   Routes,
   useLocation,
   useNavigate,
 } from "react-router-dom";
-import "./App.css";
-import Dashboard from "./components/dashboard/Dashboard";
-import Login from "./components/login/Login";
 import {
+  CSSTransition,
   SwitchTransition,
-  Transition,
   TransitionGroup,
 } from "react-transition-group";
-import { CSSTransition } from "react-transition-group";
+import "./App.css";
 import Account from "./components/account/Account";
+import Dashboard from "./components/dashboard/Dashboard";
+import Login from "./components/login/Login";
 
 interface AppProps {
   auth: Auth;
@@ -39,10 +31,13 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
   const navigate: NavigateFunction = useNavigate();
   const [currentUser, setCurrentUser] = useState(auth.currentUser);
   const location = useLocation();
+  const [userLoaded, setUserLoaded] = useState(false);
 
   useEffect(() => {
     (async () => {
-      await setPersistence(auth, browserLocalPersistence);
+      await setPersistence(auth, browserLocalPersistence).then(() => {
+        setUserLoaded(true);
+      });
     })();
     onAuthStateChanged(auth, (user: User | null) => {
       if (user != null) {
@@ -55,7 +50,7 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
   }, []);
 
   return (
-    <TransitionGroup component={null}>
+    <SwitchTransition>
       <CSSTransition
         key={location.key}
         classNames="slide"
@@ -66,15 +61,15 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
           <Route path="login" element={<Login user={currentUser} />} />
           <Route
             path="dashboard"
-            element={<Dashboard user={currentUser} />}
+            element={<>{userLoaded && <Dashboard user={currentUser} />}</>}
           />
           <Route
             path="account"
-            element={<Account user={currentUser} />}
+            element={<>{userLoaded && <Account user={currentUser} />}</>}
           />
         </Routes>
       </CSSTransition>
-    </TransitionGroup>
+    </SwitchTransition>
   );
 };
 

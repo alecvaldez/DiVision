@@ -1,0 +1,15 @@
+.account-card {
+    background-color: rgba(255,255,255,0.05);
+    width: 60%;
+    height: 50%;
+    border-radius: 5px;
+    padding: 3vh;
+}
+
+.avatar-div {
+    background-color: red;
+}
+
+.account-picure {
+    transform: scale(2);
+}

@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { firebaseLogout } from "../../firebase/FirebaseUtils";
 import { Text } from "@fluentui/react";
 import { User } from "firebase/auth";
-import "./TitleBar.css"
+import "./TitleBar.css";
 
 interface TitleBarProps {
   user: User | null;
@@ -31,6 +31,9 @@ const TitleBar: React.FC<TitleBarProps> = ({ user }: TitleBarProps) => {
     imageInitials: email?.slice(0, 2).toUpperCase() || "AA",
     text: email || "",
     secondaryText: "Game Master",
+    coinProps: {
+        color: "red"
+    }
   };
 
   const menuItems: IContextualMenuItem[] = [
@@ -68,10 +71,10 @@ const TitleBar: React.FC<TitleBarProps> = ({ user }: TitleBarProps) => {
   );
 
   const logout = (): void => {
-    firebaseLogout().then(() => {
-      navigate("/login");
-    });
+    navigate("/login");
+    firebaseLogout();
   };
+
   return (
     <div
       className="title-bar"
@@ -91,6 +94,7 @@ const TitleBar: React.FC<TitleBarProps> = ({ user }: TitleBarProps) => {
           />
           DiVision
         </Text>
+        
       </Stack>
 
       <Stack horizontal style={{ float: "right" }}>

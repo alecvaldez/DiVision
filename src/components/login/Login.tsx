@@ -2,12 +2,12 @@ import { DefaultEffects, IStackTokens, Stack } from "@fluentui/react";
 import { PrimaryButton } from "@fluentui/react/lib/Button";
 import { Text } from "@fluentui/react/lib/Text";
 import { User } from "firebase/auth";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { DeepMap, FieldError, useForm } from "react-hook-form";
-import { NavigateFunction, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   firebaseEmailCreate,
-  firebaseEmailSigin,
+  firebaseEmailSigin
 } from "../../firebase/FirebaseUtils";
 import { ControlledTextField } from "../textfield/ControlledTextField";
 import "./Login.css";

@@ -3,6 +3,7 @@ import {
   getAuth,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import { getStorage, ref, uploadBytes, getDownloadURL, UploadResult } from "firebase/storage";
 
 export const firebaseEmailSigin = (
   email: string,
@@ -43,7 +44,40 @@ export const firebaseEmailCreate = (
     });
 };
 
+export const updateUserProfilePhoto = (file: any): Promise<UploadResult> => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  const storage = getStorage();
+
+  // Create a Storage Ref w/ username
+  const storageRef = ref(
+    storage,
+    user?.uid + "/profilePicture/" + "avatar.jpg"
+  );
+
+  // Upload file
+  return uploadBytes(storageRef, file);
+};
+
+export const getUserProfilePhoto = (): Promise<string> => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  const storage = getStorage();
+
+  const storageRef = ref(
+    storage,
+    user?.uid + "/profilePicture/" + "avatar.jpg"
+  );
+  return getDownloadURL(storageRef)
+    .then((url) => {
+      return url;
+    })
+    .catch((err) => {
+      return "";
+    });
+};
+
 export const firebaseLogout = (): Promise<void> => {
   const auth = getAuth();
   return auth.signOut();
-}
+};
