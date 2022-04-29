@@ -18,13 +18,19 @@ import { User } from "firebase/auth";
 import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { Profile } from "../../App";
+import {
+  updateUserProfile,
+  updateUserProfilePhoto,
+} from "../../firebase/FirebaseUtils";
 import { ControlledTextField } from "../textfield/ControlledTextField";
 import TitleBar from "../title-bar/TitleBar";
 import "./Account.css";
 
 interface AccountProps {
   user: User | null;
-  photoUrl: string;
+  profile: Profile;
+  callback: () => void;
 }
 
 type Form = {
@@ -39,9 +45,13 @@ const verticalGapStackTokens: IStackTokens = {
 
 export const nameof = <T extends {}>(name: keyof T) => name;
 
-const Account: React.FC<AccountProps> = ({ user, photoUrl }: AccountProps) => {
+const Account: React.FC<AccountProps> = ({ user, profile, callback }: AccountProps) => {
   const navigate = useNavigate();
   const fileInputRef = useRef() as React.MutableRefObject<HTMLInputElement>;
+  const [isEditing, setIsEditing] = useState(false);
+  const [tmpPhotoUrl, setTmpPhotoUrl] = useState("");
+  const [photo, setPhoto] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (user == null) {
@@ -55,34 +65,51 @@ const Account: React.FC<AccountProps> = ({ user, photoUrl }: AccountProps) => {
     setValue: setProfileValue,
   } = useForm<Form, any>({
     defaultValues: {
-      alias: "",
-      descriptor: "",
+      alias: profile.alias,
+      descriptor: profile.descriptor,
     },
     reValidateMode: "onSubmit",
     mode: "all",
   });
 
-  const [loadPhoto, setLoadPhoto] = useState(false);
-
-  const [selectedFile, setSelectedFile] = useState();
-  const [isFilePicked, setIsFilePicked] = useState(false);
-
-  const [tmpPhotoUrl, setTmpPhotoUrl] = useState("");
-
   const email = user?.email;
 
   const persona: IPersonaSharedProps = {
-    imageUrl: tmpPhotoUrl == "" ? photoUrl : tmpPhotoUrl,
+    imageUrl: tmpPhotoUrl == "" ? profile.photoUrl : tmpPhotoUrl,
     imageInitials: email?.slice(0, 2).toUpperCase() || "AA",
     text: "",
   };
 
   const changeHandler = (event: any) => {
     const file = event.target.files[0];
-    setLoadPhoto(true);
     const fileUrl = URL.createObjectURL(file);
     setTmpPhotoUrl(fileUrl);
-    console.log(event.target.files[0]);
+    setIsEditing(true);
+    setPhoto(file);
+  };
+
+  const saveProfile = () => {
+    handleSaveProfile(
+      (data) => {
+        setLoading(true);
+        if (photo) {
+          updateUserProfilePhoto(photo).then(() => {
+            updateUserProfile(data.alias, data.descriptor).then(() => {
+              setIsEditing(false);
+              setLoading(false);
+              callback();
+            });
+          });
+        } else {
+          updateUserProfile(data.alias, data.descriptor).then(() => {
+            setIsEditing(false);
+            setLoading(false);
+            callback();
+          });
+        }
+      },
+      (err) => {}
+    )();
   };
 
   return (
@@ -95,12 +122,12 @@ const Account: React.FC<AccountProps> = ({ user, photoUrl }: AccountProps) => {
         height: "100vh",
         zIndex: 10000,
         alignItems: "center",
-        backgroundImage: "red"
+        backgroundImage: "red",
       }}
     >
       {user !== null && (
         <>
-          <TitleBar photoUrl={photoUrl} user={user} />
+          <TitleBar profile={profile} user={user} />
           <div
             style={{
               display: "flex",
@@ -114,43 +141,57 @@ const Account: React.FC<AccountProps> = ({ user, photoUrl }: AccountProps) => {
               className="account-card"
               style={{ boxShadow: DefaultEffects.elevation16 }}
             >
-              <Stack style={{ width: "100%" }} tokens={verticalGapStackTokens}>
+              <Stack
+                style={{ width: "100%", zIndex: 1000 }}
+                tokens={verticalGapStackTokens}
+              >
                 <Text variant={"xxLarge"} nowrap block>
                   Profile Settings
                 </Text>
 
-
-                <div style={{ width: "100%", alignItems: "center", textAlign: "center", justifyContent: "center " }}>
-
+                <div
+                  style={{
+                    width: "100%",
+                    alignItems: "center",
+                    textAlign: "center",
+                    justifyContent: "center ",
+                  }}
+                >
                   <Persona
                     {...persona}
                     presence={PersonaPresence.none}
                     className="account-picture"
                     initialsColor={PersonaInitialsColor.gold}
-                    coinSize={window.innerWidth / 5}
+                    coinSize={300}
                     imageAlt=""
                     styles={{
                       root: {
                         width: 0,
                         margin: "auto",
-                        display: "block"
-                      }
+                        display: "block",
+                      },
                     }}
                   />
                 </div>
-                
-                <div style={{ width: "100%", alignItems: "center", textAlign: "center", justifyContent: "center " }}>
 
-                <CommandBarButton
-                  iconProps={{ iconName: "Upload" }}
-                  text="Upload Picture"
-                  type="file"
+                <div
                   style={{
-                    height: 30,
-                    width: "40%",
+                    width: "100%",
+                    alignItems: "center",
+                    textAlign: "center",
+                    justifyContent: "center ",
                   }}
-                  onClick={() => fileInputRef.current.click()}
-                />
+                >
+                  <CommandBarButton
+                    iconProps={{ iconName: "Upload" }}
+                    text="Upload Picture"
+                    type="file"
+                    style={{
+                      height: 30,
+                      width: "200px",
+                    }}
+                    onClick={() => fileInputRef.current.click()}
+                  />
                 </div>
                 <input
                   id="photo-upload"
@@ -160,32 +201,39 @@ const Account: React.FC<AccountProps> = ({ user, photoUrl }: AccountProps) => {
                   accept="image/*"
                   onChange={changeHandler}
                 />
-                <form style={{marginTop: "auto", marginBottom: "10%"}}>
-                  <ControlledTextField
-                    // onKeyDown={siginKeyDown}
-                    label="Alias"
-                    control={controlProfile}
-                    name={nameof<Form>("alias")}
-                  />
-                              <ControlledTextField
-                    // onKeyDown={siginKeyDown}
-                    label="Descriptor"
-                    control={controlProfile}
-                    name={nameof<Form>("descriptor")}
-                  />
-                  <Stack horizontal tokens={{
-                    childrenGap: 10
-                  }}>
-                    
-                  <PrimaryButton style={{marginTop: 20}}>
+                <ControlledTextField
+                  onKeyDown={() => setIsEditing(true)}
+                  label="Alias"
+                  control={controlProfile}
+                  name={nameof<Form>("alias")}
+                />
+                <ControlledTextField
+                  onKeyDown={() => setIsEditing(true)}
+                  label="Descriptor"
+                  control={controlProfile}
+                  name={nameof<Form>("descriptor")}
+                />
+                <Stack
+                  horizontal
+                  tokens={{
+                    childrenGap: 10,
+                  }}
+                >
+                  <PrimaryButton
+                    style={{ marginTop: 20 }}
+                    disabled={!isEditing}
+                    onClick={saveProfile}
+                  >
                     Save
                   </PrimaryButton>
-                  <Spinner size={SpinnerSize.large} style={{marginTop: 20}} />
-                  </Stack>
-                </form>
+                  {loading && (
+                    <Spinner
+                      size={SpinnerSize.large}
+                      style={{ marginTop: 20 }}
+                    />
+                  )}
+                </Stack>
               </Stack>
-
-
             </div>
           </div>
         </>

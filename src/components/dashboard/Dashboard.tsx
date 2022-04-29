@@ -22,16 +22,17 @@ import {
   Routes,
   useNavigate,
 } from "react-router-dom";
+import { Profile } from "../../App";
 import { firebaseLogout } from "../../firebase/FirebaseUtils";
 import TitleBar from "../title-bar/TitleBar";
 import "./Dashboard.css";
 
 interface DashboardProps {
   user: User | null;
-  photoUrl: string;
+  profile: Profile;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ user, photoUrl }: DashboardProps) => {
+const Dashboard: React.FC<DashboardProps> = ({ user, profile }: DashboardProps) => {
   const navigate = useNavigate();
   useEffect(() => {
     if (user == null) {
@@ -53,7 +54,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, photoUrl }: DashboardProps)
     >
       {user !== null && (
         <>
-          <TitleBar photoUrl={photoUrl} user={user} />
+          <TitleBar profile={profile} user={user} />
           <div
             style={{
               display: "flex",

@@ -2,7 +2,7 @@ import { DefaultEffects, IStackTokens, Stack } from "@fluentui/react";
 import { PrimaryButton } from "@fluentui/react/lib/Button";
 import { Text } from "@fluentui/react/lib/Text";
 import { User } from "firebase/auth";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DeepMap, FieldError, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import {
@@ -28,6 +28,12 @@ export const nameof = <T extends {}>(name: keyof T) => name;
 const Login: React.FC<LoginProps> = ({ user }: LoginProps) => {
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (user !== null) {
+      navigate("/dashboard");
+    }
+  }, [user]);
+
   const [siginClass, setSiginClass] = useState("main-div");
   const [createClass, setCreateClass] = useState("main-div");
   const [siginError, setSiginError] = useState(false);
@@ -35,14 +41,6 @@ const Login: React.FC<LoginProps> = ({ user }: LoginProps) => {
 
   const [sigin, setSigin] = useState(true);
 
-  const [validSiginFormData, setValidSiginFormData] = useState<Form>();
-  const [validAccountFormData, setValidAccountFormData] = useState<Form>();
-
-  const [siginValidationError, setSiginValidationError] =
-    useState<DeepMap<Form, FieldError>>();
-
-  const [accountValidationError, setAccountValidationError] =
-    useState<DeepMap<Form, FieldError>>();
 
   const {
     handleSubmit: handleSubmitAccount,
@@ -89,21 +87,14 @@ const Login: React.FC<LoginProps> = ({ user }: LoginProps) => {
   };
 
   const onSignIn = () => {
-    setSiginValidationError(undefined);
-    setValidSiginFormData(undefined);
-
     handleSubmitSigin(
       (data) => {
-        setValidSiginFormData(data);
         firebaseEmailSigin(data.email, data.password).then((bool) => {
           setSiginError(bool);
           if (!bool) {
             navigate("/dashboard");
           }
         });
-      },
-      (err) => {
-        setSiginValidationError(undefined);
       }
     )();
   };
@@ -121,19 +112,11 @@ const Login: React.FC<LoginProps> = ({ user }: LoginProps) => {
   };
 
   const onCreateAccount = () => {
-    setAccountValidationError(undefined);
-    setValidAccountFormData(undefined);
-
     handleSubmitAccount(
       (data) => {
-        setValidAccountFormData(data);
         firebaseEmailCreate(data.email, data.password).then((bool) => {
           setAccountError(bool);
         });
-      },
-      (err) => {
-        console.log(err);
-        setAccountValidationError(undefined);
       }
     )();
   };

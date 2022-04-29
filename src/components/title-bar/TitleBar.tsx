@@ -16,22 +16,23 @@ import { firebaseLogout } from "../../firebase/FirebaseUtils";
 import { Text } from "@fluentui/react";
 import { User } from "firebase/auth";
 import "./TitleBar.css";
+import { Profile } from "../../App";
 
 interface TitleBarProps {
   user: User | null;
-  photoUrl: string;
+  profile: Profile;
 }
 
-const TitleBar: React.FC<TitleBarProps> = ({ user, photoUrl }: TitleBarProps) => {
+const TitleBar: React.FC<TitleBarProps> = ({ user, profile }: TitleBarProps) => {
   const navigate = useNavigate();
 
-  const email = user?.email;
+  const email = user?.email || "";
 
   const persona: IPersonaSharedProps = {
-    imageUrl: photoUrl,
+    imageUrl: profile.photoUrl,
     imageInitials: email?.slice(0, 2).toUpperCase() || "AA",
-    text: email || "",
-    secondaryText: "Game Master",
+    text: profile.alias === "" ? email : profile.alias,
+    secondaryText: profile.descriptor === "" ?  "Game Master" : profile.descriptor,
     coinProps: {
         color: "red"
     }
@@ -60,7 +61,7 @@ const TitleBar: React.FC<TitleBarProps> = ({ user, photoUrl }: TitleBarProps) =>
   const [showContextualMenu, setShowContextualMenu] = useState(false);
   const onShowContextualMenu = useCallback(
     (ev: React.MouseEvent<HTMLElement>) => {
-      ev.preventDefault(); // don't navigate
+      ev.preventDefault();
       setShowContextualMenu(true);
     },
     []

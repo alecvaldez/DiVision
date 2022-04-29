@@ -3,7 +3,14 @@ import {
   getAuth,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { getStorage, ref, uploadBytes, getDownloadURL, UploadResult } from "firebase/storage";
+import { getDatabase, set, ref as dbRef, get, DataSnapshot } from "firebase/database";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  UploadResult,
+} from "firebase/storage";
 
 export const firebaseEmailSigin = (
   email: string,
@@ -59,6 +66,22 @@ export const updateUserProfilePhoto = (file: any): Promise<UploadResult> => {
   return uploadBytes(storageRef, file);
 };
 
+export const updateUserProfile = (
+  alias: string,
+  descriptor: string
+): Promise<void> => {
+  const db = getDatabase();
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+  const userObject = {
+    alias: alias,
+    descriptor: descriptor
+  };
+
+  return set(dbRef(db, "users/" + user?.uid), userObject);
+};
+
 export const getUserProfilePhoto = (): Promise<string> => {
   const auth = getAuth();
   const user = auth.currentUser;
@@ -76,6 +99,16 @@ export const getUserProfilePhoto = (): Promise<string> => {
       return "";
     });
 };
+
+export const getUserProfile = (): Promise<DataSnapshot> => {
+  const db = getDatabase();
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+  return get(dbRef(db, "users/" + user?.uid));
+
+
+}
 
 export const firebaseLogout = (): Promise<void> => {
   const auth = getAuth();

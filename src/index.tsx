@@ -1,19 +1,17 @@
+import { mergeStyles, PartialTheme, ThemeProvider } from "@fluentui/react";
+import { initializeIcons } from "@fluentui/react/lib/Icons";
+import { getAnalytics } from "firebase/analytics";
+import { initializeApp } from "firebase/app";
+import {
+  getAuth
+} from "firebase/auth";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
+import { BrowserRouter } from "react-router-dom";
 import App from "./App";
+import "./index.css";
 import reportWebVitals from "./reportWebVitals";
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { mergeStyles, PartialTheme, ThemeProvider } from "@fluentui/react";
-import { BrowserRouter, useNavigate } from "react-router-dom";
-import { initializeIcons } from "@fluentui/react/lib/Icons";
-import {
-  getAuth,
-  setPersistence,
-  browserLocalPersistence,
-  onAuthStateChanged,
-} from "firebase/auth";
+import { getDatabase } from "firebase/database";
 
 initializeIcons();
 
@@ -89,8 +87,7 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+initializeApp(firebaseConfig);
 const auth = getAuth();
 
 const root = ReactDOM.createRoot(
