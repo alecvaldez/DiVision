@@ -8,8 +8,9 @@
 }
 
 .games-div {
-  width: 40%;
+  width: 60%;
   height: 70%;
+  /* padding-bottom: 3.5rem; */
   display: inline-flex;
   flex-direction: row;
   gap: 2rem;

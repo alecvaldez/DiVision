@@ -30,12 +30,10 @@ import "./Dashboard.css";
 
 interface DashboardProps {
   user: User | null;
-  profile: Profile;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({
-  user,
-  profile,
+  user
 }: DashboardProps) => {
   const navigate = useNavigate();
   useEffect(() => {
@@ -43,6 +41,10 @@ const Dashboard: React.FC<DashboardProps> = ({
       navigate("/login");
     }
   }, [user]);
+
+  const goCreateGame = ():void => {
+    navigate("/create-game");
+  }
 
   return (
     <div
@@ -112,6 +114,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                         color: "#d9d9d9"
                       },
                     }}
+                    onClick={goCreateGame}
                   />
                 </div>
                 <div

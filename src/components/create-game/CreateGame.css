@@ -1,0 +1,13 @@
+.create-account-card {
+        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(30px) saturate(125%);
+        background-color: rgba(0, 0, 0, 0.3);
+        border-radius: 5px;
+        margin-bottom: 0;
+        overflow: hidden;
+        width: 30rem;
+        border-radius: 5px;
+        padding: 2rem;
+        display: flex;
+        justify-content: center;
+    }

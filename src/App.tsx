@@ -21,6 +21,7 @@ import {
 } from "react-transition-group";
 import "./App.css";
 import Account from "./components/account/Account";
+import CreateGame from "./components/create-game/CreateGame";
 import Dashboard from "./components/dashboard/Dashboard";
 import Login from "./components/login/Login";
 import TitleBar from "./components/title-bar/TitleBar";
@@ -101,7 +102,7 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
               element={
                 <>
                   {userLoaded && (
-                    <Dashboard profile={profile} user={currentUser} />
+                    <Dashboard user={currentUser} />
                   )}
                 </>
               }
@@ -116,6 +117,16 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
                       callback={getFirebaseProfile}
                       user={currentUser}
                     />
+                  )}
+                </>
+              }
+            />
+            <Route
+              path="create-game"
+              element={
+                <>
+                  {userLoaded && (
+                    <CreateGame user={currentUser} />
                   )}
                 </>
               }
