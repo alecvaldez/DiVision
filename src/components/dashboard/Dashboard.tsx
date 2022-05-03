@@ -51,10 +51,11 @@ const Dashboard: React.FC<DashboardProps> = ({
         justifyContent: "center",
         position: "absolute",
         width: "100vw",
-        height: "100vh",
+        height: "calc(100vh - 3.5rem)",
         zIndex: 100,
         alignItems: "center",
         top: "3.5rem",
+        overflowY: "auto"
       }}
     >
       {user !== null && (
@@ -80,8 +81,8 @@ const Dashboard: React.FC<DashboardProps> = ({
                     style={{
                       position: "absolute",
                       textAlign: "center",
-                      height: "15.625rem",
-                      width: "15.625rem",
+                      height: "18rem",
+                      width: "18rem",
                       lineHeight: "420px",
                       zIndex: 200,
                       pointerEvents: "none",

@@ -11,7 +11,7 @@ import {
   Stack,
 } from "@fluentui/react";
 import { useCallback, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { firebaseLogout } from "../../firebase/FirebaseUtils";
 import { Text } from "@fluentui/react";
 import { User } from "firebase/auth";
@@ -25,6 +25,7 @@ interface TitleBarProps {
 
 const TitleBar: React.FC<TitleBarProps> = ({ user, profile }: TitleBarProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const email = user?.email || "";
 
@@ -43,7 +44,9 @@ const TitleBar: React.FC<TitleBarProps> = ({ user, profile }: TitleBarProps) => 
       key: "account",
       text: "Account",
       onClick: () => {
-        navigate("/account");
+        if(location.pathname !== "/account") {
+          navigate("/account");
+        }
       },
       iconProps: { iconName: "Contact", style: { color: "red" } },
     },
@@ -78,7 +81,9 @@ const TitleBar: React.FC<TitleBarProps> = ({ user, profile }: TitleBarProps) => 
   };
 
   const goDashboard = (): void => {
-    navigate("/dashboard");
+    if(location.pathname !== "/dashboard") {
+      navigate("/dashboard");
+    }
   }
 
   return (
@@ -116,7 +121,6 @@ const TitleBar: React.FC<TitleBarProps> = ({ user, profile }: TitleBarProps) => 
             size={PersonaSize.size40}
             imageAlt=""
             ref={linkRef}
-            styles={{}}
           />
         </Stack>
       </Stack>

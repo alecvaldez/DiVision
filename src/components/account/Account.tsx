@@ -98,6 +98,14 @@ const Account: React.FC<AccountProps> = ({
     setPhoto(file);
   };
 
+  
+  const keyDown = (e: any) => {
+    setIsEditing(true);
+    if (e.key === "Enter") {
+      saveProfile();
+    }
+  };
+
   const saveProfile = () => {
     handleSaveProfile(
       (data) => {
@@ -132,7 +140,6 @@ const Account: React.FC<AccountProps> = ({
         height: "100vh",
         zIndex: 100,
         alignItems: "center",
-        backgroundImage: "red",
       }}
     >
       {user !== null && (
@@ -213,13 +220,15 @@ const Account: React.FC<AccountProps> = ({
                   onChange={changeHandler}
                 />
                 <ControlledTextField
-                  onKeyDown={() => setIsEditing(true)}
+                  onKeyDown={keyDown}
                   label="Alias"
                   control={controlProfile}
                   name={nameof<Form>("alias")}
                 />
                 <ControlledTextField
-                  onKeyDown={() => setIsEditing(true)}
+                  onKeyDown={
+                    keyDown
+                  }
                   label="Descriptor"
                   control={controlProfile}
                   name={nameof<Form>("descriptor")}

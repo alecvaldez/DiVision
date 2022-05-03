@@ -7,6 +7,7 @@ import {
 } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import {
+  Navigate,
   NavigateFunction,
   Route,
   Routes,
@@ -93,6 +94,7 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
           unmountOnExit
         >
           <Routes location={location}>
+          <Route path="/" element={<Navigate to={"/login"} />} />
             <Route path="login" element={<Login user={currentUser} />} />
             <Route
               path="dashboard"
