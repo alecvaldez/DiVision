@@ -1,5 +1,6 @@
 import {
   CommandBarButton,
+  CommandButton,
   DefaultButton,
   DefaultEffects,
   IPersonaSharedProps,
@@ -45,8 +46,13 @@ const verticalGapStackTokens: IStackTokens = {
 
 export const nameof = <T extends {}>(name: keyof T) => name;
 
-const Account: React.FC<AccountProps> = ({ user, profile, callback }: AccountProps) => {
+const Account: React.FC<AccountProps> = ({
+  user,
+  profile,
+  callback,
+}: AccountProps) => {
   const navigate = useNavigate();
+
   const fileInputRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const [isEditing, setIsEditing] = useState(false);
   const [tmpPhotoUrl, setTmpPhotoUrl] = useState("");
@@ -58,6 +64,10 @@ const Account: React.FC<AccountProps> = ({ user, profile, callback }: AccountPro
       navigate("/login");
     }
   }, [user]);
+
+  const goBack = (): void => {
+    navigate(-1);
+  }
 
   const {
     handleSubmit: handleSaveProfile,
@@ -215,23 +225,34 @@ const Account: React.FC<AccountProps> = ({ user, profile, callback }: AccountPro
                 />
                 <Stack
                   horizontal
+                  style={{
+                    marginTop: 60,
+                    display: "flex",
+                    justifyContent: "space-between"
+                  }}
                   tokens={{
                     childrenGap: 10,
                   }}
                 >
-                  <PrimaryButton
-                    style={{ marginTop: 20 }}
-                    disabled={!isEditing}
-                    onClick={saveProfile}
-                  >
-                    Save
-                  </PrimaryButton>
+                  <CommandButton
+                    iconProps={{ iconName: "SkypeArrow" }}
+                    text="Back"
+                    onClick={goBack}
+                  />
                   {loading && (
                     <Spinner
                       size={SpinnerSize.large}
-                      style={{ marginTop: 20 }}
                     />
                   )}
+                  <PrimaryButton
+                    disabled={!isEditing}
+                    onClick={saveProfile}
+                    style={{
+                      height: "38px"
+                    }}
+                  >
+                    Save
+                  </PrimaryButton>
                 </Stack>
               </Stack>
             </div>

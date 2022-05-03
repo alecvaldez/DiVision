@@ -77,12 +77,17 @@ const TitleBar: React.FC<TitleBarProps> = ({ user, profile }: TitleBarProps) => 
     firebaseLogout();
   };
 
+  const goDashboard = (): void => {
+    navigate("/dashboard");
+  }
+
   return (
     <div
       className="title-bar"
       style={{ boxShadow: DefaultEffects.elevation16 }}
     >
-      <Stack verticalAlign="center" horizontal style={{ float: "left" }}>
+      <Stack verticalAlign="center" horizontal style={{ float: "left", cursor: "pointer" }} onClick={goDashboard}>
+
         <Text
           variant={"xxLargePlus"}
           nowrap
