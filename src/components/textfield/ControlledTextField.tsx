@@ -18,6 +18,12 @@ export const ControlledTextField: React.FC<HookFormProps & ITextFieldProps> = (
       }) => (
         <TextField
           {...props}
+
+          styles={{
+            root: {
+              height: 80
+            }
+          }}
           autoComplete={"on"}
           onChange={onChange}
           value={value}

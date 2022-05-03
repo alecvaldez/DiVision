@@ -2,11 +2,12 @@
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(30px) saturate(125%);
   background-color: rgba(0, 0, 0, 0.3);
-  width: 20vw;
-  padding: 8%;
+  width: 30em;
+  padding: 6em;
   border-radius: 5px;
   margin-bottom: 0;
   overflow-x: hidden;
+  z-index: 300;
 }
 
 .backdrop {

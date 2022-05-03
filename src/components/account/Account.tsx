@@ -130,14 +130,14 @@ const Account: React.FC<AccountProps> = ({
         position: "absolute",
         width: "100vw",
         height: "100vh",
-        zIndex: 10000,
+        zIndex: 100,
         alignItems: "center",
         backgroundImage: "red",
       }}
     >
       {user !== null && (
         <>
-          <TitleBar profile={profile} user={user} />
+          {/* <TitleBar profile={profile} user={user} /> */}
           <div
             style={{
               display: "flex",
@@ -180,6 +180,7 @@ const Account: React.FC<AccountProps> = ({
                         margin: "auto",
                         display: "block",
                       },
+                      
                     }}
                   />
                 </div>
@@ -225,10 +226,13 @@ const Account: React.FC<AccountProps> = ({
                 />
                 <Stack
                   horizontal
+                  
                   style={{
                     marginTop: 60,
+                    height: "auto",
                     display: "flex",
-                    justifyContent: "space-between"
+                    justifyContent: "space-between",
+                    bottom:  0
                   }}
                   tokens={{
                     childrenGap: 10,

@@ -4,6 +4,7 @@ import {
   DirectionalHint,
   FontIcon,
   Icon,
+  IconButton,
   IContextualMenuItem,
   IPersonaSharedProps,
   Persona,
@@ -32,7 +33,10 @@ interface DashboardProps {
   profile: Profile;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ user, profile }: DashboardProps) => {
+const Dashboard: React.FC<DashboardProps> = ({
+  user,
+  profile,
+}: DashboardProps) => {
   const navigate = useNavigate();
   useEffect(() => {
     if (user == null) {
@@ -48,13 +52,13 @@ const Dashboard: React.FC<DashboardProps> = ({ user, profile }: DashboardProps) 
         position: "absolute",
         width: "100vw",
         height: "100vh",
-        zIndex: 10000,
+        zIndex: 100,
         alignItems: "center",
+        top: "3.5rem",
       }}
     >
       {user !== null && (
         <>
-          <TitleBar profile={profile} user={user} />
           <div
             style={{
               display: "flex",
@@ -64,19 +68,83 @@ const Dashboard: React.FC<DashboardProps> = ({ user, profile }: DashboardProps) 
               justifyContent: "center",
             }}
           >
-              <div className="games-div">
-                <Stack>
-                  <div
-                    className="game-card"
+            <div className="games-div">
+                <div
+                  className="game-card"
+                  style={{
+                    boxShadow: DefaultEffects.elevation64,
+                  }}
+                >
+                  <Text
+                    variant={"large"}
                     style={{
-                      backgroundColor: "rgba(255,255,255,0.05)",
-                      boxShadow: DefaultEffects.elevation16,
+                      position: "absolute",
+                      textAlign: "center",
+                      height: "15.625rem",
+                      width: "15.625rem",
+                      lineHeight: "420px",
+                      zIndex: 200,
+                      pointerEvents: "none",
                     }}
+                    nowrap
+                    block
                   >
-                    Hello
-                  </div>
-                </Stack>
-              </div>
+                    New Game
+                  </Text>
+                  <IconButton
+                    iconProps={{ iconName: "Add" }}
+                    style={{
+                      height: "100%",
+                      width: "100%",
+                      fontSize: "40px",
+                      borderRadius: "5px",
+                    }}
+                    styles={{
+                      rootHovered: {
+                        backgroundColor: "rgba(0,0,0, 0.3)"
+                      },
+                      rootPressed: {
+                        backgroundColor: "rgba(0,0,0, 0.5)"
+                      },
+                      icon: {
+                        fontSize: "150%",
+                        color: "#d9d9d9"
+                      },
+                    }}
+                  />
+                </div>
+                <div
+                  className="game-card"
+                  style={{
+                    boxShadow: DefaultEffects.elevation64,
+                  }}
+                />
+                                <div
+                  className="game-card"
+                  style={{
+                    boxShadow: DefaultEffects.elevation64,
+                  }}
+                />
+                                                <div
+                  className="game-card"
+                  style={{
+                    boxShadow: DefaultEffects.elevation64,
+                  }}
+                />
+                                                                <div
+                  className="game-card"
+                  style={{
+                    boxShadow: DefaultEffects.elevation64,
+                  }}
+                />
+                                                                <div
+                  className="game-card"
+                  style={{
+                    boxShadow: DefaultEffects.elevation64,
+                  }}
+                />
+
+            </div>
           </div>
         </>
       )}

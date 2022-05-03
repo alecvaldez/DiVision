@@ -1,10 +1,10 @@
-.slide-enter {
+/* .slide-enter {
   transform: translate3d(0, -100%, 0);
 }
 
 .slide-enter-active {
   transform: translate3d(0, 0, 0);
-  transition: transform 300ms cubic-bezier(0.1, 0.9, 0.2, 1);
+  transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
 }
 
 .slide-exit {
@@ -13,7 +13,25 @@
 
 .slide-exit-active {
   transform: translate3d(0, -100%, 0);
-  transition: transform 300ms cubic-bezier(0.9, 0.1, 1, 0.2);
+  transition: transform 0.3s cubic-bezier(0.9, 0.1, 1, 0.2);
+} */
+
+.slide-enter {
+  margin-top: -100vh;
+}
+
+.slide-enter-active {
+  margin-top: 0px;
+  transition: margin-top 300ms cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+.slide-exit {
+  margin-top: 0px;
+}
+
+.slide-exit-active {
+  margin-top: -100vh;
+  transition: margin-top 300ms cubic-bezier(0.9, 0.1, 1, 0.2);
 }
 
 #root {
