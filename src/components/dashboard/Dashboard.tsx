@@ -30,19 +30,23 @@ import "./Dashboard.css";
 
 interface DashboardProps {
   user: User | null;
-  profile: Profile;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({
-  user,
-  profile,
-}: DashboardProps) => {
+const Dashboard: React.FC<DashboardProps> = ({ user }: DashboardProps) => {
   const navigate = useNavigate();
   useEffect(() => {
     if (user == null) {
       navigate("/login");
     }
   }, [user]);
+
+  const goCreateGame = (): void => {
+    navigate("/create-game");
+  };
+
+  const goJoinGame = (): void => {
+    navigate("/join-game");
+  };
 
   return (
     <div
@@ -112,6 +116,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                       color: "#d9d9d9",
                     },
                   }}
+                  onClick={goCreateGame}
                 />
               </div>
               <div
@@ -137,7 +142,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                   Join Game
                 </Text>
                 <IconButton
-                  iconProps={{ iconName: "Add" }}
+                  iconProps={{ iconName: "ReleaseGate" }}
                   style={{
                     height: "100%",
                     width: "100%",
@@ -156,6 +161,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                       color: "#d9d9d9",
                     },
                   }}
+                  onClick={goJoinGame}
                 />
               </div>
               <div
@@ -164,31 +170,23 @@ const Dashboard: React.FC<DashboardProps> = ({
                   boxShadow: DefaultEffects.elevation64,
                 }}
               />
-              <div
+                            <div
                 className="game-card"
                 style={{
                   boxShadow: DefaultEffects.elevation64,
                 }}
               />
-              <div
+                            <div
                 className="game-card"
                 style={{
                   boxShadow: DefaultEffects.elevation64,
                 }}
               />
-              <div
-                className="game-card"
-                style={{
-                  boxShadow: DefaultEffects.elevation64,
-                }}
-              />
-              <div
-                className="game-card"
-                style={{
-                  boxShadow: DefaultEffects.elevation64,
-                }}
-              />
+                
+
             </div>
+
+
           </div>
         </>
       )}

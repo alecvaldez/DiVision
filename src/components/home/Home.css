@@ -1,0 +1,23 @@
+.welcome-text {
+    animation: fadein 2s;
+    margin-bottom: 6rem;
+}
+
+.info-text {
+    opacity: 0;
+    animation: fadein2 3s cubic-bezier(0.1, 0.9, 0.2, 1) 2s forwards;
+
+}
+
+@keyframes fadein {
+    from { opacity: 0; transform: translateY(-100%); }
+    to   { opacity: 1; transform: translateY(0);}
+}
+
+@keyframes fadein2 {
+    from { opacity: 0 }
+    to   { opacity: 1 }
+}
+
+
+

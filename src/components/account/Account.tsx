@@ -98,7 +98,7 @@ const Account: React.FC<AccountProps> = ({
     setPhoto(file);
   };
 
-  
+
   const keyDown = (e: any) => {
     setIsEditing(true);
     if (e.key === "Enter") {
@@ -126,7 +126,7 @@ const Account: React.FC<AccountProps> = ({
           });
         }
       },
-      (err) => {}
+      (err) => { }
     )();
   };
 
@@ -137,140 +137,137 @@ const Account: React.FC<AccountProps> = ({
         justifyContent: "center",
         position: "absolute",
         width: "100vw",
-        height: "100vh",
+        height: "calc(100vh - 3.5rem)",
         zIndex: 100,
+        top: "3.5rem",
         alignItems: "center",
+        overflowY: "auto"
       }}
     >
       {user !== null && (
-        <>
-          {/* <TitleBar profile={profile} user={user} /> */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <div
-            style={{
-              display: "flex",
-              width: "100vw",
-              height: "100vh",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
+            className="account-card"
+            style={{ boxShadow: DefaultEffects.elevation16 }}
           >
-            <div
-              className="account-card"
-              style={{ boxShadow: DefaultEffects.elevation16 }}
+            <Stack
+              style={{ width: "100%", zIndex: 1000 }}
+              tokens={verticalGapStackTokens}
             >
-              <Stack
-                style={{ width: "100%", zIndex: 1000 }}
-                tokens={verticalGapStackTokens}
+              <Text variant={"xxLarge"} nowrap block>
+                Profile Settings
+              </Text>
+
+              <div
+                style={{
+                  width: "100%",
+                  alignItems: "center",
+                  textAlign: "center",
+                  justifyContent: "center ",
+                }}
               >
-                <Text variant={"xxLarge"} nowrap block>
-                  Profile Settings
-                </Text>
+                <Persona
+                  {...persona}
+                  presence={PersonaPresence.none}
+                  className="account-picture"
+                  initialsColor={PersonaInitialsColor.gold}
+                  coinSize={300}
+                  imageAlt=""
+                  styles={{
+                    root: {
+                      width: 0,
+                      margin: "auto",
+                      display: "block",
+                    },
 
-                <div
-                  style={{
-                    width: "100%",
-                    alignItems: "center",
-                    textAlign: "center",
-                    justifyContent: "center ",
                   }}
-                >
-                  <Persona
-                    {...persona}
-                    presence={PersonaPresence.none}
-                    className="account-picture"
-                    initialsColor={PersonaInitialsColor.gold}
-                    coinSize={300}
-                    imageAlt=""
-                    styles={{
-                      root: {
-                        width: 0,
-                        margin: "auto",
-                        display: "block",
-                      },
-                      
-                    }}
-                  />
-                </div>
+                />
+              </div>
 
-                <div
-                  style={{
-                    width: "100%",
-                    alignItems: "center",
-                    textAlign: "center",
-                    justifyContent: "center ",
-                  }}
-                >
-                  <CommandBarButton
-                    iconProps={{ iconName: "Upload" }}
-                    text="Upload Picture"
-                    type="file"
-                    style={{
-                      height: 30,
-                      width: "200px",
-                    }}
-                    onClick={() => fileInputRef.current.click()}
-                  />
-                </div>
-                <input
-                  id="photo-upload"
+              <div
+                style={{
+                  width: "100%",
+                  alignItems: "center",
+                  textAlign: "center",
+                  justifyContent: "center ",
+                }}
+              >
+                <CommandBarButton
+                  iconProps={{ iconName: "Upload" }}
+                  text="Upload Picture"
                   type="file"
-                  name="file"
-                  ref={fileInputRef}
-                  accept="image/*"
-                  onChange={changeHandler}
-                />
-                <ControlledTextField
-                  onKeyDown={keyDown}
-                  label="Alias"
-                  control={controlProfile}
-                  name={nameof<Form>("alias")}
-                />
-                <ControlledTextField
-                  onKeyDown={
-                    keyDown
-                  }
-                  label="Descriptor"
-                  control={controlProfile}
-                  name={nameof<Form>("descriptor")}
-                />
-                <Stack
-                  horizontal
-                  
                   style={{
-                    marginTop: 60,
-                    height: "auto",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    bottom:  0
+                    height: 30,
+                    width: "200px",
                   }}
-                  tokens={{
-                    childrenGap: 10,
+                  onClick={() => fileInputRef.current.click()}
+                />
+              </div>
+              <input
+                id="photo-upload"
+                type="file"
+                name="file"
+                ref={fileInputRef}
+                accept="image/*"
+                onChange={changeHandler}
+              />
+              <ControlledTextField
+                onKeyDown={keyDown}
+                label="Alias"
+                control={controlProfile}
+                name={nameof<Form>("alias")}
+              />
+              <ControlledTextField
+                onKeyDown={
+                  keyDown
+                }
+                label="Descriptor"
+                control={controlProfile}
+                name={nameof<Form>("descriptor")}
+              />
+              <Stack
+                horizontal
+
+                style={{
+                  marginTop: 60,
+                  height: "auto",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  bottom: 0
+                }}
+                tokens={{
+                  childrenGap: 10,
+                }}
+              >
+                <CommandButton
+                  iconProps={{ iconName: "SkypeArrow" }}
+                  text="Back"
+                  onClick={goBack}
+                />
+                {loading && (
+                  <Spinner
+                    size={SpinnerSize.large}
+                  />
+                )}
+                <PrimaryButton
+                  disabled={!isEditing}
+                  onClick={saveProfile}
+                  style={{
+                    height: "38px"
                   }}
                 >
-                  <CommandButton
-                    iconProps={{ iconName: "SkypeArrow" }}
-                    text="Back"
-                    onClick={goBack}
-                  />
-                  {loading && (
-                    <Spinner
-                      size={SpinnerSize.large}
-                    />
-                  )}
-                  <PrimaryButton
-                    disabled={!isEditing}
-                    onClick={saveProfile}
-                    style={{
-                      height: "38px"
-                    }}
-                  >
-                    Save
-                  </PrimaryButton>
-                </Stack>
+                  Save
+                </PrimaryButton>
               </Stack>
-            </div>
+            </Stack>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

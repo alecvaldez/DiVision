@@ -10,7 +10,7 @@ import {
   PersonaSize,
   Stack,
 } from "@fluentui/react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { firebaseLogout } from "../../firebase/FirebaseUtils";
 import { Text } from "@fluentui/react";
@@ -18,33 +18,40 @@ import { User } from "firebase/auth";
 import "./TitleBar.css";
 import { Profile } from "../../App";
 
+const siginUrl: string =
+  "https://firebasestorage.googleapis.com/v0/b/division-91b2e.appspot.com/o/sigin.png?alt=media&token=651e81c4-255e-431c-9b92-3e05787a2adf";
+
 interface TitleBarProps {
   user: User | null;
   profile: Profile;
+  profileLoaded: boolean;
 }
 
-const TitleBar: React.FC<TitleBarProps> = ({ user, profile }: TitleBarProps) => {
+const TitleBar: React.FC<TitleBarProps> = ({
+  user,
+  profile,
+  profileLoaded,
+}: TitleBarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const email = user?.email || "";
+  const siginItems: IContextualMenuItem[] = [
+    {
+      key: "login",
+      text: "Login",
+      iconProps: { iconName: "Contact", style: { color: "red" } },
+      onClick: () => {
+        logout();
+      },
+    },
+  ];
 
-  const persona: IPersonaSharedProps = {
-    imageUrl: profile.photoUrl,
-    imageInitials: email?.slice(0, 2).toUpperCase() || "AA",
-    text: profile.alias === "" ? email : profile.alias,
-    secondaryText: profile.descriptor === "" ?  "Game Master" : profile.descriptor,
-    coinProps: {
-        color: "red"
-    }
-  };
-
-  const menuItems: IContextualMenuItem[] = [
+  const userItems: IContextualMenuItem[] = [
     {
       key: "account",
       text: "Account",
       onClick: () => {
-        if(location.pathname !== "/account") {
+        if (location.pathname !== "/account") {
           navigate("/account");
         }
       },
@@ -59,6 +66,35 @@ const TitleBar: React.FC<TitleBarProps> = ({ user, profile }: TitleBarProps) => 
       },
     },
   ];
+
+  const [menuItems, setMenuItems] = useState(siginItems);
+
+  useEffect(() => {
+    if (user) {
+      setMenuItems(userItems);
+    } else {
+      setMenuItems(siginItems);
+    }
+  }, [user]);
+
+  const getSecondaryText = (): string => {
+    if (user) {
+      return profile.descriptor === "" ? "User" : profile.descriptor;
+    } else {
+      return "Sign In";
+    }
+  };
+  const email = user?.email || "";
+
+  const persona: IPersonaSharedProps = {
+    imageUrl: profile.photoUrl ? profile.photoUrl : siginUrl,
+    imageInitials: email?.slice(0, 2).toUpperCase() || "AA",
+    text: profile.alias === "" ? email : profile.alias,
+    secondaryText: getSecondaryText(),
+    coinProps: {
+      color: "red",
+    },
+  };
 
   const linkRef = useRef(null);
   const [showContextualMenu, setShowContextualMenu] = useState(false);
@@ -81,18 +117,22 @@ const TitleBar: React.FC<TitleBarProps> = ({ user, profile }: TitleBarProps) => 
   };
 
   const goDashboard = (): void => {
-    if(location.pathname !== "/dashboard") {
+    if (location.pathname !== "/dashboard") {
       navigate("/dashboard");
     }
-  }
+  };
 
   return (
     <div
       className="title-bar"
       style={{ boxShadow: DefaultEffects.elevation16 }}
     >
-      <Stack verticalAlign="center" horizontal style={{ float: "left", cursor: "pointer" }} onClick={goDashboard}>
-
+      <Stack
+        verticalAlign="center"
+        horizontal
+        style={{ float: "left", cursor: "pointer" }}
+        onClick={goDashboard}
+      >
         <Text
           variant={"xxLargePlus"}
           nowrap
@@ -106,34 +146,36 @@ const TitleBar: React.FC<TitleBarProps> = ({ user, profile }: TitleBarProps) => 
           />
           DiVision
         </Text>
-        
       </Stack>
-
-      <Stack horizontal style={{ float: "right" }}>
-        <Stack
-          verticalAlign="center"
-          style={{ height: "56px", cursor: "pointer" }}
-        >
-          <Persona
-            onClick={onShowContextualMenu}
-            {...persona}
-            presence={PersonaPresence.none}
-            size={PersonaSize.size40}
-            imageAlt=""
-            ref={linkRef}
+      {profileLoaded && (
+        <>
+          <Stack horizontal style={{ float: "right" }}>
+            <Stack
+              verticalAlign="center"
+              style={{ height: "56px", cursor: "pointer" }}
+            >
+              <Persona
+                onClick={onShowContextualMenu}
+                {...persona}
+                presence={PersonaPresence.none}
+                size={PersonaSize.size40}
+                imageAlt=""
+                ref={linkRef}
+              />
+            </Stack>
+          </Stack>
+          <ContextualMenu
+            items={menuItems}
+            hidden={!showContextualMenu}
+            target={linkRef}
+            directionalHint={DirectionalHint.bottomLeftEdge}
+            onItemClick={onHideContextualMenu}
+            gapSpace={10}
+            isBeakVisible={false}
+            onDismiss={onHideContextualMenu}
           />
-        </Stack>
-      </Stack>
-      <ContextualMenu
-        items={menuItems}
-        hidden={!showContextualMenu}
-        target={linkRef}
-        directionalHint={DirectionalHint.bottomLeftEdge}
-        onItemClick={onHideContextualMenu}
-        gapSpace={10}
-        isBeakVisible={false}
-        onDismiss={onHideContextualMenu}
-      />
+        </>
+      )}
     </div>
   );
 };

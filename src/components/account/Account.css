@@ -2,19 +2,17 @@
     -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(30px) saturate(125%);
     background-color: rgba(0, 0, 0, 0.3);
-    padding: 6rem;
     border-radius: 5px;
     margin-bottom: 0;
     overflow: hidden;
     width: 30rem;
+    /* height: clamp(40rem, 80vh, 90rem); */
     border-radius: 5px;
-    padding: 3vh;
+    padding: 2rem;
     display: flex;
     justify-content: center;
+    margin-top: 2.5rem;
 }
-
-
-
 
 input[type="file"] {
     display: none;

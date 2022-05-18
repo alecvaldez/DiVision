@@ -21,7 +21,9 @@ import {
 } from "react-transition-group";
 import "./App.css";
 import Account from "./components/account/Account";
+import CreateGame from "./components/create-game/CreateGame";
 import Dashboard from "./components/dashboard/Dashboard";
+import Home from "./components/home/Home";
 import Login from "./components/login/Login";
 import TitleBar from "./components/title-bar/TitleBar";
 import { getUserProfile, getUserProfilePhoto } from "./firebase/FirebaseUtils";
@@ -43,6 +45,7 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
   const [currentUser, setCurrentUser] = useState(auth.currentUser);
   const location = useLocation();
   const [userLoaded, setUserLoaded] = useState(false);
+  const [profileLoaded, setProfileLoaded] = useState(false);
   const [profile, setProfile] = useState<Profile>({
     photoUrl: "",
     alias: "",
@@ -61,6 +64,8 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
             alias: value.alias,
             descriptor: value.descriptor,
           }));
+
+          setProfileLoaded(true);
 
           console.log(profile);
         }
@@ -85,7 +90,7 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
 
   return (
     <>
-      <TitleBar profile={profile} user={currentUser} />
+      <TitleBar profile={profile} user={currentUser} profileLoaded={profileLoaded}/>
       <SwitchTransition>
         <CSSTransition
           key={location.key}
@@ -94,14 +99,14 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
           unmountOnExit
         >
           <Routes location={location}>
-          <Route path="/" element={<Navigate to={"/login"} />} />
+          <Route path="/" element={<Home profile={profile} user={currentUser} profileLoaded={profileLoaded} />} />
             <Route path="login" element={<Login user={currentUser} />} />
             <Route
               path="dashboard"
               element={
                 <>
                   {userLoaded && (
-                    <Dashboard profile={profile} user={currentUser} />
+                    <Dashboard user={currentUser} />
                   )}
                 </>
               }
@@ -116,6 +121,16 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
                       callback={getFirebaseProfile}
                       user={currentUser}
                     />
+                  )}
+                </>
+              }
+            />
+            <Route
+              path="create-game"
+              element={
+                <>
+                  {userLoaded && (
+                    <CreateGame user={currentUser} />
                   )}
                 </>
               }
