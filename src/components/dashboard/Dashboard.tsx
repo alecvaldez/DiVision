@@ -55,7 +55,7 @@ const Dashboard: React.FC<DashboardProps> = ({
         zIndex: 100,
         alignItems: "center",
         top: "3.5rem",
-        overflowY: "auto"
+        overflowY: "auto",
       }}
     >
       {user !== null && (
@@ -70,81 +70,124 @@ const Dashboard: React.FC<DashboardProps> = ({
             }}
           >
             <div className="games-div">
-                <div
-                  className="game-card"
+              <div
+                className="game-card"
+                style={{
+                  boxShadow: DefaultEffects.elevation64,
+                }}
+              >
+                <Text
+                  variant={"large"}
                   style={{
-                    boxShadow: DefaultEffects.elevation64,
+                    position: "absolute",
+                    textAlign: "center",
+                    height: "18rem",
+                    width: "18rem",
+                    lineHeight: "420px",
+                    zIndex: 200,
+                    pointerEvents: "none",
                   }}
+                  nowrap
+                  block
                 >
-                  <Text
-                    variant={"large"}
-                    style={{
-                      position: "absolute",
-                      textAlign: "center",
-                      height: "18rem",
-                      width: "18rem",
-                      lineHeight: "420px",
-                      zIndex: 200,
-                      pointerEvents: "none",
-                    }}
-                    nowrap
-                    block
-                  >
-                    New Game
-                  </Text>
-                  <IconButton
-                    iconProps={{ iconName: "Add" }}
-                    style={{
-                      height: "100%",
-                      width: "100%",
-                      fontSize: "40px",
-                      borderRadius: "5px",
-                    }}
-                    styles={{
-                      rootHovered: {
-                        backgroundColor: "rgba(0,0,0, 0.3)"
-                      },
-                      rootPressed: {
-                        backgroundColor: "rgba(0,0,0, 0.5)"
-                      },
-                      icon: {
-                        fontSize: "150%",
-                        color: "#d9d9d9"
-                      },
-                    }}
-                  />
-                </div>
-                <div
-                  className="game-card"
+                  New Game
+                </Text>
+                <IconButton
+                  iconProps={{ iconName: "Add" }}
                   style={{
-                    boxShadow: DefaultEffects.elevation64,
+                    height: "100%",
+                    width: "100%",
+                    fontSize: "40px",
+                    borderRadius: "5px",
+                  }}
+                  styles={{
+                    rootHovered: {
+                      backgroundColor: "rgba(0,0,0, 0.3)",
+                    },
+                    rootPressed: {
+                      backgroundColor: "rgba(0,0,0, 0.5)",
+                    },
+                    icon: {
+                      fontSize: "150%",
+                      color: "#d9d9d9",
+                    },
                   }}
                 />
-                                <div
-                  className="game-card"
+              </div>
+              <div
+                className="game-card"
+                style={{
+                  boxShadow: DefaultEffects.elevation64,
+                }}
+              >
+                <Text
+                  variant={"large"}
                   style={{
-                    boxShadow: DefaultEffects.elevation64,
+                    position: "absolute",
+                    textAlign: "center",
+                    height: "18rem",
+                    width: "18rem",
+                    lineHeight: "420px",
+                    zIndex: 200,
+                    pointerEvents: "none",
+                  }}
+                  nowrap
+                  block
+                >
+                  Join Game
+                </Text>
+                <IconButton
+                  iconProps={{ iconName: "Add" }}
+                  style={{
+                    height: "100%",
+                    width: "100%",
+                    fontSize: "40px",
+                    borderRadius: "5px",
+                  }}
+                  styles={{
+                    rootHovered: {
+                      backgroundColor: "rgba(0,0,0, 0.3)",
+                    },
+                    rootPressed: {
+                      backgroundColor: "rgba(0,0,0, 0.5)",
+                    },
+                    icon: {
+                      fontSize: "150%",
+                      color: "#d9d9d9",
+                    },
                   }}
                 />
-                                                <div
-                  className="game-card"
-                  style={{
-                    boxShadow: DefaultEffects.elevation64,
-                  }}
-                />
-                                                                <div
-                  className="game-card"
-                  style={{
-                    boxShadow: DefaultEffects.elevation64,
-                  }}
-                />
-                                                                <div
-                  className="game-card"
-                  style={{
-                    boxShadow: DefaultEffects.elevation64,
-                  }}
-                />
-
+              </div>
+              <div
+                className="game-card"
+                style={{
+                  boxShadow: DefaultEffects.elevation64,
+                }}
+              />
+              <div
+                className="game-card"
+                style={{
+                  boxShadow: DefaultEffects.elevation64,
+                }}
+              />
+              <div
+                className="game-card"
+                style={{
+                  boxShadow: DefaultEffects.elevation64,
+                }}
+              />
+              <div
+                className="game-card"
+                style={{
+                  boxShadow: DefaultEffects.elevation64,
+                }}
+              />
+              <div
+                className="game-card"
+                style={{
+                  boxShadow: DefaultEffects.elevation64,
+                }}
+              />
             </div>
           </div>
         </>
