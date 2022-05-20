@@ -57,7 +57,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user }: DashboardProps) => {
         width: "100vw",
         height: "calc(100vh - 3.5rem)",
         zIndex: 100,
-        alignItems: "center",
         top: "3.5rem",
         overflowY: "auto",
       }}
@@ -170,23 +169,49 @@ const Dashboard: React.FC<DashboardProps> = ({ user }: DashboardProps) => {
                   boxShadow: DefaultEffects.elevation64,
                 }}
               />
-                            <div
+              <div
                 className="game-card"
                 style={{
                   boxShadow: DefaultEffects.elevation64,
                 }}
               />
-                            <div
+              <div
                 className="game-card"
                 style={{
                   boxShadow: DefaultEffects.elevation64,
                 }}
               />
-                
-
+              <div
+                className="game-card"
+                style={{
+                  boxShadow: DefaultEffects.elevation64,
+                }}
+              />
+              <div
+                className="game-card"
+                style={{
+                  boxShadow: DefaultEffects.elevation64,
+                }}
+              />
+              <div
+                className="game-card"
+                style={{
+                  boxShadow: DefaultEffects.elevation64,
+                }}
+              />
+              <div
+                className="game-card"
+                style={{
+                  boxShadow: DefaultEffects.elevation64,
+                }}
+              />
+              <div
+                className="game-card"
+                style={{
+                  boxShadow: DefaultEffects.elevation64,
+                }}
+              />
             </div>
-
-
           </div>
         </>
       )}

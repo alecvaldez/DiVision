@@ -54,6 +54,7 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
 
   const getFirebaseProfile = () => {
     getUserProfilePhoto().then((url) => {
+      getUserProfilePhoto();
       getUserProfile().then((snapshot) => {
         if (snapshot.exists()) {
           const val = snapshot.val();
@@ -64,12 +65,10 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
             alias: value.alias,
             descriptor: value.descriptor,
           }));
-
-          setProfileLoaded(true);
-
-          console.log(profile);
         }
+        setProfileLoaded(true);
       });
+
     });
   };
 
@@ -90,7 +89,11 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
 
   return (
     <>
-      <TitleBar profile={profile} user={currentUser} profileLoaded={profileLoaded}/>
+      <TitleBar
+        profile={profile}
+        user={currentUser}
+        profileLoaded={profileLoaded}
+      />
       <SwitchTransition>
         <CSSTransition
           key={location.key}
@@ -99,17 +102,20 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
           unmountOnExit
         >
           <Routes location={location}>
-          <Route path="/" element={<Home profile={profile} user={currentUser} profileLoaded={profileLoaded} />} />
+            <Route
+              path="/"
+              element={
+                <Home
+                  profile={profile}
+                  user={currentUser}
+                  profileLoaded={profileLoaded}
+                />
+              }
+            />
             <Route path="login" element={<Login user={currentUser} />} />
             <Route
               path="dashboard"
-              element={
-                <>
-                  {userLoaded && (
-                    <Dashboard user={currentUser} />
-                  )}
-                </>
-              }
+              element={<>{userLoaded && <Dashboard user={currentUser} />}</>}
             />
             <Route
               path="account"
@@ -127,13 +133,7 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
             />
             <Route
               path="create-game"
-              element={
-                <>
-                  {userLoaded && (
-                    <CreateGame user={currentUser} />
-                  )}
-                </>
-              }
+              element={<>{userLoaded && <CreateGame user={currentUser} />}</>}
             />
           </Routes>
         </CSSTransition>

@@ -252,6 +252,9 @@ const Account: React.FC<AccountProps> = ({
                 />
                 {loading && (
                   <Spinner
+                    style={{
+                      marginLeft: "auto"
+                    }}
                     size={SpinnerSize.large}
                   />
                 )}

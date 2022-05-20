@@ -46,14 +46,14 @@ const Home: React.FC<HomeProps> = ({
       }}
     >
       {profileLoaded && (
-        <div style={{ whiteSpace: "pre-wrap", textAlign: "center", lineHeight: "100px", marginTop: "30vh" }}>
-          <Text variant={"mega"} className="welcome-text" nowrap block>
+        <div className="welcome-container" style={{ whiteSpace: "pre-wrap", textAlign: "center", lineHeight: "100px" }}>
+          <Text variant={"mega"} className="welcome-text"  block>
             Welcome, {getWelcomeName()}
           </Text>
-          <Text variant={"xxLargePlus"} className="info-text" nowrap block>
+          <Text variant={"xxLargePlus"} className="info-text"  block>
             Click to access your DiVision Dashboard
           </Text>
-          <PrimaryButton onClick={goToDashboard} className="info-text" style={{width: "100%", height: "3rem", fontSize: "20pt"}}>
+          <PrimaryButton onClick={goToDashboard} className="info-text" style={{width: "300px", height: "3rem", fontSize: "20pt"}}>
             Dashboard
           </PrimaryButton>
         </div>

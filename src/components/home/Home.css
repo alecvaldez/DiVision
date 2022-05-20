@@ -1,12 +1,22 @@
 .welcome-text {
     animation: fadein 2s;
     margin-bottom: 6rem;
+    padding-left: clamp(2rem, 2vw, 5rem);
+    padding-right: clamp(2rem, 2vw, 5rem);
 }
 
 .info-text {
     opacity: 0;
     animation: fadein2 3s cubic-bezier(0.1, 0.9, 0.2, 1) 2s forwards;
+}
 
+.welcome-container {
+    width: 100vw;
+    height: 100vh;
+    padding-left: clamp(2rem, 1vw, 5rem);
+    padding-top: clamp(2rem, 20vh, 30rem);
+    padding-right: clamp(2rem, 1vw, 5rem);
+    overflow-y: hidden;
 }
 
 @keyframes fadein {

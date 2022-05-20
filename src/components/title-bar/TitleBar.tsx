@@ -18,9 +18,6 @@ import { User } from "firebase/auth";
 import "./TitleBar.css";
 import { Profile } from "../../App";
 
-const siginUrl: string =
-  "https://firebasestorage.googleapis.com/v0/b/division-91b2e.appspot.com/o/sigin.png?alt=media&token=651e81c4-255e-431c-9b92-3e05787a2adf";
-
 interface TitleBarProps {
   user: User | null;
   profile: Profile;
@@ -87,7 +84,7 @@ const TitleBar: React.FC<TitleBarProps> = ({
   const email = user?.email || "";
 
   const persona: IPersonaSharedProps = {
-    imageUrl: profile.photoUrl ? profile.photoUrl : siginUrl,
+    imageUrl: profile.photoUrl ? profile.photoUrl : "",
     imageInitials: email?.slice(0, 2).toUpperCase() || "AA",
     text: profile.alias === "" ? email : profile.alias,
     secondaryText: getSecondaryText(),
@@ -117,7 +114,7 @@ const TitleBar: React.FC<TitleBarProps> = ({
   };
 
   const goDashboard = (): void => {
-    if (location.pathname !== "/dashboard") {
+    if (location.pathname !== "/dashboard" && user !== null) {
       navigate("/dashboard");
     }
   };

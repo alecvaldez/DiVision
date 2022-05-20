@@ -104,7 +104,6 @@ export const getUserProfile = (): Promise<DataSnapshot> => {
   const db = getDatabase();
   const auth = getAuth();
   const user = auth.currentUser;
-
   return get(dbRef(db, "users/" + user?.uid));
 
 
