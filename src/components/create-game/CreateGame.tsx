@@ -113,19 +113,12 @@ const CreateGame: React.FC<CreateGameProps> = ({ user }: CreateGameProps) => {
         width: "100vw",
         height: "calc(100vh - 3.5rem)",
         zIndex: 100,
-        top: "3.5rem",
         alignItems: "center",
         overflowY: "auto",
       }}
     >
       {user !== null && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+
           <div
             className="account-card"
             style={{ boxShadow: DefaultEffects.elevation16 }}
@@ -191,7 +184,6 @@ const CreateGame: React.FC<CreateGameProps> = ({ user }: CreateGameProps) => {
               </Stack>
             </Stack>
           </div>
-        </div>
       )}
     </div>
   );
