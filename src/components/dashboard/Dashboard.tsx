@@ -59,6 +59,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }: DashboardProps) => {
         zIndex: 100,
         top: "3.5rem",
         overflowY: "auto",
+        overflowX: "hidden"
       }}
     >
       {user !== null && (

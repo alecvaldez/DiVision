@@ -11,12 +11,11 @@
 }
 
 .welcome-container {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
     padding-left: clamp(2rem, 1vw, 5rem);
     padding-top: clamp(2rem, 20vh, 30rem);
     padding-right: clamp(2rem, 1vw, 5rem);
-    overflow-y: hidden;
+    justify-content: space-between;
 }
 
 @keyframes fadein {

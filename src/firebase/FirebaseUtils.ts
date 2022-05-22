@@ -68,7 +68,8 @@ export const updateUserProfilePhoto = (file: any): Promise<UploadResult> => {
 
 export const updateUserProfile = (
   alias: string,
-  descriptor: string
+  descriptor: string,
+  primaryColor: string
 ): Promise<void> => {
   const db = getDatabase();
   const auth = getAuth();
@@ -76,7 +77,8 @@ export const updateUserProfile = (
 
   const userObject = {
     alias: alias,
-    descriptor: descriptor
+    descriptor: descriptor,
+    primaryColor: primaryColor
   };
 
   return set(dbRef(db, "users/" + user?.uid), userObject);

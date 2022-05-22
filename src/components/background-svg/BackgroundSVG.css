@@ -1,0 +1,8 @@
+.svg {
+    position: fixed;
+    width: 130vw;
+    height: 130vh;
+    transform: translateX(-2rem) translateY(-7rem);
+    z-index: 0;
+    overflow: hidden;
+}

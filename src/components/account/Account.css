@@ -4,14 +4,19 @@
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 5px;
     margin-bottom: 0;
-    overflow: hidden;
-    width: clamp(20rem, 30vw, 30rem);
-    /* height: clamp(40rem, 80vh, 90rem); */
+    width: clamp(20rem, 90vw, 30rem);
+    overflow: auto;
     border-radius: 5px;
     padding: 2rem;
+    margin-top: 3.5rem;
     display: flex;
     justify-content: center;
-    margin-top: 2.5rem;
+    position: relative;
+}
+
+.circle-picker {
+    justify-content: center;
+    padding-top: 20px;
 }
 
 input[type="file"] {

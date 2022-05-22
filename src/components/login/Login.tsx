@@ -16,6 +16,8 @@ const stackTokens: IStackTokens = { childrenGap: 40 };
 
 interface LoginProps {
   user: User | null;
+  sigin: boolean;
+  setSigin: (bool: boolean) => void;
 }
 
 type Form = {
@@ -25,7 +27,7 @@ type Form = {
 
 export const nameof = <T extends {}>(name: keyof T) => name;
 
-const Login: React.FC<LoginProps> = ({ user }: LoginProps) => {
+const Login: React.FC<LoginProps> = ({ user, sigin, setSigin }: LoginProps) => {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,9 +40,6 @@ const Login: React.FC<LoginProps> = ({ user }: LoginProps) => {
   const [createClass, setCreateClass] = useState("main-div");
   const [siginError, setSiginError] = useState(false);
   const [accountError, setAccountError] = useState(false);
-
-  const [sigin, setSigin] = useState(true);
-
 
   const {
     handleSubmit: handleSubmitAccount,
@@ -73,6 +72,7 @@ const Login: React.FC<LoginProps> = ({ user }: LoginProps) => {
     setCreateClass("main-div slideIn");
     setTimeout(() => {
       setSigin(!sigin);
+
       setSiginClass("main-div");
     }, 200);
   };
@@ -117,6 +117,7 @@ const Login: React.FC<LoginProps> = ({ user }: LoginProps) => {
         firebaseEmailCreate(data.email, data.password).then((bool) => {
           setAccountError(bool);
         });
+        setSigin(true);
       }
     )();
   };

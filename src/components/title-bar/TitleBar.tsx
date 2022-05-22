@@ -22,12 +22,16 @@ interface TitleBarProps {
   user: User | null;
   profile: Profile;
   profileLoaded: boolean;
+  primaryColor: string;
+  setPrimaryColor: (color: string) => void;
 }
 
 const TitleBar: React.FC<TitleBarProps> = ({
   user,
   profile,
   profileLoaded,
+  primaryColor,
+  setPrimaryColor
 }: TitleBarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -36,7 +40,7 @@ const TitleBar: React.FC<TitleBarProps> = ({
     {
       key: "login",
       text: "Login",
-      iconProps: { iconName: "Contact", style: { color: "red" } },
+      iconProps: { iconName: "Contact", style: { color: primaryColor } },
       onClick: () => {
         logout();
       },
@@ -48,16 +52,14 @@ const TitleBar: React.FC<TitleBarProps> = ({
       key: "account",
       text: "Account",
       onClick: () => {
-        if (location.pathname !== "/account") {
           navigate("/account");
-        }
       },
-      iconProps: { iconName: "Contact", style: { color: "red" } },
+      iconProps: { iconName: "Contact", style: { color: primaryColor } },
     },
     {
       key: "logout",
       text: "Logout",
-      iconProps: { iconName: "Leave", style: { color: "red" } },
+      iconProps: { iconName: "Leave", style: { color: primaryColor } },
       onClick: () => {
         logout();
       },
@@ -72,7 +74,7 @@ const TitleBar: React.FC<TitleBarProps> = ({
     } else {
       setMenuItems(siginItems);
     }
-  }, [user]);
+  }, [user, primaryColor]);
 
   const getSecondaryText = (): string => {
     if (user) {
@@ -110,6 +112,7 @@ const TitleBar: React.FC<TitleBarProps> = ({
 
   const logout = (): void => {
     navigate("/login");
+    setPrimaryColor("#e00000");
     firebaseLogout();
   };
 
@@ -138,6 +141,9 @@ const TitleBar: React.FC<TitleBarProps> = ({
         >
           <FontIcon
             className="logo"
+            style={{
+              color: primaryColor
+            }}
             aria-label="WebAppBuilderFragment"
             iconName="WebAppBuilderFragment"
           />
@@ -149,13 +155,18 @@ const TitleBar: React.FC<TitleBarProps> = ({
           <Stack horizontal style={{ float: "right" }}>
             <Stack
               verticalAlign="center"
-              style={{ height: "56px", cursor: "pointer" }}
+              style={{ height: "56px", cursor: "pointer",  maxWidth: "30vw" }}
             >
               <Persona
                 onClick={onShowContextualMenu}
                 {...persona}
                 presence={PersonaPresence.none}
                 size={PersonaSize.size40}
+                styles={{
+                  root: {
+                    whiteSpace: "nowrap"
+                  }
+                }}
                 imageAlt=""
                 ref={linkRef}
               />

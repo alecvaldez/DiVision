@@ -5,7 +5,7 @@
         border-radius: 5px;
         margin-bottom: 0;
         overflow: hidden;
-        width: 30rem;
+        width: clamp(20rem, 30vw, 30rem);
         border-radius: 5px;
         padding: 2rem;
         display: flex;

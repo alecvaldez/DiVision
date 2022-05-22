@@ -1,11 +1,9 @@
 import {
   CommandBarButton,
   CommandButton,
-  DefaultButton,
   DefaultEffects,
   IPersonaSharedProps,
   IStackTokens,
-  Label,
   Persona,
   PersonaInitialsColor,
   PersonaPresence,
@@ -25,13 +23,15 @@ import {
   updateUserProfilePhoto,
 } from "../../firebase/FirebaseUtils";
 import { ControlledTextField } from "../textfield/ControlledTextField";
-import TitleBar from "../title-bar/TitleBar";
+import { CirclePicker, Color, ColorResult } from "react-color";
 import "./Account.css";
 
 interface AccountProps {
   user: User | null;
   profile: Profile;
-  callback: () => void;
+  primaryColor: string;
+  getFirebaseProfile: () => void;
+  setPrimaryColor: (color: string) => void;
 }
 
 type Form = {
@@ -40,7 +40,7 @@ type Form = {
 };
 
 const verticalGapStackTokens: IStackTokens = {
-  childrenGap: 40,
+  childrenGap: 20,
   padding: 10,
 };
 
@@ -49,7 +49,9 @@ export const nameof = <T extends {}>(name: keyof T) => name;
 const Account: React.FC<AccountProps> = ({
   user,
   profile,
-  callback,
+  primaryColor,
+  getFirebaseProfile,
+  setPrimaryColor
 }: AccountProps) => {
   const navigate = useNavigate();
 
@@ -67,7 +69,7 @@ const Account: React.FC<AccountProps> = ({
 
   const goBack = (): void => {
     navigate(-1);
-  }
+  };
 
   const {
     handleSubmit: handleSaveProfile,
@@ -98,7 +100,6 @@ const Account: React.FC<AccountProps> = ({
     setPhoto(file);
   };
 
-
   const keyDown = (e: any) => {
     setIsEditing(true);
     if (e.key === "Enter") {
@@ -112,21 +113,21 @@ const Account: React.FC<AccountProps> = ({
         setLoading(true);
         if (photo) {
           updateUserProfilePhoto(photo).then(() => {
-            updateUserProfile(data.alias, data.descriptor).then(() => {
+            updateUserProfile(data.alias, data.descriptor, primaryColor).then(() => {
               setIsEditing(false);
               setLoading(false);
-              callback();
+              getFirebaseProfile();
             });
           });
         } else {
-          updateUserProfile(data.alias, data.descriptor).then(() => {
+          updateUserProfile(data.alias, data.descriptor, primaryColor).then(() => {
             setIsEditing(false);
             setLoading(false);
-            callback();
+            getFirebaseProfile();
           });
         }
       },
-      (err) => { }
+      (err) => {}
     )();
   };
 
@@ -141,17 +142,10 @@ const Account: React.FC<AccountProps> = ({
         zIndex: 100,
         top: "3.5rem",
         alignItems: "center",
-        overflowY: "auto"
+        overflowY: "auto",
       }}
     >
       {user !== null && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
           <div
             className="account-card"
             style={{ boxShadow: DefaultEffects.elevation16 }}
@@ -160,7 +154,7 @@ const Account: React.FC<AccountProps> = ({
               style={{ width: "100%", zIndex: 1000 }}
               tokens={verticalGapStackTokens}
             >
-              <Text variant={"xxLarge"} nowrap block>
+              <Text variant={"xxLarge"} style={{ position: "absolute"}} nowrap block>
                 Profile Settings
               </Text>
 
@@ -170,6 +164,7 @@ const Account: React.FC<AccountProps> = ({
                   alignItems: "center",
                   textAlign: "center",
                   justifyContent: "center ",
+                  marginTop: 80
                 }}
               >
                 <Persona
@@ -185,7 +180,6 @@ const Account: React.FC<AccountProps> = ({
                       margin: "auto",
                       display: "block",
                     },
-
                   }}
                 />
               </div>
@@ -217,6 +211,25 @@ const Account: React.FC<AccountProps> = ({
                 accept="image/*"
                 onChange={changeHandler}
               />
+
+              <CirclePicker
+                width="100%"
+                className="circle-picker"
+                colors={[
+                  "#fa0000",
+                  "#4073ff",
+                  "#da00f2",
+                  "#ff5e00",
+                  "#e8d500",
+                  "#00d9e8",
+                  "#00c700",
+                ]}
+                onChange={(color) => {
+                  setIsEditing(true);
+                  setPrimaryColor(color.hex);
+                }}
+                color={primaryColor}
+              />
               <ControlledTextField
                 onKeyDown={keyDown}
                 label="Alias"
@@ -224,22 +237,19 @@ const Account: React.FC<AccountProps> = ({
                 name={nameof<Form>("alias")}
               />
               <ControlledTextField
-                onKeyDown={
-                  keyDown
-                }
+                onKeyDown={keyDown}
                 label="Descriptor"
                 control={controlProfile}
                 name={nameof<Form>("descriptor")}
               />
               <Stack
                 horizontal
-
                 style={{
                   marginTop: 60,
                   height: "auto",
                   display: "flex",
                   justifyContent: "space-between",
-                  bottom: 0
+                  bottom: 0,
                 }}
                 tokens={{
                   childrenGap: 10,
@@ -253,7 +263,7 @@ const Account: React.FC<AccountProps> = ({
                 {loading && (
                   <Spinner
                     style={{
-                      marginLeft: "auto"
+                      marginLeft: "auto",
                     }}
                     size={SpinnerSize.large}
                   />
@@ -262,7 +272,7 @@ const Account: React.FC<AccountProps> = ({
                   disabled={!isEditing}
                   onClick={saveProfile}
                   style={{
-                    height: "38px"
+                    height: "38px",
                   }}
                 >
                   Save
@@ -270,7 +280,6 @@ const Account: React.FC<AccountProps> = ({
               </Stack>
             </Stack>
           </div>
-        </div>
       )}
     </div>
   );

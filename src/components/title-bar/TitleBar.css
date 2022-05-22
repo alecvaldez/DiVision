@@ -1,5 +1,4 @@
 .title-bar {
-  /* background-color: #282424; */
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(30px) saturate(125%);
   background-color: rgba(0, 0, 0, 0.3);
@@ -13,7 +12,6 @@
 }
 
 .logo {
-  color: red;
   margin-right: 10px;
   vertical-align: -0.1875em;
 }

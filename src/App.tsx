@@ -1,3 +1,4 @@
+import { PartialTheme, ThemeProvider } from "@fluentui/react";
 import {
   Auth,
   browserLocalPersistence,
@@ -6,25 +7,16 @@ import {
   User,
 } from "firebase/auth";
 import React, { useEffect, useState } from "react";
-import {
-  Navigate,
-  NavigateFunction,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
-import {
-  CSSTransition,
-  SwitchTransition,
-  TransitionGroup,
-} from "react-transition-group";
+import { Route, Routes, useLocation } from "react-router-dom";
+import { CSSTransition, SwitchTransition } from "react-transition-group";
 import "./App.css";
 import Account from "./components/account/Account";
+import SVG from "./components/background-svg/BackgroundSVG";
 import CreateGame from "./components/create-game/CreateGame";
 import Dashboard from "./components/dashboard/Dashboard";
 import Home from "./components/home/Home";
 import Login from "./components/login/Login";
+import { generateTheme } from "./components/theme-designer/ThemeDesigner";
 import TitleBar from "./components/title-bar/TitleBar";
 import { getUserProfile, getUserProfilePhoto } from "./firebase/FirebaseUtils";
 
@@ -35,6 +27,7 @@ interface AppProps {
 interface ProfileData {
   alias: string;
   descriptor: string;
+  primaryColor: string;
 }
 
 export interface Profile extends ProfileData {
@@ -46,15 +39,25 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
   const location = useLocation();
   const [userLoaded, setUserLoaded] = useState(false);
   const [profileLoaded, setProfileLoaded] = useState(false);
+  const [noProfile, setNoProfile] = useState(false);
+  const [primaryColor, setPrimaryColor] = useState("#fa0000");
+  const [sigin, setSigin] = useState(true);
+
   const [profile, setProfile] = useState<Profile>({
     photoUrl: "",
     alias: "",
     descriptor: "",
+    primaryColor: "",
+  });
+
+  const appTheme: PartialTheme = generateTheme({
+    primaryColor: primaryColor,
+    textColor: "#d9d9d9",
+    backgroundColor: "#121212",
   });
 
   const getFirebaseProfile = () => {
     getUserProfilePhoto().then((url) => {
-      getUserProfilePhoto();
       getUserProfile().then((snapshot) => {
         if (snapshot.exists()) {
           const val = snapshot.val();
@@ -64,11 +67,16 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
             photoUrl: url,
             alias: value.alias,
             descriptor: value.descriptor,
+            primaryColor: value.primaryColor,
           }));
+
+          const profileColor: string =
+            value.primaryColor !== "" ? value.primaryColor : "#e00000";
+
+          setPrimaryColor(profileColor);
         }
         setProfileLoaded(true);
-      });
-
+      })
     });
   };
 
@@ -82,18 +90,24 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
       setCurrentUser(user);
       console.log(user);
       if (user !== null) {
+        setNoProfile(false);
         getFirebaseProfile();
+      } else {
+        setNoProfile(true);
       }
     });
   }, []);
 
   return (
-    <>
+    <ThemeProvider theme={appTheme}>
       <TitleBar
         profile={profile}
         user={currentUser}
         profileLoaded={profileLoaded}
+        primaryColor={primaryColor}
+        setPrimaryColor={setPrimaryColor}
       />
+      <SVG color={primaryColor} />
       <SwitchTransition>
         <CSSTransition
           key={location.key}
@@ -109,10 +123,12 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
                   profile={profile}
                   user={currentUser}
                   profileLoaded={profileLoaded}
+                  noProfile={noProfile}
+                  setSigin={setSigin}
                 />
               }
             />
-            <Route path="login" element={<Login user={currentUser} />} />
+            <Route path="login" element={<Login sigin={sigin} setSigin={setSigin} user={currentUser} />} />
             <Route
               path="dashboard"
               element={<>{userLoaded && <Dashboard user={currentUser} />}</>}
@@ -124,8 +140,12 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
                   {userLoaded && (
                     <Account
                       profile={profile}
-                      callback={getFirebaseProfile}
+                      primaryColor={primaryColor}
                       user={currentUser}
+                      getFirebaseProfile={getFirebaseProfile}
+                      setPrimaryColor={(color: string) => {
+                        setPrimaryColor(color);
+                      }}
                     />
                   )}
                 </>
@@ -138,7 +158,7 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
           </Routes>
         </CSSTransition>
       </SwitchTransition>
-    </>
+    </ThemeProvider>
   );
 };
 
