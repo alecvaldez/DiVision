@@ -1,38 +1,24 @@
 import {
-  ContextualMenu,
   DefaultEffects,
-  DirectionalHint,
-  FontIcon,
-  Icon,
   IconButton,
-  IContextualMenuItem,
-  IPersonaSharedProps,
-  Persona,
-  PersonaPresence,
-  PersonaSize,
   PrimaryButton,
-  Stack,
   Text,
 } from "@fluentui/react";
-import { getAuth, User } from "firebase/auth";
-import React, { ReactElement, useEffect } from "react";
-import {
-  Navigate,
-  NavigateFunction,
-  Route,
-  Routes,
-  useNavigate,
-} from "react-router-dom";
-import { Profile } from "../../App";
-import { firebaseLogout } from "../../firebase/FirebaseUtils";
-import TitleBar from "../title-bar/TitleBar";
+import { User } from "firebase/auth";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { GamesData, Profile } from "../../App";
 import "./Dashboard.css";
 
 interface DashboardProps {
   user: User | null;
+  games: GamesData;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ user }: DashboardProps) => {
+const Dashboard: React.FC<DashboardProps> = ({
+  user,
+  games,
+}: DashboardProps) => {
   const navigate = useNavigate();
   useEffect(() => {
     if (user == null) {
@@ -59,7 +45,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }: DashboardProps) => {
         zIndex: 100,
         top: "3.5rem",
         overflowY: "auto",
-        overflowX: "hidden"
+        overflowX: "hidden",
       }}
     >
       {user !== null && (
@@ -164,54 +150,86 @@ const Dashboard: React.FC<DashboardProps> = ({ user }: DashboardProps) => {
                   onClick={goJoinGame}
                 />
               </div>
-              <div
-                className="game-card"
-                style={{
-                  boxShadow: DefaultEffects.elevation64,
-                }}
-              />
-              <div
-                className="game-card"
-                style={{
-                  boxShadow: DefaultEffects.elevation64,
-                }}
-              />
-              <div
-                className="game-card"
-                style={{
-                  boxShadow: DefaultEffects.elevation64,
-                }}
-              />
-              <div
-                className="game-card"
-                style={{
-                  boxShadow: DefaultEffects.elevation64,
-                }}
-              />
-              <div
-                className="game-card"
-                style={{
-                  boxShadow: DefaultEffects.elevation64,
-                }}
-              />
-              <div
-                className="game-card"
-                style={{
-                  boxShadow: DefaultEffects.elevation64,
-                }}
-              />
-              <div
-                className="game-card"
-                style={{
-                  boxShadow: DefaultEffects.elevation64,
-                }}
-              />
-              <div
-                className="game-card"
-                style={{
-                  boxShadow: DefaultEffects.elevation64,
-                }}
-              />
+              {games.map((game) => {
+                return (
+                  <div
+                    className="game-card"
+                    key={game.key}
+                    style={{
+                      boxShadow: DefaultEffects.elevation64,
+                      justifyContent: "center",
+                      backgroundSize: "cover",
+                      textAlign: "center",
+                      alignContent: "center",
+                      backgroundImage: `url(${game.imgUrl})`,
+                    }}
+                  >
+                                          <Text
+                        variant={"xxLargePlus"}
+                        style={{
+                          marginTop: "40%",
+                          width: "100%",
+                          zIndex: 11,
+                          left: 0,
+                          borderRadius: "5px",
+                          position: "absolute"
+                        }}
+                        nowrap
+                        
+                      >
+                        {game.name}
+                      </Text>
+                      <Text
+                        variant={"xLarge"}
+                        style={{
+                          marginTop: "60%",
+                          width: "100%",
+                          left: 0,
+                          zIndex: 11,
+
+                          borderRadius: "5px",
+                          position: "absolute"
+
+                        }}
+                        
+                      >
+                        {game.key}
+                      </Text>
+                    <PrimaryButton
+                      style={{
+                        height: "100%",
+                        width: "100%",
+                        borderRadius: "5px",
+                        alignItems: "center",
+                        display: "block",
+                        zIndex: 10,
+                        flexWrap: "wrap"
+
+                      }}
+                      styles={{
+                        root: {
+                          backgroundColor: "rgba(0,0,0,0.2)",
+                          borderColor: "rgba(0,0,0,0)"
+                        },
+                        rootHovered: {
+                          backgroundColor: "rgba(0,0,0, 0.3)",
+                          borderColor: "rgba(0,0,0,0)"
+                        },
+                        rootPressed: {
+                          backgroundColor: "rgba(0,0,0, 0.5)",
+                          borderColor: "rgba(0,0,0,0)"
+                        },
+                        icon: {
+                          fontSize: "150%",
+                          color: "#d9d9d9",
+                        },
+                      }}
+                    >
+
+                    </PrimaryButton>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </>

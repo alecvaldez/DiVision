@@ -1,36 +1,23 @@
 import {
+  CommandBarButton,
   CommandButton,
-  ContextualMenu,
   DefaultEffects,
-  DirectionalHint,
   FontIcon,
   Icon,
-  IconButton,
-  IContextualMenuItem,
   IPersonaSharedProps,
   IStackTokens,
-  Persona,
-  PersonaPresence,
-  PersonaSize,
   PrimaryButton,
   Spinner,
   SpinnerSize,
   Stack,
   Text,
 } from "@fluentui/react";
-import { getAuth, User } from "firebase/auth";
-import React, { ReactElement, useEffect, useState } from "react";
+import { User } from "firebase/auth";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import {
-  Navigate,
-  NavigateFunction,
-  Route,
-  Routes,
-  useNavigate,
-} from "react-router-dom";
-import { firebaseLogout } from "../../firebase/FirebaseUtils";
+import { useNavigate } from "react-router-dom";
+import { addGameToUser, createNewGame } from "../../firebase/FirebaseUtils";
 import { ControlledTextField } from "../textfield/ControlledTextField";
-import TitleBar from "../title-bar/TitleBar";
 import "./CreateGame.css";
 
 interface CreateGameProps {
@@ -51,6 +38,7 @@ export const nameof = <T extends {}>(name: keyof T) => name;
 const CreateGame: React.FC<CreateGameProps> = ({ user }: CreateGameProps) => {
   const navigate = useNavigate();
 
+  const fileInputRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const [isEditing, setIsEditing] = useState(false);
   const [tmpPhotoUrl, setTmpPhotoUrl] = useState("");
   const [photo, setPhoto] = useState(null);
@@ -78,8 +66,6 @@ const CreateGame: React.FC<CreateGameProps> = ({ user }: CreateGameProps) => {
     mode: "all",
   });
 
-  const email = user?.email;
-
   const changeHandler = (event: any) => {
     const file = event.target.files[0];
     const fileUrl = URL.createObjectURL(file);
@@ -89,9 +75,10 @@ const CreateGame: React.FC<CreateGameProps> = ({ user }: CreateGameProps) => {
   };
 
   const keyDown = (e: any) => {
+    
     setIsEditing(true);
     if (e.key === "Enter") {
-        createGame();
+      createGame();
     }
   };
 
@@ -99,6 +86,12 @@ const CreateGame: React.FC<CreateGameProps> = ({ user }: CreateGameProps) => {
     handleCreateGame(
       (data) => {
         setLoading(true);
+        createNewGame(photo, data.name).then((gameKey) => {
+          console.log(data)
+          addGameToUser(gameKey)
+          setIsEditing(false);
+          setLoading(false);
+        })
       },
       (err) => {}
     )();
@@ -118,72 +111,124 @@ const CreateGame: React.FC<CreateGameProps> = ({ user }: CreateGameProps) => {
       }}
     >
       {user !== null && (
-
-          <div
-            className="account-card"
-            style={{ boxShadow: DefaultEffects.elevation16 }}
+        <div
+          className="account-card"
+          style={{ boxShadow: DefaultEffects.elevation16 }}
+        >
+          <Stack
+            style={{ width: "100%", zIndex: 1000 }}
+            tokens={verticalGapStackTokens}
           >
-            <Stack
-              style={{ width: "100%", zIndex: 1000 }}
-              tokens={verticalGapStackTokens}
+            <Text variant={"xxLarge"} nowrap block>
+              Create Game
+            </Text>
+            <div
+              style={{
+                width: "100%",
+                height: "27rem",
+                fontSize: 200,
+                backgroundColor: "#121212",
+                borderRadius: "5px",
+                alignItems: "center",
+                justifyContent: "center",
+                display: "flex",
+                cursor: "pointer",
+                backgroundImage: `url(${tmpPhotoUrl})`,
+                backgroundSize: "cover"
+              }}
+              onClick={() => fileInputRef.current.click()}
             >
-              <Text variant={"xxLarge"} nowrap block>
-                Create Game
-              </Text>
+              {tmpPhotoUrl === "" && (
+                <FontIcon
+                  iconName="FileImage"
+                  style={{
+                    fontSize: 200,
+                  }}
+                />
+              )}
+            </div>
 
-              <ControlledTextField
-                onKeyDown={keyDown}
-                label="Name"
-                autoComplete="off"
-                control={controlGame}
-                maxLength={10}
-                name={nameof<Form>("name")}
-                rules={{
-                    pattern: {
-                        value: /^[a-zA-Z0-9 ]+$/i,
-                        message: "This is not a valid game name",
-                    },
-                    required: "This field is required"
-                }}
-              />
-              <Stack
-                horizontal
+            <div
+              style={{
+                width: "100%",
+                alignItems: "center",
+                textAlign: "center",
+                justifyContent: "center ",
+              }}
+            >
+              <CommandBarButton
+                iconProps={{ iconName: "Upload" }}
+                text="Upload Game Image"
+                type="file"
                 style={{
-                  marginTop: 60,
-                  height: "auto",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  bottom: 0,
+                  height: 30,
+                  width: "200px",
                 }}
-                tokens={{
-                  childrenGap: 10,
+                onClick={() => fileInputRef.current.click()}
+              />
+            </div>
+            <input
+              id="photo-upload"
+              type="file"
+              name="file"
+              ref={fileInputRef}
+              accept="image/*"
+              onChange={changeHandler}
+            />
+
+            <ControlledTextField
+              onKeyDown={keyDown}
+              label="Name"
+              autoComplete="off"
+              control={controlGame}
+              maxLength={10}
+              name={nameof<Form>("name")}
+              rules={{
+                pattern: {
+                  value: /^[a-zA-Z0-9 ]+$/i,
+                  message: "This is not a valid game name",
+                },
+                required: "This field is required",
+              }}
+            />
+            <Stack
+              horizontal
+              style={{
+                marginTop: 60,
+                height: "auto",
+                display: "flex",
+                justifyContent: "space-between",
+                bottom: 0,
+              }}
+              tokens={{
+                childrenGap: 10,
+              }}
+            >
+              <CommandButton
+                iconProps={{ iconName: "SkypeArrow" }}
+                text="Back"
+                onClick={goBack}
+              />
+              {loading && (
+                <Spinner
+                  style={{
+                    marginLeft: "auto",
+                  }}
+                  size={SpinnerSize.large}
+                />
+              )}
+              <PrimaryButton
+                disabled={!isEditing}
+                onClick={createGame}
+                style={{
+                  height: "38px",
                 }}
               >
-                <CommandButton
-                  iconProps={{ iconName: "SkypeArrow" }}
-                  text="Back"
-                  onClick={goBack}
-                />
-                {loading && (
-                  <Spinner
-                    style={{
-                      marginLeft: "auto",
-                    }}
-                    size={SpinnerSize.large}
-                  />
-                )}
-                <PrimaryButton
-                  disabled={!isEditing}
-                  onClick={createGame}
-                  style={{
-                    height: "38px",
-                  }}
-                >
-                  Create
-                </PrimaryButton>
-              </Stack>
+                Create
+              </PrimaryButton>
             </Stack>
-          </div>
+          </Stack>
+        </div>
       )}
     </div>
   );

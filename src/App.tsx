@@ -18,7 +18,13 @@ import Home from "./components/home/Home";
 import Login from "./components/login/Login";
 import { generateTheme } from "./components/theme-designer/ThemeDesigner";
 import TitleBar from "./components/title-bar/TitleBar";
-import { getUserProfile, getUserProfilePhoto } from "./firebase/FirebaseUtils";
+import {
+  getGame,
+  getUserProfile,
+  getUserProfilePhoto,
+} from "./firebase/FirebaseUtils";
+
+export type GameArray = { [index: string]: Array<string> };
 
 interface AppProps {
   auth: Auth;
@@ -28,7 +34,19 @@ interface ProfileData {
   alias: string;
   descriptor: string;
   primaryColor: string;
+  games: GameArray;
 }
+
+interface RawGameData {
+  imgUrl: string;
+  name: string;
+}
+
+interface GameData extends RawGameData {
+  key: string;
+}
+
+export type GamesData = Array<GameData>;
 
 export interface Profile extends ProfileData {
   photoUrl: string;
@@ -42,12 +60,14 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
   const [noProfile, setNoProfile] = useState(false);
   const [primaryColor, setPrimaryColor] = useState("#fa0000");
   const [sigin, setSigin] = useState(true);
+  const [games, setGames] = useState<GamesData>([]);
 
   const [profile, setProfile] = useState<Profile>({
     photoUrl: "",
     alias: "",
     descriptor: "",
     primaryColor: "",
+    games: {},
   });
 
   const appTheme: PartialTheme = generateTheme({
@@ -62,21 +82,42 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
         if (snapshot.exists()) {
           const val = snapshot.val();
           const value = val as ProfileData;
-
-          setProfile((obj) => ({
-            photoUrl: url,
-            alias: value.alias,
-            descriptor: value.descriptor,
-            primaryColor: value.primaryColor,
-          }));
+          const gameIds: GameArray | undefined = value.games;
 
           const profileColor: string =
             value.primaryColor !== "" ? value.primaryColor : "#e00000";
 
           setPrimaryColor(profileColor);
+
+          setProfile(() => ({
+            photoUrl: url,
+            alias: value.alias,
+            descriptor: value.descriptor,
+            primaryColor: value.primaryColor,
+            games: gameIds ? gameIds : {},
+          }));
+
+          if (gameIds) {
+            Object.keys(gameIds).forEach((gameId) => {
+              getGame(gameId).then((snapshot) => {
+                if (snapshot.exists()) {
+                  const val = snapshot.val();
+                  const rawGame = val as RawGameData;
+
+                  const game: GameData = {
+                    ...rawGame,
+                    key: gameId,
+                  };
+
+                  const newGames = [...games, game];
+                  setGames(newGames);
+                }
+              });
+            });
+          }
         }
         setProfileLoaded(true);
-      })
+      });
     });
   };
 
@@ -128,10 +169,19 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
                 />
               }
             />
-            <Route path="login" element={<Login sigin={sigin} setSigin={setSigin} user={currentUser} />} />
+            <Route
+              path="login"
+              element={
+                <Login sigin={sigin} setSigin={setSigin} user={currentUser} />
+              }
+            />
             <Route
               path="dashboard"
-              element={<>{userLoaded && <Dashboard user={currentUser} />}</>}
+              element={
+                <>
+                  {userLoaded && <Dashboard user={currentUser} games={games} />}
+                </>
+              }
             />
             <Route
               path="account"
