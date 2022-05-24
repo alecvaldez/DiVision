@@ -59,9 +59,12 @@ const CreateGame: React.FC<CreateGameProps> = ({ user }: CreateGameProps) => {
 
   useEffect(() => {
     if (checkOverflow()) {
+      console.log("overflow")
       cardRef.current.style.top = "0";
+    } else {
+      cardRef.current.style.top = "auto";
     }
-  })
+  }, [])
 
   const goBack = (): void => {
     navigate(-1);

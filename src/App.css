@@ -40,12 +40,16 @@
   background-position: 0px;
 }
 
+:root {
+  --viewport-height: 100%;
+}
+
 .primary-div {
   display: flex;
   justify-content: center;
   position: absolute;
   width: 100vw;
-  height: calc(100vh - 3.5rem);
+  height: calc(var(--viewport-height) - 3.5rem);
   z-index: 100;
   align-items: center;
   overflow-y: auto;

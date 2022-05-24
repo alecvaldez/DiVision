@@ -77,8 +77,10 @@ const Account: React.FC<AccountProps> = ({
   useEffect(() => {
     if (checkOverflow()) {
       cardRef.current.style.top = "0";
+    } else {
+      cardRef.current.style.top = "auto";
     }
-  })
+  }, [])
 
   const goBack = (): void => {
     navigate(-1);
