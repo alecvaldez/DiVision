@@ -39,190 +39,179 @@ const Dashboard: React.FC<DashboardProps> = ({
       className="primary-div"
     >
       {user !== null && (
-        <>
+
+        <div className="games-div">
           <div
+            className="game-card"
             style={{
-              display: "flex",
-              width: "100vw",
-              height: "100vh",
-              alignItems: "center",
-              justifyContent: "center",
+              boxShadow: DefaultEffects.elevation64,
             }}
           >
-            <div className="games-div">
-              <div
-                className="game-card"
-                style={{
-                  boxShadow: DefaultEffects.elevation64,
-                }}
-              >
-                <Text
-                  variant={"large"}
-                  style={{
-                    position: "absolute",
-                    textAlign: "center",
-                    height: "18rem",
-                    width: "18rem",
-                    lineHeight: "420px",
-                    zIndex: 200,
-                    pointerEvents: "none",
-                  }}
-                  nowrap
-                  block
-                >
-                  New Game
-                </Text>
-                <IconButton
-                  iconProps={{ iconName: "Add" }}
-                  style={{
-                    height: "100%",
-                    width: "100%",
-                    fontSize: "40px",
-                    borderRadius: "5px",
-                  }}
-                  styles={{
-                    rootHovered: {
-                      backgroundColor: "rgba(0,0,0, 0.3)",
-                    },
-                    rootPressed: {
-                      backgroundColor: "rgba(0,0,0, 0.5)",
-                    },
-                    icon: {
-                      fontSize: "150%",
-                      color: "#d9d9d9",
-                    },
-                  }}
-                  onClick={goCreateGame}
-                />
-              </div>
-              <div
-                className="game-card"
-                style={{
-                  boxShadow: DefaultEffects.elevation64,
-                }}
-              >
-                <Text
-                  variant={"large"}
-                  style={{
-                    position: "absolute",
-                    textAlign: "center",
-                    height: "18rem",
-                    width: "18rem",
-                    lineHeight: "420px",
-                    zIndex: 200,
-                    pointerEvents: "none",
-                  }}
-                  nowrap
-                  block
-                >
-                  Join Game
-                </Text>
-                <IconButton
-                  iconProps={{ iconName: "ReleaseGate" }}
-                  style={{
-                    height: "100%",
-                    width: "100%",
-                    fontSize: "40px",
-                    borderRadius: "5px",
-                  }}
-                  styles={{
-                    rootHovered: {
-                      backgroundColor: "rgba(0,0,0, 0.3)",
-                    },
-                    rootPressed: {
-                      backgroundColor: "rgba(0,0,0, 0.5)",
-                    },
-                    icon: {
-                      fontSize: "150%",
-                      color: "#d9d9d9",
-                    },
-                  }}
-                  onClick={goJoinGame}
-                />
-              </div>
-              {games.map((game) => {
-                return (
-                  <div
-                    className="game-card"
-                    key={game.key}
-                    style={{
-                      boxShadow: DefaultEffects.elevation64,
-                      justifyContent: "center",
-                      backgroundSize: "cover",
-                      textAlign: "center",
-                      alignContent: "center",
-                      backgroundImage: `url(${game.imgUrl})`,
-                    }}
-                  >
-                                          <Text
-                        variant={"xxLargePlus"}
-                        style={{
-                          marginTop: "40%",
-                          width: "100%",
-                          zIndex: 11,
-                          left: 0,
-                          borderRadius: "5px",
-                          position: "absolute"
-                        }}
-                        nowrap
-                        
-                      >
-                        {game.name}
-                      </Text>
-                      <Text
-                        variant={"xLarge"}
-                        style={{
-                          marginTop: "60%",
-                          width: "100%",
-                          left: 0,
-                          zIndex: 11,
-
-                          borderRadius: "5px",
-                          position: "absolute"
-
-                        }}
-                        
-                      >
-                        {game.key}
-                      </Text>
-                    <PrimaryButton
-                      style={{
-                        height: "100%",
-                        width: "100%",
-                        borderRadius: "5px",
-                        alignItems: "center",
-                        display: "block",
-                        zIndex: 10,
-                        flexWrap: "wrap"
-
-                      }}
-                      styles={{
-                        root: {
-                          backgroundColor: "rgba(0,0,0,0.2)",
-                          borderColor: "rgba(0,0,0,0)"
-                        },
-                        rootHovered: {
-                          backgroundColor: "rgba(0,0,0, 0.3)",
-                          borderColor: "rgba(0,0,0,0)"
-                        },
-                        rootPressed: {
-                          backgroundColor: "rgba(0,0,0, 0.5)",
-                          borderColor: "rgba(0,0,0,0)"
-                        },
-                        icon: {
-                          fontSize: "150%",
-                          color: "#d9d9d9",
-                        },
-                      }}
-                    >
-
-                    </PrimaryButton>
-                  </div>
-                );
-              })}
-            </div>
+            <Text
+              variant={"large"}
+              style={{
+                position: "absolute",
+                textAlign: "center",
+                height: "18rem",
+                width: "18rem",
+                lineHeight: "420px",
+                zIndex: 200,
+                pointerEvents: "none",
+              }}
+              nowrap
+              block
+            >
+              New Game
+            </Text>
+            <IconButton
+              iconProps={{ iconName: "Add" }}
+              style={{
+                height: "100%",
+                width: "100%",
+                fontSize: "40px",
+                borderRadius: "5px",
+              }}
+              styles={{
+                rootHovered: {
+                  backgroundColor: "rgba(0,0,0, 0.3)",
+                },
+                rootPressed: {
+                  backgroundColor: "rgba(0,0,0, 0.5)",
+                },
+                icon: {
+                  fontSize: "150%",
+                  color: "#d9d9d9",
+                },
+              }}
+              onClick={goCreateGame}
+            />
           </div>
-        </>
+          <div
+            className="game-card"
+            style={{
+              boxShadow: DefaultEffects.elevation64,
+            }}
+          >
+            <Text
+              variant={"large"}
+              style={{
+                position: "absolute",
+                textAlign: "center",
+                height: "18rem",
+                width: "18rem",
+                lineHeight: "420px",
+                zIndex: 200,
+                pointerEvents: "none",
+              }}
+              nowrap
+              block
+            >
+              Join Game
+            </Text>
+            <IconButton
+              iconProps={{ iconName: "ReleaseGate" }}
+              style={{
+                height: "100%",
+                width: "100%",
+                fontSize: "40px",
+                borderRadius: "5px",
+              }}
+              styles={{
+                rootHovered: {
+                  backgroundColor: "rgba(0,0,0, 0.3)",
+                },
+                rootPressed: {
+                  backgroundColor: "rgba(0,0,0, 0.5)",
+                },
+                icon: {
+                  fontSize: "150%",
+                  color: "#d9d9d9",
+                },
+              }}
+              onClick={goJoinGame}
+            />
+          </div>
+          {games.map((game) => {
+            return (
+              <div
+                className="game-card"
+                key={game.key}
+                style={{
+                  boxShadow: DefaultEffects.elevation64,
+                  justifyContent: "center",
+                  backgroundSize: "cover",
+                  textAlign: "center",
+                  alignContent: "center",
+                  backgroundImage: `url(${game.imgUrl})`,
+                }}
+              >
+                <Text
+                  variant={"xxLargePlus"}
+                  style={{
+                    marginTop: "40%",
+                    width: "100%",
+                    zIndex: 11,
+                    left: 0,
+                    borderRadius: "5px",
+                    position: "absolute"
+                  }}
+                  nowrap
+
+                >
+                  {game.name}
+                </Text>
+                <Text
+                  variant={"xLarge"}
+                  style={{
+                    marginTop: "60%",
+                    width: "100%",
+                    left: 0,
+                    zIndex: 11,
+
+                    borderRadius: "5px",
+                    position: "absolute"
+
+                  }}
+
+                >
+                  {game.key}
+                </Text>
+                <PrimaryButton
+                  style={{
+                    height: "100%",
+                    width: "100%",
+                    borderRadius: "5px",
+                    alignItems: "center",
+                    display: "block",
+                    zIndex: 10,
+                    flexWrap: "wrap"
+
+                  }}
+                  styles={{
+                    root: {
+                      backgroundColor: "rgba(0,0,0,0.2)",
+                      borderColor: "rgba(0,0,0,0)"
+                    },
+                    rootHovered: {
+                      backgroundColor: "rgba(0,0,0, 0.3)",
+                      borderColor: "rgba(0,0,0,0)"
+                    },
+                    rootPressed: {
+                      backgroundColor: "rgba(0,0,0, 0.5)",
+                      borderColor: "rgba(0,0,0,0)"
+                    },
+                    icon: {
+                      fontSize: "150%",
+                      color: "#d9d9d9",
+                    },
+                  }}
+                >
+
+                </PrimaryButton>
+              </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );

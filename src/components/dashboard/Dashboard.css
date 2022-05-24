@@ -22,11 +22,14 @@
 }
 
 .games-div {
+  top: 0;
   width: 100%;
   height: 100%;
+  position: absolute;
   padding-top: clamp(3rem, 5vh, 200rem);
   padding-bottom: clamp(2rem, 10vh, 5rem);
   padding-left: clamp(0rem, 10vw, 10rem);
+  margin-bottom: 100px;
   padding-right: clamp(0rem, 10vw, 10rem);
   display: inline-flex;
   align-items: safe flex-start;
