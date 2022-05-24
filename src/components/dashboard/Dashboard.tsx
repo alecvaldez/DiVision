@@ -36,17 +36,7 @@ const Dashboard: React.FC<DashboardProps> = ({
 
   return (
     <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        position: "absolute",
-        width: "100vw",
-        height: "calc(100vh - 3.5rem)",
-        zIndex: 100,
-        top: "3.5rem",
-        overflowY: "auto",
-        overflowX: "hidden",
-      }}
+      className="primary-div"
     >
       {user !== null && (
         <>
