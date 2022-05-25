@@ -44,11 +44,27 @@ const CreateGame: React.FC<CreateGameProps> = ({ user }: CreateGameProps) => {
   const [photo, setPhoto] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const primaryRef = useRef() as React.MutableRefObject<HTMLInputElement>;
+  const cardRef = useRef() as React.MutableRefObject<HTMLInputElement>;
+
+  const checkOverflow = (): boolean => {
+    return primaryRef.current.offsetHeight < cardRef.current.offsetHeight;
+  }
+
   useEffect(() => {
     if (user == null) {
       navigate("/login");
     }
   }, [user]);
+
+  useEffect(() => {
+    if (checkOverflow()) {
+      console.log("overflow")
+      cardRef.current.style.top = "0";
+    } else {
+      cardRef.current.style.top = "auto";
+    }
+  }, [])
 
   const goBack = (): void => {
     navigate(-1);
@@ -75,7 +91,7 @@ const CreateGame: React.FC<CreateGameProps> = ({ user }: CreateGameProps) => {
   };
 
   const keyDown = (e: any) => {
-    
+
     setIsEditing(true);
     if (e.key === "Enter") {
       createGame();
@@ -93,26 +109,19 @@ const CreateGame: React.FC<CreateGameProps> = ({ user }: CreateGameProps) => {
           setLoading(false);
         })
       },
-      (err) => {}
+      (err) => { }
     )();
   };
 
   return (
     <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        position: "absolute",
-        width: "100vw",
-        height: "calc(100vh - 3.5rem)",
-        zIndex: 100,
-        alignItems: "center",
-        overflowY: "auto",
-      }}
+      className="primary-div"
+      ref={primaryRef}
     >
       {user !== null && (
         <div
-          className="account-card"
+          className="card"
+          ref={cardRef}
           style={{ boxShadow: DefaultEffects.elevation16 }}
         >
           <Stack
@@ -124,8 +133,10 @@ const CreateGame: React.FC<CreateGameProps> = ({ user }: CreateGameProps) => {
             </Text>
             <div
               style={{
-                width: "100%",
-                height: "27rem",
+                marginLeft: "auto",
+                marginRight: "auto",
+                width: "1.5em",
+                height: "1.5em",
                 fontSize: 200,
                 backgroundColor: "#121212",
                 borderRadius: "5px",
