@@ -38,7 +38,7 @@ const Login: React.FC<LoginProps> = ({ user, sigin, setSigin }: LoginProps) => {
 
   const [siginClass, setSiginClass] = useState("main-div");
   const [createClass, setCreateClass] = useState("main-div");
-  const [siginError, setSiginError] = useState(false);
+  const [siginError, setSiginError ] = useState(false);
   const [accountError, setAccountError] = useState(false);
 
   const {

@@ -20,7 +20,6 @@ import {
   UploadResult,
 } from "firebase/storage";
 import { v4 as uuidv4 } from "uuid";
-import { GameArray } from "../App";
 
 
 export const firebaseEmailSigin = (
@@ -92,7 +91,7 @@ export const updateUserProfile = (
     primaryColor: primaryColor,
   };
 
-  return set(dbRef(db, "users/" + user?.uid), userObject);
+  return update(dbRef(db, "users/" + user?.uid), userObject);
 };
 
 export const getUserProfilePhoto = (): Promise<string> => {
@@ -118,6 +117,13 @@ export const getUserProfile = (): Promise<DataSnapshot> => {
   const auth = getAuth();
   const user = auth.currentUser;
   return get(dbRef(db, "users/" + user?.uid));
+};
+
+export const getUserGames = (): Promise<DataSnapshot> => {
+  const db = getDatabase();
+  const auth = getAuth();
+  const user = auth.currentUser;
+  return get(dbRef(db, "users/" + user?.uid + "/games"));
 };
 
 export const firebaseLogout = (): Promise<void> => {

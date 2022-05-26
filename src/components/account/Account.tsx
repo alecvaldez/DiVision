@@ -51,7 +51,7 @@ const Account: React.FC<AccountProps> = ({
   profile,
   primaryColor,
   getFirebaseProfile,
-  setPrimaryColor
+  setPrimaryColor,
 }: AccountProps) => {
   const navigate = useNavigate();
 
@@ -66,7 +66,7 @@ const Account: React.FC<AccountProps> = ({
 
   const checkOverflow = (): boolean => {
     return primaryRef.current.offsetHeight < cardRef.current.offsetHeight;
-  }
+  };
 
   useEffect(() => {
     if (user == null) {
@@ -80,7 +80,7 @@ const Account: React.FC<AccountProps> = ({
     } else {
       cardRef.current.style.top = "auto";
     }
-  }, [])
+  }, []);
 
   const goBack = (): void => {
     navigate(-1);
@@ -128,167 +128,176 @@ const Account: React.FC<AccountProps> = ({
         setLoading(true);
         if (photo) {
           updateUserProfilePhoto(photo).then(() => {
-            updateUserProfile(data.alias, data.descriptor, primaryColor).then(() => {
+            updateUserProfile(data.alias, data.descriptor, primaryColor).then(
+              () => {
+                setIsEditing(false);
+                setLoading(false);
+                getFirebaseProfile();
+              }
+            );
+          });
+        } else {
+          updateUserProfile(data.alias, data.descriptor, primaryColor).then(
+            () => {
               setIsEditing(false);
               setLoading(false);
               getFirebaseProfile();
-            });
-          });
-        } else {
-          updateUserProfile(data.alias, data.descriptor, primaryColor).then(() => {
-            setIsEditing(false);
-            setLoading(false);
-            getFirebaseProfile();
-          });
+            }
+          );
         }
       },
-      (err) => { }
+      (err) => {}
     )();
   };
 
   return (
-    <div
-
-      className="primary-div"
-      ref={primaryRef}
-    >
-      {user !== null && (
-        <div
-          className="card"
-          ref={cardRef}
-          style={{ boxShadow: DefaultEffects.elevation16 }}
-        >
-          <Stack
-            style={{ width: "100%", zIndex: 1000 }}
-            tokens={verticalGapStackTokens}
+    <div className="primary-div" ref={primaryRef}>
+      <div className="secondary-div">
+        {user !== null && (
+          <div
+            className="card"
+            ref={cardRef}
+            style={{ boxShadow: DefaultEffects.elevation16 }}
           >
-            <Text variant={"xxLarge"} style={{ position: "absolute" }} nowrap block>
-              Profile Settings
-            </Text>
-
-            <div
-              style={{
-                width: "100%",
-                alignItems: "center",
-                textAlign: "center",
-                justifyContent: "center ",
-                marginTop: 80
-              }}
-            >
-              <Persona
-                {...persona}
-                presence={PersonaPresence.none}
-                className="account-picture"
-                initialsColor={PersonaInitialsColor.gold}
-                coinSize={300}
-                imageAlt=""
-                styles={{
-                  root: {
-                    width: 0,
-                    margin: "auto",
-                    display: "block",
-                  },
-                }}
-              />
-            </div>
-
-            <div
-              style={{
-                width: "100%",
-                alignItems: "center",
-                textAlign: "center",
-                justifyContent: "center ",
-              }}
-            >
-              <CommandBarButton
-                iconProps={{ iconName: "Upload" }}
-                text="Upload Picture"
-                type="file"
-                style={{
-                  height: 30,
-                  width: "200px",
-                }}
-                onClick={() => fileInputRef.current.click()}
-              />
-            </div>
-            <input
-              id="photo-upload"
-              type="file"
-              name="file"
-              ref={fileInputRef}
-              accept="image/*"
-              onChange={changeHandler}
-            />
-
-            <CirclePicker
-              width="100%"
-              className="circle-picker"
-              colors={[
-                "#fa0000",
-                "#4073ff",
-                "#da00f2",
-                "#ff5e00",
-                "#e8d500",
-                "#00d9e8",
-                "#00c700",
-              ]}
-              onChange={(color) => {
-                setIsEditing(true);
-                setPrimaryColor(color.hex);
-              }}
-              color={primaryColor}
-            />
-            <ControlledTextField
-              onKeyDown={keyDown}
-              label="Alias"
-              control={controlProfile}
-              name={nameof<Form>("alias")}
-            />
-            <ControlledTextField
-              onKeyDown={keyDown}
-              label="Descriptor"
-              control={controlProfile}
-              name={nameof<Form>("descriptor")}
-            />
             <Stack
-              horizontal
-              style={{
-                marginTop: 60,
-                height: "auto",
-                display: "flex",
-                justifyContent: "space-between",
-                bottom: 0,
-              }}
-              tokens={{
-                childrenGap: 10,
-              }}
+              style={{ width: "100%", zIndex: 1000 }}
+              tokens={verticalGapStackTokens}
             >
-              <CommandButton
-                iconProps={{ iconName: "SkypeArrow" }}
-                text="Back"
-                onClick={goBack}
-              />
-              {loading && (
-                <Spinner
-                  style={{
-                    marginLeft: "auto",
-                  }}
-                  size={SpinnerSize.large}
-                />
-              )}
-              <PrimaryButton
-                disabled={!isEditing}
-                onClick={saveProfile}
+              <Text
+                variant={"xxLarge"}
+                style={{ position: "absolute" }}
+                nowrap
+                block
+              >
+                Profile Settings
+              </Text>
+
+              <div
                 style={{
-                  height: "38px",
+                  width: "100%",
+                  alignItems: "center",
+                  textAlign: "center",
+                  justifyContent: "center ",
+                  marginTop: 80,
                 }}
               >
-                Save
-              </PrimaryButton>
+                <Persona
+                  {...persona}
+                  presence={PersonaPresence.none}
+                  className="account-picture"
+                  initialsColor={PersonaInitialsColor.gold}
+                  coinSize={300}
+                  imageAlt=""
+                  styles={{
+                    root: {
+                      width: 0,
+                      margin: "auto",
+                      display: "block",
+                    },
+                  }}
+                />
+              </div>
+
+              <div
+                style={{
+                  width: "100%",
+                  alignItems: "center",
+                  textAlign: "center",
+                  justifyContent: "center ",
+                }}
+              >
+                <CommandBarButton
+                  iconProps={{ iconName: "Upload" }}
+                  text="Upload Picture"
+                  type="file"
+                  style={{
+                    height: 30,
+                    width: "200px",
+                  }}
+                  onClick={() => fileInputRef.current.click()}
+                />
+              </div>
+              <input
+                id="photo-upload"
+                type="file"
+                name="file"
+                ref={fileInputRef}
+                accept="image/*"
+                onChange={changeHandler}
+              />
+
+              <CirclePicker
+                width="100%"
+                className="circle-picker"
+                colors={[
+                  "#fa0000",
+                  "#4073ff",
+                  "#da00f2",
+                  "#ff5e00",
+                  "#e8d500",
+                  "#00d9e8",
+                  "#00c700",
+                ]}
+                onChange={(color) => {
+                  setIsEditing(true);
+                  setPrimaryColor(color.hex);
+                }}
+                color={primaryColor}
+              />
+              <ControlledTextField
+                onKeyDown={keyDown}
+                label="Alias"
+                maxLength={10}
+                control={controlProfile}
+                name={nameof<Form>("alias")}
+              />
+              <ControlledTextField
+                onKeyDown={keyDown}
+                label="Descriptor"
+                maxLength={10}
+                control={controlProfile}
+                name={nameof<Form>("descriptor")}
+              />
+              <Stack
+                horizontal
+                style={{
+                  marginTop: 60,
+                  height: "auto",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  bottom: 0,
+                }}
+                tokens={{
+                  childrenGap: 10,
+                }}
+              >
+                <CommandButton
+                  iconProps={{ iconName: "SkypeArrow" }}
+                  text="Back"
+                  onClick={goBack}
+                />
+                {loading && (
+                  <Spinner
+                    style={{
+                      marginLeft: "auto",
+                    }}
+                    size={SpinnerSize.large}
+                  />
+                )}
+                <PrimaryButton
+                  disabled={!isEditing}
+                  onClick={saveProfile}
+                  style={{
+                    height: "38px",
+                  }}
+                >
+                  Save
+                </PrimaryButton>
+              </Stack>
             </Stack>
-          </Stack>
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

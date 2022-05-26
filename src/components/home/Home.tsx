@@ -48,23 +48,15 @@ const Home: React.FC<HomeProps> = ({
 
   return (
     <div
+      className="primary-div"
       style={{
-        display: "flex",
-        justifyContent: "center",
-        position: "absolute",
-        width: "100vw",
-        height: "100vh",
-        zIndex: 100,
-        backgroundColor: "#121212",
-        overflowX: "scroll",
-        overflowY: "scroll"
+        backgroundColor: "#121212"
       }}
     >
       {profileLoaded && (
         <div
           className="welcome-container"
           style={{
-            whiteSpace: "pre-wrap",
             textAlign: "center",
             lineHeight: "100px",
           }}
@@ -99,6 +91,11 @@ const Home: React.FC<HomeProps> = ({
           <Text variant={"xxLargePlus"} className="info-text" block>
             Click to Login or Create a New Account
           </Text>
+          <div style={{
+            display: "flex",
+            paddingBottom: "60px"
+          }}>
+
           <PrimaryButton
             onClick={goToLogin}
             className="info-text"
@@ -123,6 +120,7 @@ const Home: React.FC<HomeProps> = ({
           >
             Create Account
           </PrimaryButton>
+          </div>
         </div>
       )}
     </div>

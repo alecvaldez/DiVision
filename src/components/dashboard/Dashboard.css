@@ -22,8 +22,8 @@
 }
 
 .games-div {
-  top: 0;
   width: 100%;
+  top: 0;
   height: 100%;
   position: absolute;
   padding-top: clamp(3rem, 5vh, 200rem);

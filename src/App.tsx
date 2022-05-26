@@ -15,16 +15,16 @@ import SVG from "./components/background-svg/BackgroundSVG";
 import CreateGame from "./components/create-game/CreateGame";
 import Dashboard from "./components/dashboard/Dashboard";
 import Home from "./components/home/Home";
+import JoinGame from "./components/join-game/JoinGame";
 import Login from "./components/login/Login";
 import { generateTheme } from "./components/theme-designer/ThemeDesigner";
 import TitleBar from "./components/title-bar/TitleBar";
 import {
   getGame,
+  getUserGames,
   getUserProfile,
   getUserProfilePhoto,
 } from "./firebase/FirebaseUtils";
-
-export type GameArray = { [index: string]: Array<string> };
 
 interface AppProps {
   auth: Auth;
@@ -34,19 +34,16 @@ interface ProfileData {
   alias: string;
   descriptor: string;
   primaryColor: string;
-  games: GameArray;
 }
 
-interface RawGameData {
+interface GameData {
   imgUrl: string;
   name: string;
 }
 
-interface GameData extends RawGameData {
-  key: string;
-}
+type RawGamesMap = { [key: string]: Array<string> };
 
-export type GamesData = Array<GameData>;
+export type GamesMap = { [key: string]: GameData };
 
 export interface Profile extends ProfileData {
   photoUrl: string;
@@ -58,16 +55,15 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
   const [userLoaded, setUserLoaded] = useState(false);
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [noProfile, setNoProfile] = useState(false);
-  const [primaryColor, setPrimaryColor] = useState("#fa0000");
+  const [primaryColor, setPrimaryColor] = useState("#e00000");
   const [sigin, setSigin] = useState(true);
-  const [games, setGames] = useState<GamesData>([]);
+  const [games, setGames] = useState<GamesMap>({});
 
   const [profile, setProfile] = useState<Profile>({
     photoUrl: "",
     alias: "",
     descriptor: "",
     primaryColor: "",
-    games: {},
   });
 
   const appTheme: PartialTheme = generateTheme({
@@ -82,7 +78,6 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
         if (snapshot.exists()) {
           const val = snapshot.val();
           const value = val as ProfileData;
-          const gameIds: GameArray | undefined = value.games;
 
           const profileColor: string =
             value.primaryColor !== "" ? value.primaryColor : "#e00000";
@@ -94,30 +89,36 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
             alias: value.alias,
             descriptor: value.descriptor,
             primaryColor: value.primaryColor,
-            games: gameIds ? gameIds : {},
           }));
-
-          if (gameIds) {
-            Object.keys(gameIds).forEach((gameId) => {
-              getGame(gameId).then((snapshot) => {
-                if (snapshot.exists()) {
-                  const val = snapshot.val();
-                  const rawGame = val as RawGameData;
-
-                  const game: GameData = {
-                    ...rawGame,
-                    key: gameId,
-                  };
-
-                  const newGames = [...games, game];
-                  setGames(newGames);
-                }
-              });
-            });
-          }
         }
         setProfileLoaded(true);
       });
+    });
+  };
+
+  const getGames = (): void => {
+    getUserGames().then((snapshot) => {
+      if (snapshot.exists()) {
+        const val = snapshot.val() as RawGamesMap;
+
+        if (val) {
+          Object.keys(val).forEach((gameId) => {
+            getGame(gameId).then((snapshot) => {
+              if (snapshot.exists()) {
+                const val = snapshot.val();
+                const rawGame = val as GameData;
+
+                setGames((prevState) => ({
+                  ...prevState,
+                  [gameId]: rawGame,
+                }));
+              }
+            });
+          });
+        }
+      } else {
+        setGames({});
+      }
     });
   };
 
@@ -129,9 +130,9 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
     })();
     onAuthStateChanged(auth, (user: User | null) => {
       setCurrentUser(user);
-      console.log(user);
       if (user !== null) {
         setNoProfile(false);
+        getGames();
         getFirebaseProfile();
       } else {
         setNoProfile(true);
@@ -203,7 +204,23 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
             />
             <Route
               path="create-game"
-              element={<>{userLoaded && <CreateGame user={currentUser} />}</>}
+              element={
+                <>
+                  {userLoaded && (
+                    <CreateGame user={currentUser} callback={getGames} />
+                  )}
+                </>
+              }
+            />
+            <Route
+              path="join-game"
+              element={
+                <>
+                  {userLoaded && (
+                    <JoinGame user={currentUser} callback={getGames} />
+                  )}
+                </>
+              }
             />
           </Routes>
         </CSSTransition>
