@@ -209,6 +209,7 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
                     user={currentUser}
                     profileLoaded={profileLoaded}
                     noProfile={noProfile}
+                    backgroundColor={backgroundColor}
                     setSigin={setSigin}
                   />
                 }

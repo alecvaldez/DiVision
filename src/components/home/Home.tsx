@@ -11,6 +11,7 @@ interface HomeProps {
   profile: Profile;
   profileLoaded: boolean;
   noProfile: boolean;
+  backgroundColor: string;
   setSigin: (bool: boolean) => void;
 }
 
@@ -19,6 +20,7 @@ const Home: React.FC<HomeProps> = ({
   profile,
   profileLoaded,
   noProfile,
+  backgroundColor,
   setSigin
 }: HomeProps) => {
   const navigate = useNavigate();
@@ -50,7 +52,7 @@ const Home: React.FC<HomeProps> = ({
     <div
       className="primary-div"
       style={{
-        backgroundColor: "#121212"
+        backgroundColor: backgroundColor,
       }}
     >
       {profileLoaded && (
