@@ -46,6 +46,7 @@ const CreateGame: React.FC<CreateGameProps> = ({
   const [tmpPhotoUrl, setTmpPhotoUrl] = useState("");
   const [photo, setPhoto] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [createError, setCreateError] = useState(false);
 
   const primaryRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const cardRef = useRef() as React.MutableRefObject<HTMLInputElement>;
@@ -87,17 +88,16 @@ const CreateGame: React.FC<CreateGameProps> = ({
     mode: "all",
   });
 
-  const watch = useWatch({control: controlGame});
+  const watch = useWatch({ control: controlGame });
 
   useEffect(() => {
     const values = getValues();
-    if(formState.isValid &&values['name'].length > 0) {
+    if (formState.isValid && values["name"].length > 0) {
       setIsEditing(true);
     } else {
       setIsEditing(false);
     }
-  }, [watch])
-
+  }, [watch]);
 
   const changeHandler = (event: any) => {
     const file = event.target.files[0];
@@ -118,10 +118,16 @@ const CreateGame: React.FC<CreateGameProps> = ({
       (data) => {
         setLoading(true);
         createNewGame(photo, data.name).then((gameKey) => {
-          addGameToUser(gameKey);
-          setIsEditing(false);
-          setLoading(false);
-          callback();
+          if (gameKey !== "error") {
+            setCreateError(false);
+            addGameToUser(gameKey);
+            setIsEditing(false);
+            setLoading(false);
+            callback();
+          } else {
+            setCreateError(true);
+            setLoading(false);
+          }
         });
       },
       (_err) => {}
@@ -216,6 +222,20 @@ const CreateGame: React.FC<CreateGameProps> = ({
                   required: "This field is required",
                 }}
               />
+              {createError ? (
+                <Text
+                  className="error-text"
+                  style={{
+                    margin: 0,
+                  }}
+                  block
+                  variant="large"
+                >
+                  Error Creating Game, Please try again
+                </Text>
+              ) : (
+                <Stack style={{ height: "24px", margin: 0 }}> </Stack>
+              )}
               <Stack
                 horizontal
                 style={{

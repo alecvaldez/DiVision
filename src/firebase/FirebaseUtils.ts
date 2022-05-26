@@ -22,7 +22,6 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { ProfileData } from "../App";
 
-
 export const firebaseEmailSigin = (
   email: string,
   password: string
@@ -86,7 +85,7 @@ export const updateUserProfile = (data: ProfileData): Promise<void> => {
     alias: data.alias,
     descriptor: data.descriptor,
     primaryColor: data.primaryColor,
-    theme: data.theme
+    theme: data.theme,
   };
 
   return update(dbRef(db, "users/" + user?.uid), userObject);
@@ -136,27 +135,37 @@ export const createNewGame = (photo: any, name: string): Promise<string> => {
   const uuid: string = uuidv4();
   const key = uuid.substring(uuid.length - 5).toUpperCase();
 
-  if (photo) {
-    const storageRef = ref(storage, "games" + `/${key}/` + "game-picture.jpg");
+  return get(dbRef(db, "games/" + key))
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        return "error";
+      } else if (photo) {
+        const storageRef = ref(
+          storage,
+          "games" + `/${key}/` + "game-picture.jpg"
+        );
 
-    uploadBytes(storageRef, photo).then(() => {
-      getDownloadURL(storageRef).then((url) => {
-        return set(dbRef(db, "games/" + key), {
-          name: name,
-          imgUrl: url,
-        }).then(() => {
-          return key;
+        uploadBytes(storageRef, photo).then(() => {
+          getDownloadURL(storageRef).then((url) => {
+            return set(dbRef(db, "games/" + key), {
+              name: name,
+              imgUrl: url,
+            }).then(() => {
+              return key;
+            });
+          });
         });
+      }
+      return set(dbRef(db, "games/" + key), {
+        name: name,
+        imgUrl: "",
+      }).then(() => {
+        return key;
       });
+    })
+    .catch((_err) => {
+      return "error";
     });
-  }
-
-  return set(dbRef(db, "games/" + key), {
-    name: name,
-    imgUrl: "",
-  }).then(() => {
-    return key;
-  });
 };
 
 export const addGameToUser = (gameKey: string): Promise<void> => {
@@ -164,11 +173,10 @@ export const addGameToUser = (gameKey: string): Promise<void> => {
   const auth = getAuth();
   const user = auth.currentUser;
 
-  return set(dbRef(db, "users/" + user?.uid + "/games/" + gameKey), [ gameKey ]);
-
+  return set(dbRef(db, "users/" + user?.uid + "/games/" + gameKey), [gameKey]);
 };
 
 export const getGame = (gameKey: string): Promise<DataSnapshot> => {
   const db = getDatabase();
   return get(dbRef(db, "games/" + gameKey));
-}
+};

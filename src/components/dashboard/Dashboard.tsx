@@ -19,7 +19,7 @@ interface DashboardProps {
 const Dashboard: React.FC<DashboardProps> = ({
   user,
   games,
-  textColor
+  textColor,
 }: DashboardProps) => {
   const navigate = useNavigate();
   useEffect(() => {
@@ -154,6 +154,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                       left: 0,
                       borderRadius: "5px",
                       position: "absolute",
+                      pointerEvents: "none",
                     }}
                     nowrap
                   >
@@ -166,7 +167,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                       width: "100%",
                       left: 0,
                       zIndex: 11,
-
+                      pointerEvents: "none",
                       borderRadius: "5px",
                       position: "absolute",
                     }}
