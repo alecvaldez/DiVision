@@ -55,76 +55,80 @@ const Home: React.FC<HomeProps> = ({
         backgroundColor: backgroundColor,
       }}
     >
-      {profileLoaded && (
-        <div
-          className="welcome-container"
-          style={{
-            textAlign: "center",
-            lineHeight: "100px",
-          }}
-        >
-          <Text variant={"mega"} className="welcome-text"  block>
-            Welcome, {getWelcomeName()}
-          </Text>
-          <Text variant={"xxLargePlus"} className="info-text"  block>
-            Click to access your DiVision Dashboard
-          </Text>
-          <PrimaryButton
-            onClick={goToDashboard}
-            className="info-text"
-            style={{ width: "300px", height: "3rem", fontSize: "20pt" }}
-          >
-            Dashboard
-          </PrimaryButton>
-        </div>
-      )}
-      {!profileLoaded && noProfile && (
-        <div
-          className="welcome-container"
-          style={{
-            whiteSpace: "pre-wrap",
-            textAlign: "center",
-            lineHeight: "100px",
-          }}
-        >
-          <Text variant={"mega"} className="welcome-text" block>
-            Welcome to DiVision!
-          </Text>
-          <Text variant={"xxLargePlus"} className="info-text" block>
-            Click to Login or Create a New Account
-          </Text>
-          <div style={{
-            display: "flex",
-            paddingBottom: "60px"
-          }}>
+      <div className="secondary-div">
 
-          <PrimaryButton
-            onClick={goToLogin}
-            className="info-text"
+        {profileLoaded && (
+          <div
+            className="welcome-container"
             style={{
-              width: "250px",
-              height: "3rem",
-              marginRight: "20px",
-              fontSize: "20pt",
+              textAlign: "center",
+              lineHeight: "100px",
             }}
           >
-            Login
-          </PrimaryButton>
-          <PrimaryButton
-            onClick={goToCreateAccount}
-            className="info-text"
-            style={{
-              width: "250px",
-              marginLeft: "20px",
-              height: "3rem",
-              fontSize: "20pt",
-            }}
-          >
-            Create Account
-          </PrimaryButton>
+            <Text variant={"mega"} className="welcome-text" block>
+              Welcome, {getWelcomeName()}
+            </Text>
+            <Text variant={"xxLargePlus"} className="info-text" block>
+              Click to access your DiVision Dashboard
+            </Text>
+            <PrimaryButton
+              onClick={goToDashboard}
+              className="info-text"
+              style={{ width: "300px", height: "3rem", fontSize: "20pt" }}
+            >
+              Dashboard
+            </PrimaryButton>
           </div>
-        </div>
-      )}
+        )}
+        {!profileLoaded && noProfile && (
+          <div
+            className="welcome-container"
+            style={{
+              whiteSpace: "pre-wrap",
+              textAlign: "center",
+              lineHeight: "100px",
+            }}
+          >
+            <Text variant={"mega"} className="welcome-text" block>
+              Welcome to DiVision!
+            </Text>
+            <Text variant={"xxLargePlus"} className="info-text" block>
+              Click to Login or Create a New Account
+            </Text>
+            <div style={{
+              display: "flex",
+              paddingBottom: "60px",
+              justifyContent: "center"
+            }}>
+
+              <PrimaryButton
+                onClick={goToLogin}
+                className="info-text"
+                style={{
+                  width: "8rem",
+                  height: "3.5rem",
+                  marginRight: "20px",
+                  fontSize: "20pt",
+                }}
+              >
+                Login
+              </PrimaryButton>
+              <PrimaryButton
+                onClick={goToCreateAccount}
+                className="info-text"
+                style={{
+                  width: "8rem",
+                  marginLeft: "20px",
+                  height: "3.5rem",
+                  fontSize: "20pt",
+                }}
+              >
+                Create Account
+              </PrimaryButton>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
