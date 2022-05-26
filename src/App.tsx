@@ -14,6 +14,7 @@ import Account from "./components/account/Account";
 import SVG from "./components/background-svg/BackgroundSVG";
 import CreateGame from "./components/create-game/CreateGame";
 import Dashboard from "./components/dashboard/Dashboard";
+import Game from "./components/game/Game";
 import Home from "./components/home/Home";
 import JoinGame from "./components/join-game/JoinGame";
 import Login from "./components/login/Login";
@@ -36,7 +37,7 @@ interface ProfileData {
   primaryColor: string;
 }
 
-interface GameData {
+export interface GameData {
   imgUrl: string;
   name: string;
 }
@@ -222,6 +223,23 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
                 </>
               }
             />
+            <Route
+            path="game/:gameid"
+            element={<> </>}
+              />
+            {Object.entries(games).map(([key, value]) => {
+              return (
+                <Route
+                  key={key}
+                  path={`game/${key}`}
+                  element={
+                    <>
+                      {userLoaded && <Game user={currentUser} game={value} gameId={key} />}
+                    </>
+                  }
+                />
+              );
+            })}
           </Routes>
         </CSSTransition>
       </SwitchTransition>

@@ -181,6 +181,9 @@ const Dashboard: React.FC<DashboardProps> = ({
                       zIndex: 10,
                       flexWrap: "wrap",
                     }}
+                    onClick={() => {
+                      navigate(`/game/${key}`);
+                    }}
                     styles={{
                       root: {
                         backgroundColor: "rgba(0,0,0,0.2)",
