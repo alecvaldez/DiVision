@@ -19,6 +19,7 @@ import { ControlledTextField } from "../textfield/ControlledTextField";
 
 interface CreateGameProps {
   user: User | null;
+  backgroundColor: string;
   callback: () => void;
 }
 
@@ -35,6 +36,7 @@ export const nameof = <T extends {}>(name: keyof T) => name;
 
 const CreateGame: React.FC<CreateGameProps> = ({
   user,
+  backgroundColor,
   callback,
 }: CreateGameProps) => {
   const navigate = useNavigate();
@@ -149,7 +151,7 @@ const CreateGame: React.FC<CreateGameProps> = ({
                   width: "1.5em",
                   height: "1.5em",
                   fontSize: 200,
-                  backgroundColor: "#121212",
+                  backgroundColor: backgroundColor,
                   borderRadius: "5px",
                   alignItems: "center",
                   justifyContent: "center",

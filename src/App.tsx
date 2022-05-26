@@ -27,14 +27,27 @@ import {
   getUserProfilePhoto,
 } from "./firebase/FirebaseUtils";
 
+const DARK_THEME = {
+  primaryColor: "#e00000",
+  textColor: "#d9d9d9",
+  backgroundColor: "#121212",
+};
+
+const LIGHT_THEME = {
+  primaryColor: "#e00000",
+  textColor: "#000",
+  backgroundColor: "#fff",
+};
+
 interface AppProps {
   auth: Auth;
 }
 
-interface ProfileData {
+export interface ProfileData {
   alias: string;
   descriptor: string;
   primaryColor: string;
+  theme: string;
 }
 
 export interface GameData {
@@ -56,7 +69,11 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
   const [userLoaded, setUserLoaded] = useState(false);
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [noProfile, setNoProfile] = useState(false);
-  const [primaryColor, setPrimaryColor] = useState("#e00000");
+  const [primaryColor, setPrimaryColor] = useState(DARK_THEME.primaryColor);
+  const [backgroundColor, setBackgroundColor] = useState(
+    DARK_THEME.backgroundColor
+  );
+  const [textColor, setTextColor] = useState(DARK_THEME.textColor);
   const [sigin, setSigin] = useState(true);
   const [games, setGames] = useState<GamesMap>({});
 
@@ -65,12 +82,13 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
     alias: "",
     descriptor: "",
     primaryColor: "",
+    theme: "",
   });
 
   const appTheme: PartialTheme = generateTheme({
     primaryColor: primaryColor,
-    textColor: "#d9d9d9",
-    backgroundColor: "#121212",
+    textColor: textColor,
+    backgroundColor: backgroundColor,
   });
 
   const getFirebaseProfile = () => {
@@ -83,6 +101,16 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
           const profileColor: string =
             value.primaryColor !== "" ? value.primaryColor : "#e00000";
 
+          const profileTheme: string = value.theme;
+
+          if (profileTheme === "light") {
+            setTextColor(LIGHT_THEME.textColor);
+            setBackgroundColor(LIGHT_THEME.backgroundColor);
+          } else {
+            setTextColor(DARK_THEME.textColor);
+            setBackgroundColor(DARK_THEME.backgroundColor);
+          }
+
           setPrimaryColor(profileColor);
 
           setProfile(() => ({
@@ -90,6 +118,7 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
             alias: value.alias,
             descriptor: value.descriptor,
             primaryColor: value.primaryColor,
+            theme: value.theme,
           }));
         }
         setProfileLoaded(true);
@@ -123,6 +152,12 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
     });
   };
 
+  const setDefaultTheme = (): void => {
+    setPrimaryColor(DARK_THEME.primaryColor);
+    setBackgroundColor(DARK_THEME.backgroundColor);
+    setTextColor(DARK_THEME.textColor);
+  };
+
   useEffect(() => {
     (async () => {
       await setPersistence(auth, browserLocalPersistence).then(() => {
@@ -143,106 +178,123 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
 
   return (
     <ThemeProvider theme={appTheme}>
-      <TitleBar
-        profile={profile}
-        user={currentUser}
-        profileLoaded={profileLoaded}
-        primaryColor={primaryColor}
-        setPrimaryColor={setPrimaryColor}
-      />
-      <SVG color={primaryColor} />
-      <SwitchTransition>
-        <CSSTransition
-          key={location.key}
-          classNames="slide"
-          timeout={300}
-          unmountOnExit
-        >
-          <Routes location={location}>
-            <Route
-              path="/"
-              element={
-                <Home
-                  profile={profile}
-                  user={currentUser}
-                  profileLoaded={profileLoaded}
-                  noProfile={noProfile}
-                  setSigin={setSigin}
-                />
-              }
-            />
-            <Route
-              path="login"
-              element={
-                <Login sigin={sigin} setSigin={setSigin} user={currentUser} />
-              }
-            />
-            <Route
-              path="dashboard"
-              element={
-                <>
-                  {userLoaded && <Dashboard user={currentUser} games={games} />}
-                </>
-              }
-            />
-            <Route
-              path="account"
-              element={
-                <>
-                  {userLoaded && (
-                    <Account
-                      profile={profile}
-                      primaryColor={primaryColor}
-                      user={currentUser}
-                      getFirebaseProfile={getFirebaseProfile}
-                      setPrimaryColor={(color: string) => {
-                        setPrimaryColor(color);
-                      }}
-                    />
-                  )}
-                </>
-              }
-            />
-            <Route
-              path="create-game"
-              element={
-                <>
-                  {userLoaded && (
-                    <CreateGame user={currentUser} callback={getGames} />
-                  )}
-                </>
-              }
-            />
-            <Route
-              path="join-game"
-              element={
-                <>
-                  {userLoaded && (
-                    <JoinGame user={currentUser} callback={getGames} />
-                  )}
-                </>
-              }
-            />
-            <Route
-            path="game/:gameid"
-            element={<> </>}
+      <div
+        style={{
+          backgroundColor: backgroundColor,
+          width: "100vw",
+          height: "100vh",
+        }}
+      >
+        <TitleBar
+          profile={profile}
+          user={currentUser}
+          profileLoaded={profileLoaded}
+          primaryColor={primaryColor}
+          setDefaultTheme={setDefaultTheme}
+        />
+        <SVG color={primaryColor} />
+        <SwitchTransition>
+          <CSSTransition
+            key={location.key}
+            classNames="slide"
+            timeout={300}
+            unmountOnExit
+          >
+            <Routes location={location}>
+              <Route
+                path="/"
+                element={
+                  <Home
+                    profile={profile}
+                    user={currentUser}
+                    profileLoaded={profileLoaded}
+                    noProfile={noProfile}
+                    setSigin={setSigin}
+                  />
+                }
               />
-            {Object.entries(games).map(([key, value]) => {
-              return (
-                <Route
-                  key={key}
-                  path={`game/${key}`}
-                  element={
-                    <>
-                      {userLoaded && <Game user={currentUser} game={value} gameId={key} />}
-                    </>
-                  }
-                />
-              );
-            })}
-          </Routes>
-        </CSSTransition>
-      </SwitchTransition>
+              <Route
+                path="login"
+                element={
+                  <Login sigin={sigin} setSigin={setSigin} user={currentUser} />
+                }
+              />
+              <Route
+                path="dashboard"
+                element={
+                  <>
+                    {userLoaded && (
+                      <Dashboard
+                        user={currentUser}
+                        games={games}
+                        textColor={textColor}
+                      />
+                    )}
+                  </>
+                }
+              />
+              <Route
+                path="account"
+                element={
+                  <>
+                    {userLoaded && (
+                      <Account
+                        profile={profile}
+                        primaryColor={primaryColor}
+                        user={currentUser}
+                        getFirebaseProfile={getFirebaseProfile}
+                        setPrimaryColor={(color: string) => {
+                          setPrimaryColor(color);
+                        }}
+                      />
+                    )}
+                  </>
+                }
+              />
+              <Route
+                path="create-game"
+                element={
+                  <>
+                    {userLoaded && (
+                      <CreateGame
+                        user={currentUser}
+                        backgroundColor={backgroundColor}
+                        callback={getGames}
+                      />
+                    )}
+                  </>
+                }
+              />
+              <Route
+                path="join-game"
+                element={
+                  <>
+                    {userLoaded && (
+                      <JoinGame user={currentUser} callback={getGames} />
+                    )}
+                  </>
+                }
+              />
+              <Route path="game/:gameid" element={<> </>} />
+              {Object.entries(games).map(([key, value]) => {
+                return (
+                  <Route
+                    key={key}
+                    path={`game/${key}`}
+                    element={
+                      <>
+                        {userLoaded && (
+                          <Game user={currentUser} game={value} gameId={key} />
+                        )}
+                      </>
+                    }
+                  />
+                );
+              })}
+            </Routes>
+          </CSSTransition>
+        </SwitchTransition>
+      </div>
     </ThemeProvider>
   );
 };

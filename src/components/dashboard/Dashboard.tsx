@@ -13,11 +13,13 @@ import "./Dashboard.css";
 interface DashboardProps {
   user: User | null;
   games: GamesMap;
+  textColor: string;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({
   user,
   games,
+  textColor
 }: DashboardProps) => {
   const navigate = useNavigate();
   useEffect(() => {
@@ -78,7 +80,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                   },
                   icon: {
                     fontSize: "150%",
-                    color: "#d9d9d9",
+                    color: textColor,
                   },
                 }}
                 onClick={goCreateGame}
@@ -123,7 +125,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                   },
                   icon: {
                     fontSize: "150%",
-                    color: "#d9d9d9",
+                    color: textColor,
                   },
                 }}
                 onClick={goJoinGame}

@@ -11,13 +11,14 @@ import {
   Spinner,
   SpinnerSize,
   Stack,
+  Toggle,
 } from "@fluentui/react";
 import { Text } from "@fluentui/react/lib/Text";
 import { User } from "firebase/auth";
 import React, { createRef, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { Profile } from "../../App";
+import { Profile, ProfileData } from "../../App";
 import {
   updateUserProfile,
   updateUserProfilePhoto,
@@ -60,6 +61,7 @@ const Account: React.FC<AccountProps> = ({
   const [tmpPhotoUrl, setTmpPhotoUrl] = useState("");
   const [photo, setPhoto] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [darkMode, setDarkMode] = useState((profile.theme === "light") ? false : true);
 
   const primaryRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const cardRef = useRef() as React.MutableRefObject<HTMLInputElement>;
@@ -107,6 +109,15 @@ const Account: React.FC<AccountProps> = ({
     text: "",
   };
 
+  const changeTheme = (_event: any, checked?: boolean | undefined): void => {
+    setIsEditing(true);
+    if(checked == true) {
+      setDarkMode(true);
+    } else {
+      setDarkMode(false);
+    }
+  }
+
   const changeHandler = (event: any) => {
     const file = event.target.files[0];
     const fileUrl = URL.createObjectURL(file);
@@ -126,9 +137,15 @@ const Account: React.FC<AccountProps> = ({
     handleSaveProfile(
       (data) => {
         setLoading(true);
+        const profileData: ProfileData = {
+          alias: data.alias,
+          descriptor: data.descriptor,
+          primaryColor: primaryColor,
+          theme: darkMode ? "dark" : "light"
+        }
         if (photo) {
           updateUserProfilePhoto(photo).then(() => {
-            updateUserProfile(data.alias, data.descriptor, primaryColor).then(
+            updateUserProfile(profileData).then(
               () => {
                 setIsEditing(false);
                 setLoading(false);
@@ -137,7 +154,7 @@ const Account: React.FC<AccountProps> = ({
             );
           });
         } else {
-          updateUserProfile(data.alias, data.descriptor, primaryColor).then(
+          updateUserProfile(profileData).then(
             () => {
               setIsEditing(false);
               setLoading(false);
@@ -258,10 +275,13 @@ const Account: React.FC<AccountProps> = ({
                 control={controlProfile}
                 name={nameof<Form>("descriptor")}
               />
+
+              <Toggle label="Dark Mode" defaultChecked={darkMode} onText="On" offText="Off" onChange={changeTheme}/>
+
               <Stack
                 horizontal
                 style={{
-                  marginTop: 60,
+                  marginTop: 30,
                   height: "auto",
                   display: "flex",
                   justifyContent: "space-between",

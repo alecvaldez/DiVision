@@ -20,6 +20,7 @@ import {
   UploadResult,
 } from "firebase/storage";
 import { v4 as uuidv4 } from "uuid";
+import { ProfileData } from "../App";
 
 
 export const firebaseEmailSigin = (
@@ -76,19 +77,16 @@ export const updateUserProfilePhoto = (file: any): Promise<UploadResult> => {
   return uploadBytes(storageRef, file);
 };
 
-export const updateUserProfile = (
-  alias: string,
-  descriptor: string,
-  primaryColor: string
-): Promise<void> => {
+export const updateUserProfile = (data: ProfileData): Promise<void> => {
   const db = getDatabase();
   const auth = getAuth();
   const user = auth.currentUser;
 
-  const userObject = {
-    alias: alias,
-    descriptor: descriptor,
-    primaryColor: primaryColor,
+  const userObject: ProfileData = {
+    alias: data.alias,
+    descriptor: data.descriptor,
+    primaryColor: data.primaryColor,
+    theme: data.theme
   };
 
   return update(dbRef(db, "users/" + user?.uid), userObject);

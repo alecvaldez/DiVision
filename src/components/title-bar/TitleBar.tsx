@@ -23,7 +23,7 @@ interface TitleBarProps {
   profile: Profile;
   profileLoaded: boolean;
   primaryColor: string;
-  setPrimaryColor: (color: string) => void;
+  setDefaultTheme: () => void;
 }
 
 const TitleBar: React.FC<TitleBarProps> = ({
@@ -31,7 +31,7 @@ const TitleBar: React.FC<TitleBarProps> = ({
   profile,
   profileLoaded,
   primaryColor,
-  setPrimaryColor,
+  setDefaultTheme,
 }: TitleBarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -114,7 +114,7 @@ const TitleBar: React.FC<TitleBarProps> = ({
     navigate("/login");
     firebaseLogout();
     setTimeout(() => {
-      setPrimaryColor("#e00000");
+      setDefaultTheme();
     }, 350);
   };
 
