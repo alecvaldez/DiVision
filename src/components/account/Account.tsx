@@ -20,6 +20,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { Profile, ProfileData } from "../../App";
 import {
+  getUserProfilePhoto,
   updateUserProfile,
   updateUserProfilePhoto,
 } from "../../firebase/FirebaseUtils";
@@ -141,17 +142,24 @@ const Account: React.FC<AccountProps> = ({
           alias: data.alias,
           descriptor: data.descriptor,
           primaryColor: primaryColor,
-          theme: darkMode ? "dark" : "light"
+          theme: darkMode ? "dark" : "light",
+          photoUrl: "",
+          email: user?.email
         }
+
         if (photo) {
           updateUserProfilePhoto(photo).then(() => {
-            updateUserProfile(profileData).then(
-              () => {
-                setIsEditing(false);
-                setLoading(false);
-                getFirebaseProfile();
-              }
-            );
+            getUserProfilePhoto().then((url) => {
+              profileData.photoUrl = url;
+              updateUserProfile(profileData).then(
+                () => {
+                  setIsEditing(false);
+                  setLoading(false);
+                  getFirebaseProfile();
+                }
+              );
+            });
+
           });
         } else {
           updateUserProfile(profileData).then(

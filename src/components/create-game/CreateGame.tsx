@@ -117,13 +117,14 @@ const CreateGame: React.FC<CreateGameProps> = ({
     handleCreateGame(
       (data) => {
         setLoading(true);
-        createNewGame(photo, data.name).then((gameKey) => {
+        createNewGame(photo, data.name, user?.uid).then((gameKey) => {
           if (gameKey !== "error") {
             setCreateError(false);
             addGameToUser(gameKey);
             setIsEditing(false);
             setLoading(false);
             callback();
+            navigate(`/game/${gameKey}`);
           } else {
             setCreateError(true);
             setLoading(false);

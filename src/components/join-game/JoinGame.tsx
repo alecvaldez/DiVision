@@ -13,7 +13,11 @@ import { watch } from "fs";
 import React, { useEffect, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { addGameToUser, getGame } from "../../firebase/FirebaseUtils";
+import {
+  addGameToUser,
+  addPlayerToGame,
+  getGame,
+} from "../../firebase/FirebaseUtils";
 import { ControlledTextField } from "../textfield/ControlledTextField";
 
 interface JoinGameProps {
@@ -102,11 +106,15 @@ const JoinGame: React.FC<JoinGameProps> = ({
     handleJoinGame(
       (data) => {
         setLoading(true);
-        getGame(data.gameId).then((snapshot) => {
+        const gameKey = data.gameId.toUpperCase();
+        getGame(gameKey).then((snapshot) => {
           if (snapshot.exists()) {
             setJoinError(false);
-            addGameToUser(data.gameId);
+            addGameToUser(gameKey);
             callback();
+            addPlayerToGame(gameKey).then(() => {
+              navigate(`/game/${gameKey}`);
+            });
           } else {
             setJoinError(true);
           }

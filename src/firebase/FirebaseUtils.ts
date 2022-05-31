@@ -81,12 +81,23 @@ export const updateUserProfile = (data: ProfileData): Promise<void> => {
   const auth = getAuth();
   const user = auth.currentUser;
 
-  const userObject: ProfileData = {
-    alias: data.alias,
-    descriptor: data.descriptor,
-    primaryColor: data.primaryColor,
-    theme: data.theme,
-  };
+  const userObject =
+    data.photoUrl !== ""
+      ? {
+          alias: data.alias,
+          descriptor: data.descriptor,
+          primaryColor: data.primaryColor,
+          theme: data.theme,
+          photoUrl: data.photoUrl,
+          email: data.email,
+        }
+      : {
+          alias: data.alias,
+          descriptor: data.descriptor,
+          primaryColor: data.primaryColor,
+          theme: data.theme,
+          email: data.email,
+        };
 
   return update(dbRef(db, "users/" + user?.uid), userObject);
 };
@@ -116,6 +127,19 @@ export const getUserProfile = (): Promise<DataSnapshot> => {
   return get(dbRef(db, "users/" + user?.uid));
 };
 
+export const getUserProfileById = (userId: string): Promise<DataSnapshot> => {
+  const db = getDatabase();
+  const auth = getAuth();
+  return get(dbRef(db, "users/" + userId));
+};
+
+// export const getUserProfilseById = (userIds: Array<string>): Promise<DataSnapshot> => {
+//   const db = getDatabase();
+//   const auth = getAuth();
+//   return get(dbRef(db, "users/" + userId));
+// };
+
+
 export const getUserGames = (): Promise<DataSnapshot> => {
   const db = getDatabase();
   const auth = getAuth();
@@ -128,7 +152,11 @@ export const firebaseLogout = (): Promise<void> => {
   return auth.signOut();
 };
 
-export const createNewGame = (photo: any, name: string): Promise<string> => {
+export const createNewGame = (
+  photo: any,
+  name: string,
+  gameMasterId: string | undefined
+): Promise<string> => {
   const db = getDatabase();
   const storage = getStorage();
 
@@ -150,6 +178,7 @@ export const createNewGame = (photo: any, name: string): Promise<string> => {
             return set(dbRef(db, "games/" + key), {
               name: name,
               imgUrl: url,
+              gameMasterId: gameMasterId,
             }).then(() => {
               return key;
             });
@@ -159,6 +188,7 @@ export const createNewGame = (photo: any, name: string): Promise<string> => {
       return set(dbRef(db, "games/" + key), {
         name: name,
         imgUrl: "",
+        gameMasterId: gameMasterId,
       }).then(() => {
         return key;
       });
@@ -179,4 +209,12 @@ export const addGameToUser = (gameKey: string): Promise<void> => {
 export const getGame = (gameKey: string): Promise<DataSnapshot> => {
   const db = getDatabase();
   return get(dbRef(db, "games/" + gameKey));
+};
+
+export const addPlayerToGame = (gameKey: string): Promise<void> => {
+  const db = getDatabase();
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+  return set(dbRef(db, "games/" + gameKey + "/players/" + user?.uid), [user?.uid]);
 };

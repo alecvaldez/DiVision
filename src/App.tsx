@@ -48,11 +48,15 @@ export interface ProfileData {
   descriptor: string;
   primaryColor: string;
   theme: string;
+  photoUrl: string;
+  email: string | null | undefined;
 }
 
 export interface GameData {
   imgUrl: string;
   name: string;
+  gameMasterId: string;
+  players: {[key: string]: Array<string> };
 }
 
 type RawGamesMap = { [key: string]: Array<string> };
@@ -83,6 +87,7 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
     descriptor: "",
     primaryColor: "",
     theme: "",
+    email: ""
   });
 
   const appTheme: PartialTheme = generateTheme({
@@ -92,7 +97,6 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
   });
 
   const getFirebaseProfile = () => {
-    getUserProfilePhoto().then((url) => {
       getUserProfile().then((snapshot) => {
         if (snapshot.exists()) {
           const val = snapshot.val();
@@ -114,16 +118,16 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
           setPrimaryColor(profileColor);
 
           setProfile(() => ({
-            photoUrl: url,
+            photoUrl: value.photoUrl,
             alias: value.alias,
             descriptor: value.descriptor,
             primaryColor: value.primaryColor,
             theme: value.theme,
+            email: currentUser?.email
           }));
         }
         setProfileLoaded(true);
       });
-    });
   };
 
   const getGames = (): void => {

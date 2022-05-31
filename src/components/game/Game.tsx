@@ -1,26 +1,44 @@
 import {
   CommandButton,
   DefaultEffects,
+  Facepile,
+  IPersonaSharedProps,
   IStackTokens,
+  OverflowButtonType,
+  Persona,
+  PersonaInitialsColor,
+  PersonaPresence,
+  PersonaSize,
   PrimaryButton,
   Spinner,
   SpinnerSize,
   Stack,
   Text,
 } from "@fluentui/react";
+import { profile } from "console";
 import { User } from "firebase/auth";
+import { DataSnapshot } from "firebase/database";
 import { watch } from "fs";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import { GameData } from "../../App";
-import { addGameToUser, getGame } from "../../firebase/FirebaseUtils";
-import { ControlledTextField } from "../textfield/ControlledTextField";
+import { GameData, ProfileData } from "../../App";
+import {
+  addGameToUser,
+  getGame,
+  getUserProfileById,
+} from "../../firebase/FirebaseUtils";
 
 interface GameProps {
   user: User | null;
   game: GameData;
   gameId: string;
+}
+
+interface Player {
+  photoUrl: string;
+  alias: string;
+  email: string;
 }
 
 type Form = {
@@ -40,9 +58,64 @@ const Game: React.FC<GameProps> = ({ user, game, gameId }: GameProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [joinError, setJoinError] = useState(false);
+  const [master, setMaster] = useState<Player>({
+    photoUrl: "",
+    alias: "",
+    email: "",
+  });
+
+  const [players, setPlayers] = useState<Array<Player>>([]);
 
   const primaryRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const cardRef = useRef() as React.MutableRefObject<HTMLInputElement>;
+
+  useEffect(() => {
+    getUserProfileById(game.gameMasterId).then((snapshot) => {
+      if (snapshot.exists()) {
+        const value = snapshot.val();
+        setMaster(() => ({
+          photoUrl: value.photoUrl,
+          alias: value.alias,
+          email: value.email,
+        }));
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    console.log(game);
+    const playersIds = game.players;
+    if (playersIds) {
+      const promises: Array<Promise<DataSnapshot>> = Object.keys(
+        playersIds
+      ).map((playerId) => {
+        return getUserProfileById(playerId);
+      });
+      Promise.all(promises).then((profiles) => {
+        const profilesData: Array<Player> = profiles.map((snapshot) => {
+          return snapshot.val() as Player;
+        });
+        setPlayers(profilesData);
+      });
+    }
+  }, []);
+
+  const gameMaster: IPersonaSharedProps = {
+    imageUrl: master.photoUrl,
+    imageInitials: master.email?.slice(0, 2).toUpperCase(),
+    text: master.alias === "" ? master.email : master.alias,
+    secondaryText: "Game Master",
+  };
+
+  const personas = useMemo(() => {
+    return players.map((player) => {
+      return {
+        personaName: player.alias !== "" ? player.alias : player.email,
+        imageUrl: player.photoUrl,
+        imageInitials: player.email?.slice(0, 2).toUpperCase(),
+      };
+    });
+  }, [players]);
 
   const checkOverflow = (): boolean => {
     return primaryRef.current.offsetHeight < cardRef.current.offsetHeight;
@@ -127,44 +200,49 @@ const Game: React.FC<GameProps> = ({ user, game, gameId }: GameProps) => {
               style={{ width: "100%", zIndex: 1000 }}
               tokens={verticalGapStackTokens}
             >
-              <Text variant={"xxLarge"} nowrap block>
-                {game.name}
-              </Text>
-              <Text variant={"large"} nowrap block>
-                {gameId}
-              </Text>
-
-              <ControlledTextField
-                onKeyDown={keyDown}
-                onError={() => console.log("error")}
-                label="Game ID"
-                autoComplete="off"
-                control={controlGame}
-                maxLength={5}
-                minLength={5}
-                name={nameof<Form>("gameId")}
-                rules={{
-                  pattern: {
-                    value: /^[A-Z0-9]+$/i,
-                    message: "This is not a valid game id",
-                  },
-                  required: "This field is required",
+              <div
+                style={{
+                  display: "inline-block",
                 }}
-              />
-              {joinError ? (
-                <Text
-                  className="error-text"
-                  style={{
-                    margin: 0,
-                  }}
-                  block
-                  variant="large"
-                >
-                  Invalid Game ID
+              >
+                <Text variant={"xxLarge"} nowrap>
+                  {game.name}
                 </Text>
-              ) : (
-                <Stack style={{ height: "64px", margin: 0 }}> </Stack>
-              )}
+                <Text
+                  variant={"large"}
+                  nowrap
+                  style={{ float: "right", lineHeight: "37px" }}
+                >
+                  {gameId}
+                </Text>
+              </div>
+
+              <Persona
+                {...gameMaster}
+                presence={PersonaPresence.none}
+                initialsColor={PersonaInitialsColor.gold}
+                imageAlt=""
+                size={PersonaSize.size120}
+              />
+              <div>
+                <Text
+                  variant={"xLarge"}
+                  nowrap
+                  
+                >
+                  Players
+                </Text>
+                <br></br>
+                <Facepile
+                  personas={personas}
+                  maxDisplayablePersonas={14}
+                  overflowButtonType={OverflowButtonType.descriptive}
+                  // showAddButton
+                  // addButtonProps={addButtonProps}
+                  ariaDescription="To move through the items use left and right arrow keys."
+                />
+              </div>
+
               <Stack
                 horizontal
                 style={{
