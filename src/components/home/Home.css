@@ -12,8 +12,6 @@
 
 .welcome-container {
     width: 100%;
-    padding-left: clamp(2rem, 1vw, 5rem);
-    padding-right: clamp(2rem, 1vw, 5rem);
     justify-content: space-between;
 }
 
