@@ -302,7 +302,7 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
                 );
               })}
 
-              {Object.entries(games).map(([key, value]) => {
+              {Object.entries(games).map(([key, _value]) => {
                 return (
                   <Route
                     key={`create-character-${key}`}
@@ -311,6 +311,7 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
                       <>
                         {userLoaded && (
                           <CreateCharacter
+                            backgroundColor={backgroundColor}
                             user={currentUser}
                             gameId={key}
                             callback={getGames}

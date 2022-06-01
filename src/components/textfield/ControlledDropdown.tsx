@@ -1,8 +1,8 @@
 import { Controller } from "react-hook-form";
-import { TextField, ITextFieldProps } from "@fluentui/react/lib/TextField";
+import { Dropdown, IDropdownProps } from "@fluentui/react/lib/Dropdown";
 import { HookFormProps } from "./HookFormProps";
 
-export const ControlledTextField: React.FC<HookFormProps & ITextFieldProps> = (
+export const ControlledDropdown: React.FC<HookFormProps & IDropdownProps> = (
   props
 ) => {
   return (
@@ -13,21 +13,16 @@ export const ControlledTextField: React.FC<HookFormProps & ITextFieldProps> = (
       defaultValue={props.defaultValue || ""}
       render={({
         field: { onChange, onBlur, name: fieldName, value },
-        fieldState: { error }
+        fieldState: { error },
       }) => (
-        <TextField
+        <Dropdown
           {...props}
-
-          styles={{
-            root: {
-              height: 80
-            }
+          selectedKey={value}
+          onChange={(_e, option) => {
+            onChange(option?.key);
           }}
-          autoComplete={"on"}
-          onChange={onChange}
-          value={value}
+          
           onBlur={onBlur}
-          name={fieldName}
           errorMessage={error && error.message}
           defaultValue={undefined}
         />

@@ -1,10 +1,10 @@
 import {
   CommandButton,
   DefaultEffects,
-  DetailsListLayoutMode,
+  Dropdown,
   IStackTokens,
+  List,
   PrimaryButton,
-  SelectionMode,
   SpinButton,
   Spinner,
   SpinnerSize,
@@ -15,39 +15,45 @@ import { User } from "firebase/auth";
 import React, { useEffect, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { ControlledDropdown } from "../textfield/ControlledDropdown";
+import { ControlledList } from "../textfield/ControlledList";
+import { ControlledSpinButton } from "../textfield/ControlledSpinButton";
 import { ControlledTextField } from "../textfield/ControlledTextField";
-import {
-  EditableGrid,
-  EditControlType,
-  IColumnConfig,
-  EventEmitter,
-  EventType,
-  NumberAndDateOperators,
-  StringOperators,
-} from "fluentui-editable-grid";
 
 interface CreateCharacterProps {
   user: User | null;
   gameId: string;
+  backgroundColor: string;
   callback: () => void;
 }
 
-interface Weapon {
+export interface Weapon {
   name: string;
   bonus: number;
   die: string; // 1d6
   modifier: number;
 }
+
+export interface WeaponMap {
+  [key: string]: Weapon;
+}
+
 type Form = {
   name: string;
-  strength: [number, number];
-  dexterity: [number, number];
-  constitution: [number, number];
-  intelligence: [number, number];
-  wisdom: [number, number];
-  charisma: [number, number];
   proficiencyModifier: number;
-  weapons: Array<Weapon>;
+  strengthScore: number;
+  strengthModifier: number;
+  dexterityScore: number;
+  dexterityModifier: number;
+  constitutionScore: number;
+  constitutionModifier: number;
+  intelligenceScore: number;
+  intelligenceModifier: number;
+  wisdomScore: number;
+  wisdomModifier: number;
+  charismaScore: number;
+  charismaModifier: number;
+  weapons: WeaponMap;
 };
 
 const verticalGapStackTokens: IStackTokens = {
@@ -60,6 +66,7 @@ export const nameof = <T extends {}>(name: keyof T) => name;
 const CreateCharacter: React.FC<CreateCharacterProps> = ({
   user,
   gameId,
+  backgroundColor,
   callback,
 }: CreateCharacterProps) => {
   const navigate = useNavigate();
@@ -67,7 +74,8 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [joinError, setJoinError] = useState(false);
-  const [weapons, setWeapons] = useState([]);
+
+  const [selectedWeapon, setSelectedWeapon] = useState("Mace");
 
   const primaryRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const cardRef = useRef() as React.MutableRefObject<HTMLInputElement>;
@@ -75,59 +83,6 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
   const checkOverflow = (): boolean => {
     return primaryRef.current.offsetHeight < cardRef.current.offsetHeight;
   };
-
-  const columns: IColumnConfig[] = [
-    {
-      key: "name",
-      text: "Name",
-      name: "Name",
-      minWidth: 100,
-      editable: true,
-      dataType: "string",
-      isResizable: true,
-      includeColumnInExport: true,
-      includeColumnInSearch: true,
-      applyColumnFilter: true,
-    },
-    {
-      key: "bonus",
-      text: "Bonus",
-      name: "Bonus",
-      minWidth: 100,
-      editable: true,
-      dataType: "number",
-      isResizable: true,
-      includeColumnInExport: true,
-      includeColumnInSearch: true,
-      applyColumnFilter: true,
-    },
-    {
-      key: "die",
-      text: "Die",
-      editable: true,
-      name: "Die",
-      minWidth: 100,
-      dataType: "string",
-      isResizable: true,
-      includeColumnInExport: true,
-      includeColumnInSearch: true,
-      // inputType: EditControlType.MultilineTextField,
-      applyColumnFilter: true,
-    },
-    {
-      key: "modifier",
-      text: "Modifier",
-      editable: true,
-      name: "Modifier",
-      minWidth: 100,
-      dataType: "number",
-      isResizable: true,
-      includeColumnInExport: true,
-      includeColumnInSearch: true,
-      // inputType: EditControlType.MultilineTextField,
-      applyColumnFilter: true,
-    },
-  ];
 
   const {
     handleSubmit: handleCreateCharacter,
@@ -137,19 +92,39 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
   } = useForm<Form, any>({
     defaultValues: {
       name: "",
-      strength: [0, 0],
-      dexterity: [0, 0],
-      constitution: [0, 0],
-      intelligence: [0, 0],
-      wisdom: [0, 0],
-      charisma: [0, 0],
-      weapons: [],
+      proficiencyModifier: 2,
+      strengthScore: 10,
+      strengthModifier: 0,
+      dexterityScore: 10,
+      dexterityModifier: 0,
+      constitutionScore: 10,
+      constitutionModifier: 1,
+      intelligenceScore: 10,
+      intelligenceModifier: 0,
+      wisdomScore: 10,
+      wisdomModifier: 0,
+      charismaScore: 10,
+      charismaModifier: 0,
+      weapons: {},
     },
     reValidateMode: "onSubmit",
     mode: "all",
   });
 
   const watch = useWatch({ control: controlCharacter });
+
+  useEffect(() => {
+    const values = getValues();
+    if (
+      formState.isValid &&
+      values["name"].length > 0 &&
+      Object.keys(values["weapons"]).length > 0
+    ) {
+      setIsEditing(true);
+    } else {
+      setIsEditing(false);
+    }
+  }, [watch]);
 
   useEffect(() => {
     if (user == null) {
@@ -165,15 +140,6 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
     }
   }, []);
 
-  // useEffect(() => {
-  //   const values = getValues();
-  //   if (formState.isValid && values["gameId"].length == 5) {
-  //     setIsEditing(true);
-  //   } else {
-  //     setIsEditing(false);
-  //   }
-  // }, [watch]);
-
   const goBack = (): void => {
     navigate(-1);
   };
@@ -187,6 +153,7 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
   const createCharacter = () => {
     handleCreateCharacter(
       (data) => {
+        console.log(data);
         // setLoading(true);
         // getGame(gameKey).then((snapshot) => {
         //   if (snapshot.exists()) {
@@ -213,7 +180,10 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
           <div
             className="card"
             ref={cardRef}
-            style={{ boxShadow: DefaultEffects.elevation16 }}
+            style={{
+              boxShadow: DefaultEffects.elevation16,
+              width: "clamp(20rem, 90vw, 60rem)",
+            }}
           >
             <Stack
               style={{ width: "100%", zIndex: 1000 }}
@@ -236,24 +206,6 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                 </Text>
               </div>
 
-              <ControlledTextField
-                onKeyDown={keyDown}
-                onError={() => console.log("error")}
-                label="Name"
-                autoComplete="off"
-                control={controlCharacter}
-                maxLength={15}
-                minLength={1}
-                name={nameof<Form>("name")}
-                rules={{
-                  pattern: {
-                    value: /^[a-zA-Z0-9]+$/i,
-                    message: "This is not a valid character name",
-                  },
-                  required: "This field is required",
-                }}
-              />
-
               <Stack
                 horizontal
                 tokens={{
@@ -266,7 +218,40 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                       width: 200,
                     }}
                   >
-                    <Text variant={"xLarge"} nowrap>
+                    <ControlledDropdown
+                      onError={() => console.log("error")}
+                      label="Proficiency Bonus"
+                      control={controlCharacter}
+                      name={nameof<Form>("proficiencyModifier")}
+                      options={[
+                        { key: "2", text: "2" },
+                        { key: "3", text: "3" },
+                        { key: "4", text: "4" },
+                        { key: "5", text: "5" },
+                        { key: "6", text: "6" },
+                      ]}
+                      styles={{
+                        root: {
+                          width: 190,
+                          marginBottom: 20,
+                        },
+                      }}
+                      rules={{
+                        pattern: {
+                          value: /^[2-6]$/i,
+                          message: "This is not a valid proficiency bonus",
+                        },
+                        required: "This field is required",
+                      }}
+                    />
+
+                    <Text
+                      variant={"xLarge"}
+                      nowrap
+                      style={{
+                        marginTop: 30,
+                      }}
+                    >
                       Strength
                     </Text>
                     <Stack
@@ -275,11 +260,19 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                         alignItems: "center",
                       }}
                     >
-                      <SpinButton
+                      <ControlledSpinButton
+                        name={nameof<Form>("strengthScore")}
+                        rules={{
+                          pattern: {
+                            value: /^[1-20]$/i,
+                            message: "This is not a valid score",
+                          },
+                          required: "This field is required",
+                        }}
+                        control={controlCharacter}
                         label="Score"
-                        defaultValue="0"
-                        min={0}
-                        max={100}
+                        min={1}
+                        max={20}
                         step={1}
                         incrementButtonAriaLabel="Increase value by 1"
                         decrementButtonAriaLabel="Decrease value by 1"
@@ -289,18 +282,23 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                           },
                         }}
                       />
-                      <SpinButton
+                      <ControlledSpinButton
+                        name={nameof<Form>("strengthModifier")}
+                        rules={{
+                          pattern: {
+                            value: /^[-5-5]$/i,
+                            message: "This is not a valid modifier",
+                          },
+                          required: "This field is required",
+                        }}
+                        control={controlCharacter}
                         label="Modifier"
-                        defaultValue="0"
-                        min={0}
-                        max={100}
+                        min={-5}
+                        max={5}
                         step={1}
                         incrementButtonAriaLabel="Increase value by 1"
                         decrementButtonAriaLabel="Decrease value by 1"
                         styles={{
-                          root: {
-                            float: "right",
-                          },
                           spinButtonWrapper: {
                             width: 75,
                           },
@@ -323,11 +321,19 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                         alignItems: "center",
                       }}
                     >
-                      <SpinButton
+                      <ControlledSpinButton
+                        name={nameof<Form>("dexterityScore")}
+                        rules={{
+                          pattern: {
+                            value: /^[1-20]$/i,
+                            message: "This is not a valid score",
+                          },
+                          required: "This field is required",
+                        }}
+                        control={controlCharacter}
                         label="Score"
-                        defaultValue="0"
-                        min={0}
-                        max={100}
+                        min={1}
+                        max={20}
                         step={1}
                         incrementButtonAriaLabel="Increase value by 1"
                         decrementButtonAriaLabel="Decrease value by 1"
@@ -337,18 +343,23 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                           },
                         }}
                       />
-                      <SpinButton
+                      <ControlledSpinButton
+                        name={nameof<Form>("dexterityModifier")}
+                        rules={{
+                          pattern: {
+                            value: /^[(-5)-5]$/i,
+                            message: "This is not a valid modifier",
+                          },
+                          required: "This field is required",
+                        }}
+                        control={controlCharacter}
                         label="Modifier"
-                        defaultValue="0"
-                        min={0}
-                        max={100}
+                        min={-5}
+                        max={5}
                         step={1}
                         incrementButtonAriaLabel="Increase value by 1"
                         decrementButtonAriaLabel="Decrease value by 1"
                         styles={{
-                          root: {
-                            float: "right",
-                          },
                           spinButtonWrapper: {
                             width: 75,
                           },
@@ -370,11 +381,19 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                         alignItems: "center",
                       }}
                     >
-                      <SpinButton
+                      <ControlledSpinButton
+                        name={nameof<Form>("constitutionScore")}
+                        rules={{
+                          pattern: {
+                            value: /^[1-20]$/i,
+                            message: "This is not a valid score",
+                          },
+                          required: "This field is required",
+                        }}
+                        control={controlCharacter}
                         label="Score"
-                        defaultValue="0"
-                        min={0}
-                        max={100}
+                        min={1}
+                        max={20}
                         step={1}
                         incrementButtonAriaLabel="Increase value by 1"
                         decrementButtonAriaLabel="Decrease value by 1"
@@ -384,18 +403,23 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                           },
                         }}
                       />
-                      <SpinButton
+                      <ControlledSpinButton
+                        name={nameof<Form>("constitutionModifier")}
+                        rules={{
+                          pattern: {
+                            value: /^\d/i,
+                            message: "This is not a valid modifier",
+                          },
+                          required: "This field is required",
+                        }}
+                        control={controlCharacter}
                         label="Modifier"
-                        defaultValue="0"
-                        min={0}
-                        max={100}
+                        min={-5}
+                        max={5}
                         step={1}
                         incrementButtonAriaLabel="Increase value by 1"
                         decrementButtonAriaLabel="Decrease value by 1"
                         styles={{
-                          root: {
-                            float: "right",
-                          },
                           spinButtonWrapper: {
                             width: 75,
                           },
@@ -409,7 +433,13 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                       width: 200,
                     }}
                   >
-                    <Text variant={"xLarge"} nowrap>
+                    <Text
+                      variant={"xLarge"}
+                      nowrap
+                      style={{
+                        marginTop: 20,
+                      }}
+                    >
                       Intelligence
                     </Text>
                     <Stack
@@ -418,11 +448,19 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                         alignItems: "center",
                       }}
                     >
-                      <SpinButton
+                      <ControlledSpinButton
+                        name={nameof<Form>("intelligenceScore")}
+                        rules={{
+                          pattern: {
+                            value: /^[1-20]$/i,
+                            message: "This is not a valid score",
+                          },
+                          required: "This field is required",
+                        }}
+                        control={controlCharacter}
                         label="Score"
-                        defaultValue="0"
-                        min={0}
-                        max={100}
+                        min={1}
+                        max={20}
                         step={1}
                         incrementButtonAriaLabel="Increase value by 1"
                         decrementButtonAriaLabel="Decrease value by 1"
@@ -432,18 +470,23 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                           },
                         }}
                       />
-                      <SpinButton
+                      <ControlledSpinButton
+                        name={nameof<Form>("intelligenceModifier")}
+                        rules={{
+                          pattern: {
+                            value: /^[-5-5]$/i,
+                            message: "This is not a valid modifier",
+                          },
+                          required: "This field is required",
+                        }}
+                        control={controlCharacter}
                         label="Modifier"
-                        defaultValue="0"
-                        min={0}
-                        max={100}
+                        min={-5}
+                        max={5}
                         step={1}
                         incrementButtonAriaLabel="Increase value by 1"
                         decrementButtonAriaLabel="Decrease value by 1"
                         styles={{
-                          root: {
-                            float: "right",
-                          },
                           spinButtonWrapper: {
                             width: 75,
                           },
@@ -457,7 +500,13 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                       width: 200,
                     }}
                   >
-                    <Text variant={"xLarge"} nowrap>
+                    <Text
+                      variant={"xLarge"}
+                      nowrap
+                      style={{
+                        marginTop: 20,
+                      }}
+                    >
                       Wisdom
                     </Text>
                     <Stack
@@ -466,11 +515,19 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                         alignItems: "center",
                       }}
                     >
-                      <SpinButton
+                      <ControlledSpinButton
+                        name={nameof<Form>("wisdomScore")}
+                        rules={{
+                          pattern: {
+                            value: /^[1-20]$/i,
+                            message: "This is not a valid score",
+                          },
+                          required: "This field is required",
+                        }}
+                        control={controlCharacter}
                         label="Score"
-                        defaultValue="0"
-                        min={0}
-                        max={100}
+                        min={1}
+                        max={20}
                         step={1}
                         incrementButtonAriaLabel="Increase value by 1"
                         decrementButtonAriaLabel="Decrease value by 1"
@@ -480,18 +537,23 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                           },
                         }}
                       />
-                      <SpinButton
+                      <ControlledSpinButton
+                        name={nameof<Form>("wisdomModifier")}
+                        rules={{
+                          pattern: {
+                            value: /^[-5-5]$/i,
+                            message: "This is not a valid modifier",
+                          },
+                          required: "This field is required",
+                        }}
+                        control={controlCharacter}
                         label="Modifier"
-                        defaultValue="0"
-                        min={0}
-                        max={100}
+                        min={-5}
+                        max={5}
                         step={1}
                         incrementButtonAriaLabel="Increase value by 1"
                         decrementButtonAriaLabel="Decrease value by 1"
                         styles={{
-                          root: {
-                            float: "right",
-                          },
                           spinButtonWrapper: {
                             width: 75,
                           },
@@ -514,11 +576,19 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                         alignItems: "center",
                       }}
                     >
-                      <SpinButton
+                      <ControlledSpinButton
+                        name={nameof<Form>("charismaScore")}
+                        rules={{
+                          pattern: {
+                            value: /^[1-20]$/i,
+                            message: "This is not a valid score",
+                          },
+                          required: "This field is required",
+                        }}
+                        control={controlCharacter}
                         label="Score"
-                        defaultValue="0"
-                        min={0}
-                        max={100}
+                        min={1}
+                        max={20}
                         step={1}
                         incrementButtonAriaLabel="Increase value by 1"
                         decrementButtonAriaLabel="Decrease value by 1"
@@ -528,18 +598,23 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                           },
                         }}
                       />
-                      <SpinButton
+                      <ControlledSpinButton
+                        name={nameof<Form>("charismaModifier")}
+                        rules={{
+                          pattern: {
+                            value: /^[-5-5]$/i,
+                            message: "This is not a valid modifier",
+                          },
+                          required: "This field is required",
+                        }}
+                        control={controlCharacter}
                         label="Modifier"
-                        defaultValue="0"
-                        min={0}
-                        max={100}
+                        min={-5}
+                        max={5}
                         step={1}
                         incrementButtonAriaLabel="Increase value by 1"
                         decrementButtonAriaLabel="Decrease value by 1"
                         styles={{
-                          root: {
-                            float: "right",
-                          },
                           spinButtonWrapper: {
                             width: 75,
                           },
@@ -548,40 +623,41 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                     </Stack>
                   </Stack>
                 </Stack>
-                <Stack>
+                <Stack
+                  style={{
+                    width: "100%",
+                    float: "right",
+                  }}
+                  tokens={{
+                    childrenGap: 30,
+                  }}
+                >
+                  <ControlledTextField
+                    onKeyDown={keyDown}
+                    onError={() => console.log("error")}
+                    label="Name"
+                    autoComplete="off"
+                    control={controlCharacter}
+                    maxLength={15}
+                    minLength={1}
+                    name={nameof<Form>("name")}
+                    rules={{
+                      pattern: {
+                        value: /^[a-zA-Z0-9]+$/i,
+                        message: "This is not a valid character name",
+                      },
+                      required: "This field is required",
+                    }}
+                  />
                   <Text variant={"xLarge"} nowrap>
                     Weapons
                   </Text>
-
-                  <EditableGrid
-                    id={1}
-                    columns={columns}
-                    items={[]}
-                    enableCellEdit={true}
-                    enableExport={true}
-                    enableTextFieldEditMode={true}
-                    enableTextFieldEditModeCancel={true}
-                    enableGridRowsDelete={true}
-                    enableGridRowsAdd={true}
-                    height={"70vh"}
-                    width={"140vh"}
-                    position={"relative"}
-                    enableUnsavedEditIndicator={true}
-                    onGridSave={() => {}}
-                    enableGridReset={true}
-                    enableColumnFilters={true}
-                    enableColumnFilterRules={true}
-                    enableRowAddWithValues={{
-                      enable: true,
-                      enableRowsCounterInPanel: true,
-                    }}
-                    // layoutMode={DetailsListLayoutMode.justified}
-                    // selectionMode={SelectionMode.multiple}
-                    enableRowEdit={true}
-                    enableRowEditCancel={true}
-                    enableBulkEdit={true}
-                    enableColumnEdit={true}
-                    enableSave={true}
+                  <ControlledList
+                    proficiencyBonus={getValues()["proficiencyModifier"]}
+                    modifier={getValues()["strengthModifier"]}
+                    name={nameof<Form>("weapons")}
+                    backgroundColor={backgroundColor}
+                    control={controlCharacter}
                   />
                 </Stack>
               </Stack>
@@ -633,7 +709,7 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                     height: "38px",
                   }}
                 >
-                  Join
+                  Create
                 </PrimaryButton>
               </Stack>
             </Stack>
