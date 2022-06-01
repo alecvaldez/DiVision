@@ -1,28 +1,59 @@
 import {
+  Callout,
   CommandButton,
+  DefaultButton,
   DefaultEffects,
+  Dialog,
+  DialogFooter,
+  DialogType,
   IconButton,
+  IDialogContentProps,
+  Modal,
   PrimaryButton,
+  Spinner,
+  SpinnerSize,
+  Stack,
   Text,
 } from "@fluentui/react";
 import { User } from "firebase/auth";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GamesMap } from "../../App";
+import { useBoolean, useId } from "@fluentui/react-hooks";
 import "./Dashboard.css";
+import {
+  removeGameFromUser,
+  removePlayerFromGame,
+} from "../../firebase/FirebaseUtils";
 
 interface DashboardProps {
   user: User | null;
   games: GamesMap;
   textColor: string;
+  callback: () => void;
 }
+
+const dialogContentProps: IDialogContentProps = {
+  type: DialogType.normal,
+  title: "Remove Game",
+  closeButtonAriaLabel: "Close",
+  subText: "Are you sure you want to remove this game from your Dashboard?",
+  showCloseButton: true,
+};
 
 const Dashboard: React.FC<DashboardProps> = ({
   user,
   games,
   textColor,
+  callback,
 }: DashboardProps) => {
   const navigate = useNavigate();
+  const [isModalOpen, { setTrue: showModal, setFalse: hideModal }] =
+    useBoolean(false);
+  const [loading, setLoading] = useState(false);
+
+  const [selectedGame, setSelectedGame] = useState("");
+
   useEffect(() => {
     if (user == null) {
       navigate("/login");
@@ -37,11 +68,86 @@ const Dashboard: React.FC<DashboardProps> = ({
     navigate("/join-game");
   };
 
+  const removeGame = (gameKey: string): void => {
+    setLoading(true);
+    removeGameFromUser(gameKey).then(() => {
+      removePlayerFromGame(gameKey).then(() => {
+        callback();
+        setLoading(false);
+        hideModal();
+      });
+    });
+  };
+
   return (
     <div className="primary-div">
       <div className="secondary-div">
         {user !== null && (
           <div className="games-div">
+            <Modal
+              isOpen={isModalOpen}
+              onDismiss={hideModal}
+              isBlocking={false}
+            >
+              <div
+                style={{
+                  width: 340,
+                }}
+              >
+                <div
+                  style={{
+                    padding: "16px 46px  20px 24px",
+                    width: 340,
+                    boxSizing: "border-box",
+                  }}
+                >
+                  <Text variant={"xLarge"} nowrap>
+                    Remove Game
+                  </Text>
+                </div>
+                <div
+                  style={{
+                    padding: "0px 24px 24px 24px",
+                    width: 340,
+                    boxSizing: "border-box",
+                  }}
+                >
+                  <Text variant={"medium"}>
+                    Are you sure you want to remove this game from your
+                    Dashboard?
+                  </Text>
+                  <Stack
+                    horizontal
+                    style={{
+                      marginTop: 24,
+                      justifyContent: "right",
+                    }}
+                    tokens={{
+                      childrenGap: 10,
+                    }}
+                  >
+                    {loading && (
+                      <Spinner
+                        style={{
+                          marginLeft: "auto",
+                        }}
+                        size={SpinnerSize.large}
+                      />
+                    )}
+                    <PrimaryButton
+                      onClick={() => {
+                        removeGame(selectedGame);
+                      }}
+                    >
+                      Remove
+                    </PrimaryButton>
+                    <DefaultButton onClick={hideModal}>
+                      Don't Remove
+                    </DefaultButton>
+                  </Stack>
+                </div>
+              </div>
+            </Modal>
             <div
               className="game-card"
               style={{
@@ -146,21 +252,23 @@ const Dashboard: React.FC<DashboardProps> = ({
                     backgroundImage: `url(${value.imgUrl})`,
                   }}
                 >
-                <CommandButton
-                  iconProps={{ iconName: "Cancel" }}
-                  // onClick={goBack}
-                  style={{
-                    position: "absolute",
-                    zIndex: 2000,
-                    right: 0,
-                    
-                  }}
-                  styles={{
-                    icon: {
-                      color: textColor
-                    }
-                  }}
-                />
+                  <CommandButton
+                    iconProps={{ iconName: "Cancel" }}
+                    onClick={() => {
+                      setSelectedGame(key);
+                      showModal();
+                    }}
+                    style={{
+                      position: "absolute",
+                      zIndex: 2000,
+                      right: 0,
+                    }}
+                    styles={{
+                      icon: {
+                        color: textColor,
+                      },
+                    }}
+                  />
                   <Text
                     variant={"xxLargePlus"}
                     style={{

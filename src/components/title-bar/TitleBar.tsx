@@ -38,6 +38,12 @@ const TitleBar: React.FC<TitleBarProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [secondaryText, setSecondaryText] = useState(profile.descriptor === "" ? "User" : profile.descriptor)
+
+  useEffect(() => {
+    if(profile.descriptor !== undefined)
+    setSecondaryText(profile.descriptor)
+  }, [profile.descriptor])
   const siginItems: IContextualMenuItem[] = [
     {
       key: "login",
@@ -78,20 +84,14 @@ const TitleBar: React.FC<TitleBarProps> = ({
     }
   }, [user, primaryColor]);
 
-  const getSecondaryText = (): string => {
-    if (user) {
-      return profile.descriptor === "" ? "User" : profile.descriptor;
-    } else {
-      return "Sign In";
-    }
-  };
+
   const email = user?.email || "";
 
   const persona: IPersonaSharedProps = {
     imageUrl: profile.photoUrl ? profile.photoUrl : "",
     imageInitials: email?.slice(0, 2).toUpperCase() || "AA",
     text: profile.alias === "" ? email : profile.alias,
-    secondaryText: getSecondaryText(),
+    secondaryText: secondaryText,
     coinProps: {
       color: "red",
     },

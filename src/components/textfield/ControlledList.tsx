@@ -6,15 +6,58 @@ import { Weapon, WeaponMap } from "../create-character/CreateCharacter";
 import { HookFormProps } from "./HookFormProps";
 
 interface ControlledListProps {
-  proficiencyBonus: number;
-  modifier: number;
+  proficiencyModifier: number;
+  strengthModifier: number;
+  dexterityModifier: number;
+  constitutionModifier: number;
+  intelligenceModifier: number;
+  wisdomModifier: number;
+  charismaModifier: number;
   backgroundColor: string;
 }
+
+interface WeaponRaw {
+  name: string;
+  skill: string;
+  die: string;
+}
+
+const WEAPONS: { [key: string]: WeaponRaw } = {
+  ["Mace (Strength)"]: {
+    name: "Mace (Strength)",
+    skill: "strengthModifier",
+    die: "1d6",
+  },
+  ["Shortsword (Strength)"]: {
+    name: "Shortsword (Strength)",
+    skill: "strengthModifier",
+    die: "1d6",
+  },
+  ["Shortsword (Dexterity)"]: {
+    name: "Shortsword (Dexterity)",
+    skill: "dexterityModifier",
+    die: "1d6",
+  },
+  ["Thorn Whip (Wisdom)"]: {
+    name: "Thorn Whip (Wisdom)",
+    skill: "wisdomModifier",
+    die: "1d6",
+  },
+  ["Thorn Whip (Intelligence)"]: {
+    name: "Thorn Whip (Intelligence)",
+    skill: "intelligenceModifier",
+    die: "1d6",
+  },
+};
 
 export const ControlledList: React.FC<
   HookFormProps & IListProps & ControlledListProps
 > = (props) => {
-  const [selectedWeapon, setSelectedWeapon] = useState("");
+  const [selectedWeapon, setSelectedWeapon] = useState<WeaponRaw>({
+    name: "",
+    skill: "",
+    die: "1d6",
+  });
 
   return (
     <Controller
@@ -33,40 +76,62 @@ export const ControlledList: React.FC<
                 transform: "translateY(-4px)",
               }}
               disabled={
-                selectedWeapon === "" || value[selectedWeapon] !== undefined
+                selectedWeapon.name === "" ||
+                value[selectedWeapon.name] !== undefined
               }
               iconProps={{ iconName: "Add" }}
               onClick={() => {
+                let skillBonus: number = 0;
+                switch (selectedWeapon.skill) {
+                  case "strengthModifier":
+                    skillBonus = +props.strengthModifier;
+                    break;
+                  case "dexterityModifier":
+                    skillBonus = props.dexterityModifier;
+                    break;
+                  case "constitutionModifier":
+                    skillBonus = props.constitutionModifier;
+                    break;
+                  case "intelligenceModifier":
+                    skillBonus = props.intelligenceModifier;
+                    break;
+                  case "wisdomModifier":
+                    skillBonus = props.wisdomModifier;
+                    break;
+                  case "charismaModifier":
+                    skillBonus = props.charismaModifier;
+                    break;
+                  default:
+                    skillBonus = 0;
+                    break;
+                }
                 const newVal = {
                   ...value,
-                  [selectedWeapon]: {
-                    name: selectedWeapon,
-                    bonus: props.proficiencyBonus,
+                  [selectedWeapon.name]: {
+                    name: selectedWeapon.name,
+                    bonus: props.proficiencyModifier + skillBonus,
+                    skill: selectedWeapon.skill,
                     die: "1d6",
-                    modifier: props.modifier,
+                    modifier: skillBonus > 0 ? skillBonus : 0,
                   },
                 };
                 onChange(newVal);
               }}
             />
             <Dropdown
-              options={[
-                {
-                  key: "Mace",
-                  text: "Mace",
-                },
-                {
-                  key: "Battle Axe",
-                  text: "Battle Axe",
-                },
-              ]}
+              options={Object.values(WEAPONS).map((weapon) => {
+                return {
+                  key: weapon.name,
+                  text: weapon.name,
+                };
+              })}
               styles={{
                 root: {
                   width: "100%",
                 },
               }}
               onChange={(_evt, op, _i) => {
-                if (op) setSelectedWeapon(op.text);
+                if (op) setSelectedWeapon(WEAPONS[op.text]);
               }}
             />
           </Stack>
@@ -178,7 +243,7 @@ export const ControlledList: React.FC<
                         lineHeight: "32px",
                       }}
                     >
-                      {item.bonus}
+                      +{item.bonus}
                     </Text>
                     <Text
                       variant={"medium"}

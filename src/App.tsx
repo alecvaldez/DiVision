@@ -237,6 +237,7 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
                         user={currentUser}
                         games={games}
                         textColor={textColor}
+                        callback={getGames}
                       />
                     )}
                   </>

@@ -15,6 +15,7 @@ import { User } from "firebase/auth";
 import React, { useEffect, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { addCharacterToGame } from "../../firebase/FirebaseUtils";
 import { ControlledDropdown } from "../textfield/ControlledDropdown";
 import { ControlledList } from "../textfield/ControlledList";
 import { ControlledSpinButton } from "../textfield/ControlledSpinButton";
@@ -29,6 +30,13 @@ interface CreateCharacterProps {
 
 export interface Weapon {
   name: string;
+  skill:
+    | "strengthModifier"
+    | "dexterityModifier"
+    | "constitutionModifier"
+    | "intelligenceModifier"
+    | "wisdomModifier"
+    | "charismaModifier";
   bonus: number;
   die: string; // 1d6
   modifier: number;
@@ -38,7 +46,7 @@ export interface WeaponMap {
   [key: string]: Weapon;
 }
 
-type Form = {
+export type CharacterForm = {
   name: string;
   proficiencyModifier: number;
   strengthScore: number;
@@ -73,9 +81,7 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
 
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [joinError, setJoinError] = useState(false);
-
-  const [selectedWeapon, setSelectedWeapon] = useState("Mace");
+  const [createError, setCreateError] = useState(false);
 
   const primaryRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const cardRef = useRef() as React.MutableRefObject<HTMLInputElement>;
@@ -88,8 +94,9 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
     handleSubmit: handleCreateCharacter,
     getValues,
     formState,
+    setValue,
     control: controlCharacter,
-  } = useForm<Form, any>({
+  } = useForm<CharacterForm, any>({
     defaultValues: {
       name: "",
       proficiencyModifier: 2,
@@ -98,7 +105,7 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
       dexterityScore: 10,
       dexterityModifier: 0,
       constitutionScore: 10,
-      constitutionModifier: 1,
+      constitutionModifier: 0,
       intelligenceScore: 10,
       intelligenceModifier: 0,
       wisdomScore: 10,
@@ -113,6 +120,35 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
 
   const watch = useWatch({ control: controlCharacter });
 
+  const strengthWatch = useWatch({
+    control: controlCharacter,
+    name: "strengthModifier",
+  });
+  const dexterityhWatch = useWatch({
+    control: controlCharacter,
+    name: "dexterityModifier",
+  });
+  const constitutionWatch = useWatch({
+    control: controlCharacter,
+    name: "constitutionModifier",
+  });
+  const intelligenceWatch = useWatch({
+    control: controlCharacter,
+    name: "intelligenceModifier",
+  });
+  const widsomWatch = useWatch({
+    control: controlCharacter,
+    name: "wisdomModifier",
+  });
+  const charismaWatch = useWatch({
+    control: controlCharacter,
+    name: "charismaModifier",
+  });
+  const proficiencyWatch = useWatch({
+    control: controlCharacter,
+    name: "proficiencyModifier",
+  });
+
   useEffect(() => {
     const values = getValues();
     if (
@@ -125,6 +161,27 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
       setIsEditing(false);
     }
   }, [watch]);
+
+  useEffect(() => {
+    const weapons: WeaponMap = { ...getValues()["weapons"] };
+    Object.values(weapons).forEach((weapon) => {
+      const val = getValues();
+      const modifier = val[weapon.skill];
+      const proficiencyModifier = val["proficiencyModifier"];
+      weapon.bonus = proficiencyModifier + modifier;
+      weapon.modifier = modifier > 0 ? modifier : 0;
+    });
+
+    setValue("weapons", weapons);
+  }, [
+    strengthWatch,
+    dexterityhWatch,
+    constitutionWatch,
+    intelligenceWatch,
+    widsomWatch,
+    charismaWatch,
+    proficiencyWatch,
+  ]);
 
   useEffect(() => {
     if (user == null) {
@@ -154,22 +211,16 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
     handleCreateCharacter(
       (data) => {
         console.log(data);
-        // setLoading(true);
-        // getGame(gameKey).then((snapshot) => {
-        //   if (snapshot.exists()) {
-        //     setJoinError(false);
-        //     addGameToUser(gameKey);
-        //     callback();
-        //     addPlayerToGame(gameKey).then(() => {
-        //       navigate(`/game/${gameKey}`);
-        //     });
-        //   } else {
-        //     setJoinError(true);
-        //   }
-        //   setLoading(false);
-        // });
+        setLoading(true);
+        addCharacterToGame(gameId, data).then(() => {
+          setCreateError(false);
+          setLoading(false);
+          navigate(`/game/${gameId}`);
+        });
       },
-      (err) => {}
+      (_err: any) => {
+        setCreateError(true);
+      }
     )();
   };
 
@@ -222,13 +273,13 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                       onError={() => console.log("error")}
                       label="Proficiency Bonus"
                       control={controlCharacter}
-                      name={nameof<Form>("proficiencyModifier")}
+                      name={nameof<CharacterForm>("proficiencyModifier")}
                       options={[
-                        { key: "2", text: "2" },
-                        { key: "3", text: "3" },
-                        { key: "4", text: "4" },
-                        { key: "5", text: "5" },
-                        { key: "6", text: "6" },
+                        { key: 2, text: "2" },
+                        { key: 3, text: "3" },
+                        { key: 4, text: "4" },
+                        { key: 5, text: "5" },
+                        { key: 6, text: "6" },
                       ]}
                       styles={{
                         root: {
@@ -259,9 +310,12 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                       style={{
                         alignItems: "center",
                       }}
+                      tokens={{
+                        childrenGap: 20,
+                      }}
                     >
                       <ControlledSpinButton
-                        name={nameof<Form>("strengthScore")}
+                        name={nameof<CharacterForm>("strengthScore")}
                         rules={{
                           pattern: {
                             value: /^[1-20]$/i,
@@ -283,7 +337,7 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                         }}
                       />
                       <ControlledSpinButton
-                        name={nameof<Form>("strengthModifier")}
+                        name={nameof<CharacterForm>("strengthModifier")}
                         rules={{
                           pattern: {
                             value: /^[-5-5]$/i,
@@ -320,9 +374,12 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                       style={{
                         alignItems: "center",
                       }}
+                      tokens={{
+                        childrenGap: 20,
+                      }}
                     >
                       <ControlledSpinButton
-                        name={nameof<Form>("dexterityScore")}
+                        name={nameof<CharacterForm>("dexterityScore")}
                         rules={{
                           pattern: {
                             value: /^[1-20]$/i,
@@ -344,7 +401,7 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                         }}
                       />
                       <ControlledSpinButton
-                        name={nameof<Form>("dexterityModifier")}
+                        name={nameof<CharacterForm>("dexterityModifier")}
                         rules={{
                           pattern: {
                             value: /^[(-5)-5]$/i,
@@ -380,9 +437,12 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                       style={{
                         alignItems: "center",
                       }}
+                      tokens={{
+                        childrenGap: 20,
+                      }}
                     >
                       <ControlledSpinButton
-                        name={nameof<Form>("constitutionScore")}
+                        name={nameof<CharacterForm>("constitutionScore")}
                         rules={{
                           pattern: {
                             value: /^[1-20]$/i,
@@ -404,7 +464,7 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                         }}
                       />
                       <ControlledSpinButton
-                        name={nameof<Form>("constitutionModifier")}
+                        name={nameof<CharacterForm>("constitutionModifier")}
                         rules={{
                           pattern: {
                             value: /^\d/i,
@@ -447,9 +507,12 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                       style={{
                         alignItems: "center",
                       }}
+                      tokens={{
+                        childrenGap: 20,
+                      }}
                     >
                       <ControlledSpinButton
-                        name={nameof<Form>("intelligenceScore")}
+                        name={nameof<CharacterForm>("intelligenceScore")}
                         rules={{
                           pattern: {
                             value: /^[1-20]$/i,
@@ -471,7 +534,7 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                         }}
                       />
                       <ControlledSpinButton
-                        name={nameof<Form>("intelligenceModifier")}
+                        name={nameof<CharacterForm>("intelligenceModifier")}
                         rules={{
                           pattern: {
                             value: /^[-5-5]$/i,
@@ -514,9 +577,12 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                       style={{
                         alignItems: "center",
                       }}
+                      tokens={{
+                        childrenGap: 20,
+                      }}
                     >
                       <ControlledSpinButton
-                        name={nameof<Form>("wisdomScore")}
+                        name={nameof<CharacterForm>("wisdomScore")}
                         rules={{
                           pattern: {
                             value: /^[1-20]$/i,
@@ -538,7 +604,7 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                         }}
                       />
                       <ControlledSpinButton
-                        name={nameof<Form>("wisdomModifier")}
+                        name={nameof<CharacterForm>("wisdomModifier")}
                         rules={{
                           pattern: {
                             value: /^[-5-5]$/i,
@@ -575,9 +641,12 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                       style={{
                         alignItems: "center",
                       }}
+                      tokens={{
+                        childrenGap: 20,
+                      }}
                     >
                       <ControlledSpinButton
-                        name={nameof<Form>("charismaScore")}
+                        name={nameof<CharacterForm>("charismaScore")}
                         rules={{
                           pattern: {
                             value: /^[1-20]$/i,
@@ -599,7 +668,7 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                         }}
                       />
                       <ControlledSpinButton
-                        name={nameof<Form>("charismaModifier")}
+                        name={nameof<CharacterForm>("charismaModifier")}
                         rules={{
                           pattern: {
                             value: /^[-5-5]$/i,
@@ -640,7 +709,7 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                     control={controlCharacter}
                     maxLength={15}
                     minLength={1}
-                    name={nameof<Form>("name")}
+                    name={nameof<CharacterForm>("name")}
                     rules={{
                       pattern: {
                         value: /^[a-zA-Z0-9]+$/i,
@@ -653,16 +722,21 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                     Weapons
                   </Text>
                   <ControlledList
-                    proficiencyBonus={getValues()["proficiencyModifier"]}
-                    modifier={getValues()["strengthModifier"]}
-                    name={nameof<Form>("weapons")}
+                    proficiencyModifier={getValues()["proficiencyModifier"]}
+                    strengthModifier={getValues()["strengthModifier"]}
+                    dexterityModifier={getValues()["dexterityModifier"]}
+                    constitutionModifier={getValues()["constitutionModifier"]}
+                    intelligenceModifier={getValues()["intelligenceModifier"]}
+                    wisdomModifier={getValues()["wisdomModifier"]}
+                    charismaModifier={getValues()["charismaModifier"]}
+                    name={nameof<CharacterForm>("weapons")}
                     backgroundColor={backgroundColor}
                     control={controlCharacter}
                   />
                 </Stack>
               </Stack>
 
-              {joinError ? (
+              {createError ? (
                 <Text
                   className="error-text"
                   style={{
@@ -671,7 +745,7 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                   block
                   variant="large"
                 >
-                  Invalid Game ID
+                  There was an error creating your character
                 </Text>
               ) : (
                 <Stack style={{ height: "64px", margin: 0 }}> </Stack>

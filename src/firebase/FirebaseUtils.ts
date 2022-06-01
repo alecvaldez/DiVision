@@ -11,6 +11,7 @@ import {
   DataSnapshot,
   push,
   update,
+  remove,
 } from "firebase/database";
 import {
   getStorage,
@@ -21,6 +22,7 @@ import {
 } from "firebase/storage";
 import { v4 as uuidv4 } from "uuid";
 import { ProfileData } from "../App";
+import { CharacterForm } from "../components/create-character/CreateCharacter";
 
 export const firebaseEmailSigin = (
   email: string,
@@ -206,6 +208,14 @@ export const addGameToUser = (gameKey: string): Promise<void> => {
   return set(dbRef(db, "users/" + user?.uid + "/games/" + gameKey), [gameKey]);
 };
 
+export const removeGameFromUser = (gameKey: string): Promise<void> => {
+  const db = getDatabase();
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+  return remove(dbRef(db, "users/" + user?.uid + "/games/" + gameKey));
+};
+
 export const getGame = (gameKey: string): Promise<DataSnapshot> => {
   const db = getDatabase();
   return get(dbRef(db, "games/" + gameKey));
@@ -217,4 +227,20 @@ export const addPlayerToGame = (gameKey: string): Promise<void> => {
   const user = auth.currentUser;
 
   return set(dbRef(db, "games/" + gameKey + "/players/" + user?.uid), [user?.uid]);
+};
+
+export const removePlayerFromGame = (gameKey: string): Promise<void> => {
+  const db = getDatabase();
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+  return remove(dbRef(db, "games/" + gameKey + "/players/" + user?.uid));
+};
+
+export const addCharacterToGame = (gameKey: string, character: CharacterForm): Promise<void> => {
+  const db = getDatabase();
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+  return set(dbRef(db, "games/" + gameKey + "/players/" + user?.uid), character);
 };
