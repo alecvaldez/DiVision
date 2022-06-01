@@ -1,4 +1,5 @@
 import {
+  CommandButton,
   DefaultEffects,
   IconButton,
   PrimaryButton,
@@ -145,6 +146,21 @@ const Dashboard: React.FC<DashboardProps> = ({
                     backgroundImage: `url(${value.imgUrl})`,
                   }}
                 >
+                <CommandButton
+                  iconProps={{ iconName: "Cancel" }}
+                  // onClick={goBack}
+                  style={{
+                    position: "absolute",
+                    zIndex: 2000,
+                    right: 0,
+                    
+                  }}
+                  styles={{
+                    icon: {
+                      color: textColor
+                    }
+                  }}
+                />
                   <Text
                     variant={"xxLargePlus"}
                     style={{

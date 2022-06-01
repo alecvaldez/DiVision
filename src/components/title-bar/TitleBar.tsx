@@ -24,6 +24,7 @@ interface TitleBarProps {
   profileLoaded: boolean;
   primaryColor: string;
   setDefaultTheme: () => void;
+  clearGames: () => void;
 }
 
 const TitleBar: React.FC<TitleBarProps> = ({
@@ -32,6 +33,7 @@ const TitleBar: React.FC<TitleBarProps> = ({
   profileLoaded,
   primaryColor,
   setDefaultTheme,
+  clearGames
 }: TitleBarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -115,6 +117,7 @@ const TitleBar: React.FC<TitleBarProps> = ({
     firebaseLogout();
     setTimeout(() => {
       setDefaultTheme();
+      clearGames();
     }, 350);
   };
 

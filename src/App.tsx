@@ -12,6 +12,7 @@ import { CSSTransition, SwitchTransition } from "react-transition-group";
 import "./App.css";
 import Account from "./components/account/Account";
 import SVG from "./components/background-svg/BackgroundSVG";
+import CreateCharacter from "./components/create-character/CreateCharacter";
 import CreateGame from "./components/create-game/CreateGame";
 import Dashboard from "./components/dashboard/Dashboard";
 import Game from "./components/game/Game";
@@ -56,7 +57,7 @@ export interface GameData {
   imgUrl: string;
   name: string;
   gameMasterId: string;
-  players: {[key: string]: Array<string> };
+  players: { [key: string]: Array<string> };
 }
 
 type RawGamesMap = { [key: string]: Array<string> };
@@ -87,7 +88,7 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
     descriptor: "",
     primaryColor: "",
     theme: "",
-    email: ""
+    email: "",
   });
 
   const appTheme: PartialTheme = generateTheme({
@@ -97,37 +98,37 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
   });
 
   const getFirebaseProfile = () => {
-      getUserProfile().then((snapshot) => {
-        if (snapshot.exists()) {
-          const val = snapshot.val();
-          const value = val as ProfileData;
+    getUserProfile().then((snapshot) => {
+      if (snapshot.exists()) {
+        const val = snapshot.val();
+        const value = val as ProfileData;
 
-          const profileColor: string =
-            value.primaryColor !== "" ? value.primaryColor : "#e00000";
+        const profileColor: string =
+          value.primaryColor !== "" ? value.primaryColor : "#e00000";
 
-          const profileTheme: string = value.theme;
+        const profileTheme: string = value.theme;
 
-          if (profileTheme === "light") {
-            setTextColor(LIGHT_THEME.textColor);
-            setBackgroundColor(LIGHT_THEME.backgroundColor);
-          } else {
-            setTextColor(DARK_THEME.textColor);
-            setBackgroundColor(DARK_THEME.backgroundColor);
-          }
-
-          setPrimaryColor(profileColor);
-
-          setProfile(() => ({
-            photoUrl: value.photoUrl,
-            alias: value.alias,
-            descriptor: value.descriptor,
-            primaryColor: value.primaryColor,
-            theme: value.theme,
-            email: currentUser?.email
-          }));
+        if (profileTheme === "light") {
+          setTextColor(LIGHT_THEME.textColor);
+          setBackgroundColor(LIGHT_THEME.backgroundColor);
+        } else {
+          setTextColor(DARK_THEME.textColor);
+          setBackgroundColor(DARK_THEME.backgroundColor);
         }
-        setProfileLoaded(true);
-      });
+
+        setPrimaryColor(profileColor);
+
+        setProfile(() => ({
+          photoUrl: value.photoUrl,
+          alias: value.alias,
+          descriptor: value.descriptor,
+          primaryColor: value.primaryColor,
+          theme: value.theme,
+          email: currentUser?.email,
+        }));
+      }
+      setProfileLoaded(true);
+    });
   };
 
   const getGames = (): void => {
@@ -195,6 +196,9 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
           profileLoaded={profileLoaded}
           primaryColor={primaryColor}
           setDefaultTheme={setDefaultTheme}
+          clearGames={() => {
+            setGames({});
+          }}
         />
         <SVG color={primaryColor} />
         <SwitchTransition>
@@ -281,15 +285,36 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
                 }
               />
               <Route path="game/:gameid" element={<> </>} />
+              <Route path="create-character/:gameid" element={<> </>} />
               {Object.entries(games).map(([key, value]) => {
                 return (
                   <Route
-                    key={key}
+                    key={`game-${key}`}
                     path={`game/${key}`}
                     element={
                       <>
                         {userLoaded && (
                           <Game user={currentUser} game={value} gameId={key} />
+                        )}
+                      </>
+                    }
+                  />
+                );
+              })}
+
+              {Object.entries(games).map(([key, value]) => {
+                return (
+                  <Route
+                    key={`create-character-${key}`}
+                    path={`create-character/${key}`}
+                    element={
+                      <>
+                        {userLoaded && (
+                          <CreateCharacter
+                            user={currentUser}
+                            gameId={key}
+                            callback={getGames}
+                          />
                         )}
                       </>
                     }

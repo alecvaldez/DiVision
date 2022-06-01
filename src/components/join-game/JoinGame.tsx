@@ -110,10 +110,11 @@ const JoinGame: React.FC<JoinGameProps> = ({
         getGame(gameKey).then((snapshot) => {
           if (snapshot.exists()) {
             setJoinError(false);
+            navigate(`/create-character/${gameKey}`);
             addGameToUser(gameKey);
             callback();
             addPlayerToGame(gameKey).then(() => {
-              navigate(`/game/${gameKey}`);
+              navigate(`/create-character/${gameKey}`);
             });
           } else {
             setJoinError(true);
