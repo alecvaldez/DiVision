@@ -103,8 +103,7 @@ const Game: React.FC<GameProps> = ({
   const gameMaster: IPersonaSharedProps = {
     imageUrl: master.photoUrl,
     imageInitials: master.email?.slice(0, 2).toUpperCase(),
-    text: master.alias === "" ? master.email : master.alias,
-    secondaryText: "Game Master",
+    text: "",
   };
 
   const personas = useMemo(() => {
@@ -219,32 +218,64 @@ const Game: React.FC<GameProps> = ({
                   {gameId}
                 </Text>
               </div>
-
-              <Persona
-                {...gameMaster}
-                presence={PersonaPresence.none}
-                initialsColor={PersonaInitialsColor.gold}
-                imageAlt=""
-                size={PersonaSize.size120}
-              />
-              <div>
-                <Text variant={"xLarge"} nowrap>
-                  Players
-                </Text>
-                <Facepile
-                  personas={personas}
-                  maxDisplayablePersonas={14}
-                  overflowButtonType={OverflowButtonType.descriptive}
-                  // showAddButton
-                  // addButtonProps={addButtonProps}
-                  ariaDescription="To move through the items use left and right arrow keys."
-                  styles={{
-                    root: {
-                      marginTop: "20px",
-                    },
+              <Stack
+                horizontal
+                tokens={
+                  {
+                    // childrenGap: 20
+                  }
+                }
+              >
+                <div
+                  style={{
+                    width: 200,
+                    
                   }}
-                />
-              </div>
+                >
+                  <Text variant={"xLarge"} nowrap>
+                    Game Master
+                  </Text>
+                  <Persona
+                    {...gameMaster}
+                    styles={{
+                      root: {
+                        marginTop: 20,
+                        marginBottom: 10,
+                        width: 0,
+                      },
+                    }}
+                    presence={PersonaPresence.none}
+                    initialsColor={PersonaInitialsColor.gold}
+                    imageAlt=""
+                    size={PersonaSize.size120}
+                  />
+                  <Text variant={"large"} block nowrap style={{
+                    width: 120,
+                    textAlign: "center"
+                  }}>
+                    {master.alias ? master.alias : master.email}
+                  </Text>
+                </div>
+
+                <div>
+                  <Text variant={"xLarge"} nowrap>
+                    Players
+                  </Text>
+                  <Facepile
+                    personas={personas}
+                    maxDisplayablePersonas={14}
+                    overflowButtonType={OverflowButtonType.descriptive}
+                    showAddButton
+                    // addButtonProps={addButtonProps}
+                    ariaDescription="To move through the items use left and right arrow keys."
+                    styles={{
+                      root: {
+                        marginTop: "20px",
+                      },
+                    }}
+                  />
+                </div>
+              </Stack>
               {user?.uid === game.gameMasterId ? (
                 <></>
               ) : (
