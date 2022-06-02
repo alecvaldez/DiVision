@@ -496,9 +496,6 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                     <Text
                       variant={"xLarge"}
                       nowrap
-                      style={{
-                        marginTop: 20,
-                      }}
                     >
                       Intelligence
                     </Text>
@@ -566,9 +563,7 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                     <Text
                       variant={"xLarge"}
                       nowrap
-                      style={{
-                        marginTop: 20,
-                      }}
+
                     >
                       Wisdom
                     </Text>

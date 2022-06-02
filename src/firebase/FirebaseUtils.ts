@@ -12,6 +12,8 @@ import {
   push,
   update,
   remove,
+  onValue,
+  off,
 } from "firebase/database";
 import {
   getStorage,
@@ -243,4 +245,20 @@ export const addCharacterToGame = (gameKey: string, character: CharacterForm): P
   const user = auth.currentUser;
 
   return set(dbRef(db, "games/" + gameKey + "/players/" + user?.uid), character);
+};
+
+export const addGameListener = (gameKey: string, callback: (snapshot: DataSnapshot) => void): void => {
+  const db = getDatabase();
+  const auth = getAuth();
+
+  onValue(dbRef(db, "games/" + gameKey), (snapshot) => {
+    callback(snapshot);
+  });
+};
+
+export const removeGameListener = (gameKey: string): void => {
+  const db = getDatabase();
+  const auth = getAuth();
+
+  off(dbRef(db, "games/" + gameKey));
 };

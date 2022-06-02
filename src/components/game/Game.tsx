@@ -15,24 +15,20 @@ import {
   Stack,
   Text,
 } from "@fluentui/react";
-import { profile } from "console";
 import { User } from "firebase/auth";
 import { DataSnapshot } from "firebase/database";
-import { watch } from "fs";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
-import { useNavigate, useParams } from "react-router-dom";
-import { GameData, ProfileData } from "../../App";
-import {
-  addGameToUser,
-  getGame,
-  getUserProfileById,
-} from "../../firebase/FirebaseUtils";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { GameData } from "../../App";
+import { getGame, getUserProfileById } from "../../firebase/FirebaseUtils";
+import PlayerStats from "../player-stats/PlayerStats";
 
 interface GameProps {
   user: User | null;
   game: GameData;
   gameId: string;
+  backgroundColor: string;
 }
 
 interface Player {
@@ -52,9 +48,13 @@ const verticalGapStackTokens: IStackTokens = {
 
 export const nameof = <T extends {}>(name: keyof T) => name;
 
-const Game: React.FC<GameProps> = ({ user, game, gameId }: GameProps) => {
+const Game: React.FC<GameProps> = ({
+  user,
+  game,
+  gameId,
+  backgroundColor,
+}: GameProps) => {
   const navigate = useNavigate();
-
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [joinError, setJoinError] = useState(false);
@@ -194,7 +194,10 @@ const Game: React.FC<GameProps> = ({ user, game, gameId }: GameProps) => {
           <div
             className="card"
             ref={cardRef}
-            style={{ boxShadow: DefaultEffects.elevation16 }}
+            style={{
+              boxShadow: DefaultEffects.elevation16,
+              width: "clamp(20rem, 90vw, 60rem)",
+            }}
           >
             <Stack
               style={{ width: "100%", zIndex: 1000 }}
@@ -225,14 +228,9 @@ const Game: React.FC<GameProps> = ({ user, game, gameId }: GameProps) => {
                 size={PersonaSize.size120}
               />
               <div>
-                <Text
-                  variant={"xLarge"}
-                  nowrap
-                  
-                >
+                <Text variant={"xLarge"} nowrap>
                   Players
                 </Text>
-                <br></br>
                 <Facepile
                   personas={personas}
                   maxDisplayablePersonas={14}
@@ -240,8 +238,21 @@ const Game: React.FC<GameProps> = ({ user, game, gameId }: GameProps) => {
                   // showAddButton
                   // addButtonProps={addButtonProps}
                   ariaDescription="To move through the items use left and right arrow keys."
+                  styles={{
+                    root: {
+                      marginTop: "20px",
+                    },
+                  }}
                 />
               </div>
+              {user?.uid === game.gameMasterId ? (
+                <></>
+              ) : (
+                <PlayerStats
+                  character={game.players[user?.uid]}
+                  backgroundColor={backgroundColor}
+                />
+              )}
 
               <Stack
                 horizontal

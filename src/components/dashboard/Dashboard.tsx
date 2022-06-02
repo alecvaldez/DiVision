@@ -23,6 +23,7 @@ import { useBoolean, useId } from "@fluentui/react-hooks";
 import "./Dashboard.css";
 import {
   removeGameFromUser,
+  removeGameListener,
   removePlayerFromGame,
 } from "../../firebase/FirebaseUtils";
 
@@ -73,6 +74,7 @@ const Dashboard: React.FC<DashboardProps> = ({
     removeGameFromUser(gameKey).then(() => {
       removePlayerFromGame(gameKey).then(() => {
         callback();
+        removeGameListener(gameKey);
         setLoading(false);
         hideModal();
       });

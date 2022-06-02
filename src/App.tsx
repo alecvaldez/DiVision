@@ -4,15 +4,16 @@ import {
   browserLocalPersistence,
   onAuthStateChanged,
   setPersistence,
-  User,
+  User
 } from "firebase/auth";
+import { DataSnapshot } from "firebase/database";
 import React, { useEffect, useState } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { CSSTransition, SwitchTransition } from "react-transition-group";
 import "./App.css";
 import Account from "./components/account/Account";
 import SVG from "./components/background-svg/BackgroundSVG";
-import CreateCharacter from "./components/create-character/CreateCharacter";
+import CreateCharacter, { CharacterForm } from "./components/create-character/CreateCharacter";
 import CreateGame from "./components/create-game/CreateGame";
 import Dashboard from "./components/dashboard/Dashboard";
 import Game from "./components/game/Game";
@@ -22,10 +23,10 @@ import Login from "./components/login/Login";
 import { generateTheme } from "./components/theme-designer/ThemeDesigner";
 import TitleBar from "./components/title-bar/TitleBar";
 import {
+  addGameListener,
   getGame,
   getUserGames,
-  getUserProfile,
-  getUserProfilePhoto,
+  getUserProfile, removeGameListener
 } from "./firebase/FirebaseUtils";
 
 const DARK_THEME = {
@@ -57,7 +58,7 @@ export interface GameData {
   imgUrl: string;
   name: string;
   gameMasterId: string;
-  players: { [key: string]: Array<string> };
+  players: { [key: string]: CharacterForm };
 }
 
 type RawGamesMap = { [key: string]: Array<string> };
@@ -131,6 +132,15 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
     });
   };
 
+  const setGame = (gameId: string, snapshot: DataSnapshot): void => {
+    const val = snapshot.val();
+    const rawGame = val as GameData;
+    setGames((prevState) => ({
+      ...prevState,
+      [gameId]: rawGame,
+    }));
+  }
+
   const getGames = (): void => {
     getUserGames().then((snapshot) => {
       if (snapshot.exists()) {
@@ -140,18 +150,21 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
           Object.keys(val).forEach((gameId) => {
             getGame(gameId).then((snapshot) => {
               if (snapshot.exists()) {
-                const val = snapshot.val();
-                const rawGame = val as GameData;
+                setGame(gameId, snapshot);
 
-                setGames((prevState) => ({
-                  ...prevState,
-                  [gameId]: rawGame,
-                }));
+                addGameListener(gameId, (snapshot1: DataSnapshot) => {
+                  if(snapshot1.exists()) {
+                    setGame(gameId, snapshot1);
+                  }
+                })
               }
             });
           });
         }
       } else {
+        Object.keys(games).forEach(gameId => {
+          removeGameListener(gameId);
+        });
         setGames({});
       }
     });
@@ -295,7 +308,7 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
                     element={
                       <>
                         {userLoaded && (
-                          <Game user={currentUser} game={value} gameId={key} />
+                          <Game backgroundColor={backgroundColor} user={currentUser} game={value} gameId={key} />
                         )}
                       </>
                     }

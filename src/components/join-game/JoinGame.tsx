@@ -45,6 +45,7 @@ const JoinGame: React.FC<JoinGameProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [joinError, setJoinError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const primaryRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const cardRef = useRef() as React.MutableRefObject<HTMLInputElement>;
@@ -85,7 +86,7 @@ const JoinGame: React.FC<JoinGameProps> = ({
 
   useEffect(() => {
     const values = getValues();
-    if (formState.isValid && values["gameId"].length == 5) {
+    if (values["gameId"].length == 5) {
       setIsEditing(true);
     } else {
       setIsEditing(false);
@@ -109,15 +110,25 @@ const JoinGame: React.FC<JoinGameProps> = ({
         const gameKey = data.gameId.toUpperCase();
         getGame(gameKey).then((snapshot) => {
           if (snapshot.exists()) {
-            setJoinError(false);
-            navigate(`/create-character/${gameKey}`);
-            addGameToUser(gameKey);
-            callback();
-            addPlayerToGame(gameKey).then(() => {
-              navigate(`/create-character/${gameKey}`);
-            });
+            const value = snapshot.val();
+            const userId = user?.uid;
+            if (
+              userId && value.players && 
+              (value.players[userId] || value.gameMasterId === userId)
+            ) {
+              setJoinError(true);
+              setErrorMessage("You have already joined this game");
+            } else {
+              setJoinError(false);
+              addGameToUser(gameKey);
+              callback();
+              addPlayerToGame(gameKey).then(() => {
+                navigate(`/create-character/${gameKey}`);
+              });
+            }
           } else {
             setJoinError(true);
+            setErrorMessage("Invalid Game ID");
           }
           setLoading(false);
         });
@@ -145,7 +156,7 @@ const JoinGame: React.FC<JoinGameProps> = ({
 
               <ControlledTextField
                 onKeyDown={keyDown}
-                onError={() => console.log("error")}
+                onError={() => console.log("kek")}
                 label="Game ID"
                 autoComplete="off"
                 control={controlJoin}
@@ -165,11 +176,12 @@ const JoinGame: React.FC<JoinGameProps> = ({
                   className="error-text"
                   style={{
                     margin: 0,
+                    height: 64,
                   }}
                   block
                   variant="large"
                 >
-                  Invalid Game ID
+                  {errorMessage}
                 </Text>
               ) : (
                 <Stack style={{ height: "64px", margin: 0 }}> </Stack>
