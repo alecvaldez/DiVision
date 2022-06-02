@@ -44,10 +44,13 @@ const Section: React.FC<{
 }> = ({ backgroundColor, name, modifier, score }) => (
   <>
     <Text
-      variant={"xLarge"}
-      nowrap
+      variant={"large"}
+      
+      block
+      
       style={{
         marginBottom: 8,
+        fontWeight: 600
       }}
     >
       {name}
@@ -130,6 +133,8 @@ const PlayerStats: React.FC<PlayerStatsProps> = ({
       <Stack
         style={{
           width: 200,
+          height: 250,
+          overflowY: "auto"
         }}
       >
         <Section
@@ -167,6 +172,7 @@ const PlayerStats: React.FC<PlayerStatsProps> = ({
         style={{
           marginTop: 0,
           width: "100%",
+          overflowX: "auto"
         }}
       >
         <Text variant={"xLarge"} nowrap>

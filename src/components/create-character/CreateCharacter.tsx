@@ -13,7 +13,7 @@ import {
 } from "@fluentui/react";
 import { User } from "firebase/auth";
 import React, { useEffect, useRef, useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { Control, useForm, useWatch } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { addCharacterToGame } from "../../firebase/FirebaseUtils";
 import { ControlledDropdown } from "../textfield/ControlledDropdown";
@@ -70,6 +70,88 @@ const verticalGapStackTokens: IStackTokens = {
 };
 
 export const nameof = <T extends {}>(name: keyof T) => name;
+
+const Section: React.FC<{
+  name: string;
+  form1: keyof CharacterForm;
+  form2: keyof CharacterForm;
+  control: Control<CharacterForm, any>;
+}> = ({ name, form1, form2, control }) => (
+  <>
+    <Text
+      variant={"large"}
+      block
+      style={{
+        marginTop: 0,
+        fontWeight: 600,
+      }}
+    >
+      {name}
+    </Text>
+    <Stack
+      horizontal
+      style={{
+        alignItems: "center",
+      }}
+      tokens={{
+        childrenGap: 20,
+      }}
+    >
+      <ControlledSpinButton
+        name={nameof<CharacterForm>(form1)}
+        rules={{
+          pattern: {
+            value: /^[1-20]$/i,
+            message: "This is not a valid score",
+          },
+          required: "This field is required",
+        }}
+        control={control}
+        label="Score"
+        min={1}
+        max={20}
+        step={1}
+        labelPosition={0}
+        style={{
+          width: 10,
+        }}
+        incrementButtonAriaLabel="Increase value by 1"
+        decrementButtonAriaLabel="Decrease value by 1"
+        styles={{
+          spinButtonWrapper: {
+            width: 75,
+          },
+        }}
+      />
+      <ControlledSpinButton
+        name={nameof<CharacterForm>(form2)}
+        rules={{
+          pattern: {
+            value: /^[-5-5]$/i,
+            message: "This is not a valid modifier",
+          },
+          required: "This field is required",
+        }}
+        control={control}
+        label="Modifier"
+        labelPosition={0}
+        style={{
+          width: 10,
+        }}
+        min={-5}
+        max={5}
+        step={1}
+        incrementButtonAriaLabel="Increase value by 1"
+        decrementButtonAriaLabel="Decrease value by 1"
+        styles={{
+          spinButtonWrapper: {
+            width: 75,
+          },
+        }}
+      />
+    </Stack>
+  </>
+);
 
 const CreateCharacter: React.FC<CreateCharacterProps> = ({
   user,
@@ -234,6 +316,7 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
             style={{
               boxShadow: DefaultEffects.elevation16,
               width: "clamp(20rem, 90vw, 60rem)",
+              overflowX: "auto"
             }}
           >
             <Stack
@@ -295,396 +378,45 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                         required: "This field is required",
                       }}
                     />
-
-                    <Text
-                      variant={"xLarge"}
-                      nowrap
-                      style={{
-                        marginTop: 30,
-                      }}
-                    >
-                      Strength
-                    </Text>
-                    <Stack
-                      horizontal
-                      style={{
-                        alignItems: "center",
-                      }}
-                      tokens={{
-                        childrenGap: 20,
-                      }}
-                    >
-                      <ControlledSpinButton
-                        name={nameof<CharacterForm>("strengthScore")}
-                        rules={{
-                          pattern: {
-                            value: /^[1-20]$/i,
-                            message: "This is not a valid score",
-                          },
-                          required: "This field is required",
-                        }}
-                        control={controlCharacter}
-                        label="Score"
-                        min={1}
-                        max={20}
-                        step={1}
-                        incrementButtonAriaLabel="Increase value by 1"
-                        decrementButtonAriaLabel="Decrease value by 1"
-                        styles={{
-                          spinButtonWrapper: {
-                            width: 75,
-                          },
-                        }}
-                      />
-                      <ControlledSpinButton
-                        name={nameof<CharacterForm>("strengthModifier")}
-                        rules={{
-                          pattern: {
-                            value: /^[-5-5]$/i,
-                            message: "This is not a valid modifier",
-                          },
-                          required: "This field is required",
-                        }}
-                        control={controlCharacter}
-                        label="Modifier"
-                        min={-5}
-                        max={5}
-                        step={1}
-                        incrementButtonAriaLabel="Increase value by 1"
-                        decrementButtonAriaLabel="Decrease value by 1"
-                        styles={{
-                          spinButtonWrapper: {
-                            width: 75,
-                          },
-                        }}
-                      />
-                    </Stack>
-                  </Stack>
-
-                  <Stack
-                    style={{
-                      width: 200,
-                    }}
-                  >
-                    <Text variant={"xLarge"} nowrap>
-                      Dexterity
-                    </Text>
-                    <Stack
-                      horizontal
-                      style={{
-                        alignItems: "center",
-                      }}
-                      tokens={{
-                        childrenGap: 20,
-                      }}
-                    >
-                      <ControlledSpinButton
-                        name={nameof<CharacterForm>("dexterityScore")}
-                        rules={{
-                          pattern: {
-                            value: /^[1-20]$/i,
-                            message: "This is not a valid score",
-                          },
-                          required: "This field is required",
-                        }}
-                        control={controlCharacter}
-                        label="Score"
-                        min={1}
-                        max={20}
-                        step={1}
-                        incrementButtonAriaLabel="Increase value by 1"
-                        decrementButtonAriaLabel="Decrease value by 1"
-                        styles={{
-                          spinButtonWrapper: {
-                            width: 75,
-                          },
-                        }}
-                      />
-                      <ControlledSpinButton
-                        name={nameof<CharacterForm>("dexterityModifier")}
-                        rules={{
-                          pattern: {
-                            value: /^[(-5)-5]$/i,
-                            message: "This is not a valid modifier",
-                          },
-                          required: "This field is required",
-                        }}
-                        control={controlCharacter}
-                        label="Modifier"
-                        min={-5}
-                        max={5}
-                        step={1}
-                        incrementButtonAriaLabel="Increase value by 1"
-                        decrementButtonAriaLabel="Decrease value by 1"
-                        styles={{
-                          spinButtonWrapper: {
-                            width: 75,
-                          },
-                        }}
-                      />
-                    </Stack>
                   </Stack>
                   <Stack
                     style={{
-                      width: 200,
+                      marginTop: 32,
+                      overflowY: "auto",
+                      height: 280,
+                      width: 230
                     }}
                   >
-                    <Text variant={"xLarge"} nowrap>
-                      Constitution
-                    </Text>
-                    <Stack
-                      horizontal
-                      style={{
-                        alignItems: "center",
-                      }}
-                      tokens={{
-                        childrenGap: 20,
-                      }}
-                    >
-                      <ControlledSpinButton
-                        name={nameof<CharacterForm>("constitutionScore")}
-                        rules={{
-                          pattern: {
-                            value: /^[1-20]$/i,
-                            message: "This is not a valid score",
-                          },
-                          required: "This field is required",
-                        }}
-                        control={controlCharacter}
-                        label="Score"
-                        min={1}
-                        max={20}
-                        step={1}
-                        incrementButtonAriaLabel="Increase value by 1"
-                        decrementButtonAriaLabel="Decrease value by 1"
-                        styles={{
-                          spinButtonWrapper: {
-                            width: 75,
-                          },
-                        }}
-                      />
-                      <ControlledSpinButton
-                        name={nameof<CharacterForm>("constitutionModifier")}
-                        rules={{
-                          pattern: {
-                            value: /^\d/i,
-                            message: "This is not a valid modifier",
-                          },
-                          required: "This field is required",
-                        }}
-                        control={controlCharacter}
-                        label="Modifier"
-                        min={-5}
-                        max={5}
-                        step={1}
-                        incrementButtonAriaLabel="Increase value by 1"
-                        decrementButtonAriaLabel="Decrease value by 1"
-                        styles={{
-                          spinButtonWrapper: {
-                            width: 75,
-                          },
-                        }}
-                      />
-                    </Stack>
-                  </Stack>
-
-                  <Stack
-                    style={{
-                      width: 200,
-                    }}
-                  >
-                    <Text
-                      variant={"xLarge"}
-                      nowrap
-                    >
-                      Intelligence
-                    </Text>
-                    <Stack
-                      horizontal
-                      style={{
-                        alignItems: "center",
-                      }}
-                      tokens={{
-                        childrenGap: 20,
-                      }}
-                    >
-                      <ControlledSpinButton
-                        name={nameof<CharacterForm>("intelligenceScore")}
-                        rules={{
-                          pattern: {
-                            value: /^[1-20]$/i,
-                            message: "This is not a valid score",
-                          },
-                          required: "This field is required",
-                        }}
-                        control={controlCharacter}
-                        label="Score"
-                        min={1}
-                        max={20}
-                        step={1}
-                        incrementButtonAriaLabel="Increase value by 1"
-                        decrementButtonAriaLabel="Decrease value by 1"
-                        styles={{
-                          spinButtonWrapper: {
-                            width: 75,
-                          },
-                        }}
-                      />
-                      <ControlledSpinButton
-                        name={nameof<CharacterForm>("intelligenceModifier")}
-                        rules={{
-                          pattern: {
-                            value: /^[-5-5]$/i,
-                            message: "This is not a valid modifier",
-                          },
-                          required: "This field is required",
-                        }}
-                        control={controlCharacter}
-                        label="Modifier"
-                        min={-5}
-                        max={5}
-                        step={1}
-                        incrementButtonAriaLabel="Increase value by 1"
-                        decrementButtonAriaLabel="Decrease value by 1"
-                        styles={{
-                          spinButtonWrapper: {
-                            width: 75,
-                          },
-                        }}
-                      />
-                    </Stack>
-                  </Stack>
-
-                  <Stack
-                    style={{
-                      width: 200,
-                    }}
-                  >
-                    <Text
-                      variant={"xLarge"}
-                      nowrap
-
-                    >
-                      Wisdom
-                    </Text>
-                    <Stack
-                      horizontal
-                      style={{
-                        alignItems: "center",
-                      }}
-                      tokens={{
-                        childrenGap: 20,
-                      }}
-                    >
-                      <ControlledSpinButton
-                        name={nameof<CharacterForm>("wisdomScore")}
-                        rules={{
-                          pattern: {
-                            value: /^[1-20]$/i,
-                            message: "This is not a valid score",
-                          },
-                          required: "This field is required",
-                        }}
-                        control={controlCharacter}
-                        label="Score"
-                        min={1}
-                        max={20}
-                        step={1}
-                        incrementButtonAriaLabel="Increase value by 1"
-                        decrementButtonAriaLabel="Decrease value by 1"
-                        styles={{
-                          spinButtonWrapper: {
-                            width: 75,
-                          },
-                        }}
-                      />
-                      <ControlledSpinButton
-                        name={nameof<CharacterForm>("wisdomModifier")}
-                        rules={{
-                          pattern: {
-                            value: /^[-5-5]$/i,
-                            message: "This is not a valid modifier",
-                          },
-                          required: "This field is required",
-                        }}
-                        control={controlCharacter}
-                        label="Modifier"
-                        min={-5}
-                        max={5}
-                        step={1}
-                        incrementButtonAriaLabel="Increase value by 1"
-                        decrementButtonAriaLabel="Decrease value by 1"
-                        styles={{
-                          spinButtonWrapper: {
-                            width: 75,
-                          },
-                        }}
-                      />
-                    </Stack>
-                  </Stack>
-
-                  <Stack
-                    style={{
-                      width: 200,
-                    }}
-                  >
-                    <Text variant={"xLarge"} nowrap>
-                      Charisma
-                    </Text>
-                    <Stack
-                      horizontal
-                      style={{
-                        alignItems: "center",
-                      }}
-                      tokens={{
-                        childrenGap: 20,
-                      }}
-                    >
-                      <ControlledSpinButton
-                        name={nameof<CharacterForm>("charismaScore")}
-                        rules={{
-                          pattern: {
-                            value: /^[1-20]$/i,
-                            message: "This is not a valid score",
-                          },
-                          required: "This field is required",
-                        }}
-                        control={controlCharacter}
-                        label="Score"
-                        min={1}
-                        max={20}
-                        step={1}
-                        incrementButtonAriaLabel="Increase value by 1"
-                        decrementButtonAriaLabel="Decrease value by 1"
-                        styles={{
-                          spinButtonWrapper: {
-                            width: 75,
-                          },
-                        }}
-                      />
-                      <ControlledSpinButton
-                        name={nameof<CharacterForm>("charismaModifier")}
-                        rules={{
-                          pattern: {
-                            value: /^[-5-5]$/i,
-                            message: "This is not a valid modifier",
-                          },
-                          required: "This field is required",
-                        }}
-                        control={controlCharacter}
-                        label="Modifier"
-                        min={-5}
-                        max={5}
-                        step={1}
-                        incrementButtonAriaLabel="Increase value by 1"
-                        decrementButtonAriaLabel="Decrease value by 1"
-                        styles={{
-                          spinButtonWrapper: {
-                            width: 75,
-                          },
-                        }}
-                      />
-                    </Stack>
+                    <Section
+                      control={controlCharacter}
+                      form1={"strengthScore"}
+                      name={"Strength"}
+                      form2={"strengthModifier"}
+                    />
+                    <Section
+                      control={controlCharacter}
+                      form1={"dexterityScore"}
+                      name={"Dexterity"}
+                      form2={"dexterityModifier"}
+                    />
+                    <Section
+                      control={controlCharacter}
+                      form1={"constitutionScore"}
+                      name={"Constitution"}
+                      form2={"constitutionModifier"}
+                    />
+                    <Section
+                      control={controlCharacter}
+                      form1={"intelligenceScore"}
+                      name={"Intelligence"}
+                      form2={"intelligenceModifier"}
+                    />
+                    <Section
+                      control={controlCharacter}
+                      form1={"charismaScore"}
+                      name={"Charisma"}
+                      form2={"charismaModifier"}
+                    />
                   </Stack>
                 </Stack>
                 <Stack
