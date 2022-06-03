@@ -1,4 +1,4 @@
-import { PartialTheme, ThemeProvider } from "@fluentui/react";
+import { PartialTheme, PersonaInitialsColor, ThemeProvider } from "@fluentui/react";
 import {
   Auth,
   browserLocalPersistence,
@@ -79,6 +79,16 @@ export type GamesMap = { [key: string]: GameData };
 export interface Profile extends ProfileData {
   photoUrl: string;
 }
+
+export const getPersonaIntialsColor = (name: string): PersonaInitialsColor => {
+  let h=0;
+
+  for(let i = 0; i < name.length; i++) 
+        h = Math.imul(31, h) + name.charCodeAt(i) | 0;
+
+  return h % 24;
+};
+
 
 const App: React.FC<AppProps> = ({ auth }: AppProps) => {
   const [currentUser, setCurrentUser] = useState(auth.currentUser);

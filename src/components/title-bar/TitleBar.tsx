@@ -16,7 +16,7 @@ import { firebaseLogout } from "../../firebase/FirebaseUtils";
 import { Text } from "@fluentui/react";
 import { User } from "firebase/auth";
 import "./TitleBar.css";
-import { Profile } from "../../App";
+import { getPersonaIntialsColor, Profile } from "../../App";
 
 interface TitleBarProps {
   user: User | null;
@@ -92,9 +92,7 @@ const TitleBar: React.FC<TitleBarProps> = ({
     imageInitials: email?.slice(0, 2).toUpperCase() || "AA",
     text: profile.alias === "" ? email : profile.alias,
     secondaryText: secondaryText,
-    coinProps: {
-      color: "red",
-    },
+    initialsColor: email ? getPersonaIntialsColor(email) : 0
   };
 
   const linkRef = useRef(null);

@@ -18,7 +18,7 @@ import { User } from "firebase/auth";
 import React, { createRef, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { Profile, ProfileData } from "../../App";
+import { getPersonaIntialsColor, Profile, ProfileData } from "../../App";
 import {
   getUserProfilePhoto,
   updateUserProfile,
@@ -108,6 +108,7 @@ const Account: React.FC<AccountProps> = ({
     imageUrl: tmpPhotoUrl == "" ? profile.photoUrl : tmpPhotoUrl,
     imageInitials: email?.slice(0, 2).toUpperCase() || "AA",
     text: "",
+    initialsColor: email ? getPersonaIntialsColor(email) : 0
   };
 
   const changeTheme = (_event: any, checked?: boolean | undefined): void => {
@@ -210,7 +211,6 @@ const Account: React.FC<AccountProps> = ({
                   {...persona}
                   presence={PersonaPresence.none}
                   className="account-picture"
-                  initialsColor={PersonaInitialsColor.gold}
                   coinSize={300}
                   imageAlt=""
                   styles={{

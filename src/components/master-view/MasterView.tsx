@@ -13,6 +13,7 @@ import {
 } from "@fluentui/react";
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import { getPersonaIntialsColor } from "../../App";
 import {
   setSelectedPlayer,
   setSelectedRoll,
@@ -161,6 +162,7 @@ const MasterView: React.FC<PlayerStatsProps> = ({
             {...{
               imageUrl: props.data.imageUrl ? props.data.imageUrl : "",
               imageInitials: props.data.email.slice(0, 2).toUpperCase(),
+              initialsColor: props.data.email ? getPersonaIntialsColor(props.data.email) : 0
             }}
             presence={PersonaPresence.none}
             size={PersonaSize.size32}
@@ -235,7 +237,7 @@ const MasterView: React.FC<PlayerStatsProps> = ({
               onError={() => console.log("error")}
               defaultSelectedKey={selectedRoll}
               options={
-                selectedWeapon
+                selectedWeapon && characters[selectedPlayer].weapons[selectedWeapon]
                   ? [
                       {
                         key: `Roll 1 (+${characters[selectedPlayer].weapons[selectedWeapon].bonus})`,

@@ -20,7 +20,7 @@ import { DataSnapshot } from "firebase/database";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { GameData } from "../../App";
+import { GameData, getPersonaIntialsColor } from "../../App";
 import { getGame, getUserProfileById } from "../../firebase/FirebaseUtils";
 import EnemiesList from "../enemies-list/EnemiesList";
 import MasterView from "../master-view/MasterView";
@@ -113,6 +113,7 @@ const Game: React.FC<GameProps> = ({
     imageUrl: master.photoUrl,
     imageInitials: master.email?.slice(0, 2).toUpperCase(),
     text: "",
+    initialsColor: getPersonaIntialsColor(master.email),
   };
 
   const personas = useMemo(() => {
@@ -121,9 +122,25 @@ const Game: React.FC<GameProps> = ({
         personaName: "",
         imageUrl: player.photoUrl,
         imageInitials: player.email?.slice(0, 2).toUpperCase(),
+        initialsColor: getPersonaIntialsColor(player.email),
       };
     });
   }, [players]);
+
+  const currentRoller = useMemo(() => {
+    return {
+      personaName: "",
+      initialsColor: players[game.selectedPlayer]
+      ? getPersonaIntialsColor(players[game.selectedPlayer].email)
+      : 0,
+      imageUrl: players[game.selectedPlayer]
+        ? players[game.selectedPlayer].photoUrl
+        : "",
+      imageInitials: players[game.selectedPlayer]
+        ? players[game.selectedPlayer].email?.slice(0, 2).toUpperCase()
+        : "",
+    };
+  }, [game.selectedPlayer, players]);
 
   const checkOverflow = (): boolean => {
     return primaryRef.current.offsetHeight < cardRef.current.offsetHeight;
@@ -147,7 +164,6 @@ const Game: React.FC<GameProps> = ({
     navigate(-1);
   };
 
-
   return (
     <div className="primary-div" ref={primaryRef}>
       <div className="secondary-div">
@@ -158,6 +174,7 @@ const Game: React.FC<GameProps> = ({
             style={{
               boxShadow: DefaultEffects.elevation16,
               width: "clamp(20rem, 90vw, 40rem)",
+              overflowX: "auto",
             }}
           >
             <Stack
@@ -188,7 +205,7 @@ const Game: React.FC<GameProps> = ({
               >
                 <div
                   style={{
-                    width: 150,
+                    width: "calc(100% / 2 - 100)",
                   }}
                 >
                   <Text variant={"xLarge"} nowrap>
@@ -204,7 +221,6 @@ const Game: React.FC<GameProps> = ({
                       },
                     }}
                     presence={PersonaPresence.none}
-                    initialsColor={PersonaInitialsColor.gold}
                     imageAlt=""
                     size={PersonaSize.size120}
                   />
@@ -221,9 +237,11 @@ const Game: React.FC<GameProps> = ({
                   </Text>
                 </div>
 
-                <div style={{
-                  width: 80
-                }}>
+                <div
+                  style={{
+                    width: 100,                
+                  }}
+                >
                   <Text variant={"xLarge"} nowrap>
                     Players
                   </Text>
@@ -236,12 +254,11 @@ const Game: React.FC<GameProps> = ({
                     styles={{
                       root: {
                         marginTop: "20px",
-
                       },
                       members: {
                         display: "flex",
                         flexWrap: "wrap",
-                        width: "100%"
+                        width: "100%",
                       },
                     }}
                   />
@@ -250,7 +267,7 @@ const Game: React.FC<GameProps> = ({
                 {user?.uid === game.gameMasterId ? (
                   <div
                     style={{
-                      overflowX: "auto",
+                      width: "100%",
                     }}
                   >
                     <Text variant={"xLarge"} nowrap>
@@ -267,19 +284,41 @@ const Game: React.FC<GameProps> = ({
                 ) : (
                   <div
                     style={{
-                      overflowX: "auto",
-                    }}
-                  >
+                      width: "100%",
+                    }}>
                     <Text variant={"xLarge"} nowrap>
                       Current Roller
                     </Text>
-                    <EnemiesList
-                      selectedEnemy={game.selectedEnemy}
-                      gameKey={gameId}
-                      backgroundColor={backgroundColor}
-                      primaryColor={primaryColor}
-                      enemies={game.enemies}
+                    <Persona
+                      {...currentRoller}
+                      styles={{
+                        root: {
+                          width: 0,
+                          // marginLeft: "auto",
+                          marginTop: 20,
+                          display: "block",
+                        },
+                      }}
+                      presence={PersonaPresence.none}
+                      imageAlt=""
+                      size={PersonaSize.size120}
                     />
+                    {players[game.selectedPlayer] && (
+                      <Text
+                        variant={"large"}
+                        block
+                        nowrap
+                        style={{
+                          width: 120,
+                          textAlign: "center",
+                          marginTop: 10
+                        }}
+                      >
+                        {players[game.selectedPlayer].alias
+                          ? players[game.selectedPlayer].alias
+                          : players[game.selectedPlayer].email}
+                      </Text>
+                    )}
                   </div>
                 )}
               </Stack>

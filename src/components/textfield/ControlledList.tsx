@@ -74,7 +74,7 @@ export const ControlledList: React.FC<
 
                     const newVal = {
                       ...value,
-                      [`${data.name}-${data.modifier}-${data.die}`]: {
+                      [`${data.name} (${skill})`]: {
                         name: `${data.name} (${skill})`,
                         bonus: props.values["proficiencyModifier"] + skillBonus,
                         skill: data.modifier,
