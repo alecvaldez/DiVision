@@ -94,7 +94,7 @@ const EnemiesList: React.FC<EnemiesListProps> = ({
             label="HP"
             autoComplete="off"
             control={controlEnemy}
-            maxLength={2}
+            maxLength={4}
             minLength={1}
             name={nameof<EnemyForm>("hp")}
             rules={{
@@ -105,7 +105,7 @@ const EnemiesList: React.FC<EnemiesListProps> = ({
               required: "Error",
             }}
             style={{
-              width: 32,
+              width: 48,
             }}
           />
 
