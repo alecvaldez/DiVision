@@ -11,7 +11,18 @@
   z-index: 200;
 }
 
-.logo {
+@font-face {
+  font-family: Logo;
+  src: url(../../../public/fonts/icomoon.ttf);
+}
+
+.icon-logo {
   margin-right: 10px;
-  vertical-align: -0.1875em;
+  vertical-align: -0.102em;
+}
+
+.icon-logo:before {
+  content: "\e900";
+  font-family: Logo;
+  
 }

@@ -14,6 +14,7 @@
     "@types/react-dom": "^18.0.1",
     "firebase": "^9.6.11",
     "fluentui-editable-grid": "^1.11.2",
+    "oslllo-svg-fixer": "^2.1.1",
     "react": "^18.0.0",
     "react-color": "^2.19.3",
     "react-dom": "^18.0.0",

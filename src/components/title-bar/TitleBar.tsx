@@ -4,6 +4,7 @@ import {
   DirectionalHint,
   FontIcon,
   IContextualMenuItem,
+  ImageIcon,
   IPersonaSharedProps,
   Persona,
   PersonaPresence,
@@ -17,6 +18,7 @@ import { Text } from "@fluentui/react";
 import { User } from "firebase/auth";
 import "./TitleBar.css";
 import { getPersonaIntialsColor, Profile } from "../../App";
+import {ReactComponent as Icon} from '../../logo.svg';
 
 interface TitleBarProps {
   user: User | null;
@@ -26,6 +28,7 @@ interface TitleBarProps {
   setDefaultTheme: () => void;
   clearGames: () => void;
 }
+
 
 const TitleBar: React.FC<TitleBarProps> = ({
   user,
@@ -142,14 +145,10 @@ const TitleBar: React.FC<TitleBarProps> = ({
           block
           style={{ lineHeight: "50px" }}
         >
-          <FontIcon
-            className="logo"
-            style={{
-              color: primaryColor,
-            }}
-            aria-label="WebAppBuilderFragment"
-            iconName="WebAppBuilderFragment"
-          />
+          <span className="icon-logo" style={{
+            color: primaryColor
+          }}/>
+          
           DiVision
         </Text>
       </Stack>
