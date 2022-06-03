@@ -22,6 +22,8 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { GameData } from "../../App";
 import { getGame, getUserProfileById } from "../../firebase/FirebaseUtils";
+import EnemiesList from "../enemies-list/EnemiesList";
+import MasterView from "../master-view/MasterView";
 import PlayerStats from "../player-stats/PlayerStats";
 
 interface GameProps {
@@ -29,9 +31,14 @@ interface GameProps {
   game: GameData;
   gameId: string;
   backgroundColor: string;
+  primaryColor: string;
 }
 
-interface Player {
+export interface PlayerMap {
+  [key: string]: Player;
+}
+
+export interface Player {
   photoUrl: string;
   alias: string;
   email: string;
@@ -53,18 +60,16 @@ const Game: React.FC<GameProps> = ({
   game,
   gameId,
   backgroundColor,
+  primaryColor,
 }: GameProps) => {
   const navigate = useNavigate();
-  const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [joinError, setJoinError] = useState(false);
   const [master, setMaster] = useState<Player>({
     photoUrl: "",
     alias: "",
     email: "",
   });
 
-  const [players, setPlayers] = useState<Array<Player>>([]);
+  const [players, setPlayers] = useState<PlayerMap>({});
 
   const primaryRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const cardRef = useRef() as React.MutableRefObject<HTMLInputElement>;
@@ -83,7 +88,6 @@ const Game: React.FC<GameProps> = ({
   }, []);
 
   useEffect(() => {
-    console.log(game);
     const playersIds = game.players;
     if (playersIds) {
       const promises: Array<Promise<DataSnapshot>> = Object.keys(
@@ -91,11 +95,16 @@ const Game: React.FC<GameProps> = ({
       ).map((playerId) => {
         return getUserProfileById(playerId);
       });
-      Promise.all(promises).then((profiles) => {
-        const profilesData: Array<Player> = profiles.map((snapshot) => {
-          return snapshot.val() as Player;
+
+      Object.keys(playersIds).forEach((playerId) => {
+        getUserProfileById(playerId).then((snapshot) => {
+          if (snapshot.val()) {
+            setPlayers((old) => ({
+              ...old,
+              [playerId]: snapshot.val(),
+            }));
+          }
         });
-        setPlayers(profilesData);
       });
     }
   }, []);
@@ -107,9 +116,9 @@ const Game: React.FC<GameProps> = ({
   };
 
   const personas = useMemo(() => {
-    return players.map((player) => {
+    return Object.values(players).map((player) => {
       return {
-        personaName: player.alias !== "" ? player.alias : player.email,
+        personaName: "",
         imageUrl: player.photoUrl,
         imageInitials: player.email?.slice(0, 2).toUpperCase(),
       };
@@ -119,20 +128,6 @@ const Game: React.FC<GameProps> = ({
   const checkOverflow = (): boolean => {
     return primaryRef.current.offsetHeight < cardRef.current.offsetHeight;
   };
-
-  const {
-    handleSubmit: handleGame,
-    getValues,
-    formState,
-    control: controlGame,
-    setValue: setGameValue,
-  } = useForm<Form, any>({
-    defaultValues: {
-      gameId: "",
-    },
-    reValidateMode: "onSubmit",
-    mode: "all",
-  });
 
   useEffect(() => {
     if (user == null) {
@@ -148,43 +143,10 @@ const Game: React.FC<GameProps> = ({
     }
   }, []);
 
-  //   useEffect(() => {
-  //     const values = getValues();
-  //     if (formState.isValid && values["gameId"].length == 5) {
-  //       setIsEditing(true);
-  //     } else {
-  //       setIsEditing(false);
-  //     }
-  //   }, [watch]);
-
   const goBack = (): void => {
     navigate(-1);
   };
 
-  const keyDown = (e: any) => {
-    if (e.key === "Enter") {
-      joinGame();
-    }
-  };
-
-  const joinGame = () => {
-    handleGame(
-      (data) => {
-        setLoading(true);
-        getGame(data.gameId).then((snapshot) => {
-          // if (snapshot.exists()) {
-          //   setJoinError(false);
-          //   addGameToUser(data.gameId);
-          //   callback();
-          // } else {
-          //   setJoinError(true);
-          // }
-          // setLoading(false);
-        });
-      },
-      (err) => {}
-    )();
-  };
 
   return (
     <div className="primary-div" ref={primaryRef}>
@@ -195,7 +157,7 @@ const Game: React.FC<GameProps> = ({
             ref={cardRef}
             style={{
               boxShadow: DefaultEffects.elevation16,
-              width: "clamp(20rem, 90vw, 60rem)",
+              width: "clamp(20rem, 90vw, 40rem)",
             }}
           >
             <Stack
@@ -220,16 +182,13 @@ const Game: React.FC<GameProps> = ({
               </div>
               <Stack
                 horizontal
-                tokens={
-                  {
-                    // childrenGap: 20
-                  }
-                }
+                tokens={{
+                  childrenGap: 40,
+                }}
               >
                 <div
                   style={{
-                    width: 200,
-                    
+                    width: 150,
                   }}
                 >
                   <Text variant={"xLarge"} nowrap>
@@ -249,15 +208,22 @@ const Game: React.FC<GameProps> = ({
                     imageAlt=""
                     size={PersonaSize.size120}
                   />
-                  <Text variant={"large"} block nowrap style={{
-                    width: 120,
-                    textAlign: "center"
-                  }}>
+                  <Text
+                    variant={"large"}
+                    block
+                    nowrap
+                    style={{
+                      width: 120,
+                      textAlign: "center",
+                    }}
+                  >
                     {master.alias ? master.alias : master.email}
                   </Text>
                 </div>
 
-                <div>
+                <div style={{
+                  width: 80
+                }}>
                   <Text variant={"xLarge"} nowrap>
                     Players
                   </Text>
@@ -265,19 +231,69 @@ const Game: React.FC<GameProps> = ({
                     personas={personas}
                     maxDisplayablePersonas={14}
                     overflowButtonType={OverflowButtonType.descriptive}
-                    showAddButton
                     // addButtonProps={addButtonProps}
                     ariaDescription="To move through the items use left and right arrow keys."
                     styles={{
                       root: {
                         marginTop: "20px",
+
+                      },
+                      members: {
+                        display: "flex",
+                        flexWrap: "wrap",
+                        width: "100%"
                       },
                     }}
                   />
                 </div>
+
+                {user?.uid === game.gameMasterId ? (
+                  <div
+                    style={{
+                      overflowX: "auto",
+                    }}
+                  >
+                    <Text variant={"xLarge"} nowrap>
+                      Enemies
+                    </Text>
+                    <EnemiesList
+                      selectedEnemy={game.selectedEnemy}
+                      gameKey={gameId}
+                      backgroundColor={backgroundColor}
+                      primaryColor={primaryColor}
+                      enemies={game.enemies}
+                    />
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      overflowX: "auto",
+                    }}
+                  >
+                    <Text variant={"xLarge"} nowrap>
+                      Current Roller
+                    </Text>
+                    <EnemiesList
+                      selectedEnemy={game.selectedEnemy}
+                      gameKey={gameId}
+                      backgroundColor={backgroundColor}
+                      primaryColor={primaryColor}
+                      enemies={game.enemies}
+                    />
+                  </div>
+                )}
               </Stack>
               {user?.uid === game.gameMasterId ? (
-                <></>
+                <MasterView
+                  gameKey={gameId}
+                  selectedPlayer={game.selectedPlayer}
+                  selectedWeapon={game.selectedWeapon}
+                  selectedRoll={game.selectedRoll}
+                  primaryColor={primaryColor}
+                  characters={game.players}
+                  players={players}
+                  backgroundColor={backgroundColor}
+                />
               ) : (
                 <PlayerStats
                   character={game.players[user?.uid]}
@@ -303,23 +319,6 @@ const Game: React.FC<GameProps> = ({
                   text="Back"
                   onClick={goBack}
                 />
-                {loading && (
-                  <Spinner
-                    style={{
-                      marginLeft: "auto",
-                    }}
-                    size={SpinnerSize.large}
-                  />
-                )}
-                <PrimaryButton
-                  disabled={!isEditing}
-                  onClick={joinGame}
-                  style={{
-                    height: "38px",
-                  }}
-                >
-                  Join
-                </PrimaryButton>
               </Stack>
             </Stack>
           </div>

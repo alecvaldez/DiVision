@@ -1,62 +1,40 @@
 import { CommandButton, IListProps, List, Stack, Text } from "@fluentui/react";
 import { Dropdown } from "@fluentui/react/lib/Dropdown";
 import { useEffect, useState } from "react";
-import { Controller } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { Weapon, WeaponMap } from "../create-character/CreateCharacter";
+import { ControlledDropdown } from "./ControlledDropdown";
+import { ControlledTextField } from "./ControlledTextField";
 import { HookFormProps } from "./HookFormProps";
 
 interface ControlledListProps {
-  proficiencyModifier: number;
-  strengthModifier: number;
-  dexterityModifier: number;
-  constitutionModifier: number;
-  intelligenceModifier: number;
-  wisdomModifier: number;
-  charismaModifier: number;
+  values: any;
   backgroundColor: string;
 }
 
-interface WeaponRaw {
+type WeaponForm = {
   name: string;
-  skill: string;
+  modifier: string;
   die: string;
-}
-
-const WEAPONS: { [key: string]: WeaponRaw } = {
-  ["Mace (Strength)"]: {
-    name: "Mace (Strength)",
-    skill: "strengthModifier",
-    die: "1d6",
-  },
-  ["Shortsword (Strength)"]: {
-    name: "Shortsword (Strength)",
-    skill: "strengthModifier",
-    die: "1d6",
-  },
-  ["Shortsword (Dexterity)"]: {
-    name: "Shortsword (Dexterity)",
-    skill: "dexterityModifier",
-    die: "1d6",
-  },
-  ["Thorn Whip (Wisdom)"]: {
-    name: "Thorn Whip (Wisdom)",
-    skill: "wisdomModifier",
-    die: "1d6",
-  },
-  ["Thorn Whip (Intelligence)"]: {
-    name: "Thorn Whip (Intelligence)",
-    skill: "intelligenceModifier",
-    die: "1d6",
-  },
 };
+
+export const nameof = <T extends {}>(name: keyof T) => name;
 
 export const ControlledList: React.FC<
   HookFormProps & IListProps & ControlledListProps
 > = (props) => {
-  const [selectedWeapon, setSelectedWeapon] = useState<WeaponRaw>({
-    name: "",
-    skill: "",
-    die: "1d6",
+  const {
+    handleSubmit: handleAddWeapon,
+    getValues,
+    formState,
+    setValue,
+    control: controlWeapon,
+  } = useForm<WeaponForm, any>({
+    defaultValues: {
+      name: "",
+    },
+    reValidateMode: "onSubmit",
+    mode: "all",
   });
 
   return (
@@ -70,70 +48,121 @@ export const ControlledList: React.FC<
         fieldState: { error },
       }) => (
         <>
-          <Stack horizontal>
+          <Stack
+            horizontal
+            style={{
+              marginTop: 0,
+            }}
+          >
             <CommandButton
               style={{
-                transform: "translateY(-4px)",
+                transform: "translateY(25px)",
               }}
-              disabled={
-                selectedWeapon.name === "" ||
-                value[selectedWeapon.name] !== undefined
-              }
+              disabled={!formState.isValid}
               iconProps={{ iconName: "Add" }}
               onClick={() => {
-                let skillBonus: number = 0;
-                switch (selectedWeapon.skill) {
-                  case "strengthModifier":
-                    skillBonus = +props.strengthModifier;
-                    break;
-                  case "dexterityModifier":
-                    skillBonus = props.dexterityModifier;
-                    break;
-                  case "constitutionModifier":
-                    skillBonus = props.constitutionModifier;
-                    break;
-                  case "intelligenceModifier":
-                    skillBonus = props.intelligenceModifier;
-                    break;
-                  case "wisdomModifier":
-                    skillBonus = props.wisdomModifier;
-                    break;
-                  case "charismaModifier":
-                    skillBonus = props.charismaModifier;
-                    break;
-                  default:
-                    skillBonus = 0;
-                    break;
-                }
-                const newVal = {
-                  ...value,
-                  [selectedWeapon.name]: {
-                    name: selectedWeapon.name,
-                    bonus: props.proficiencyModifier + skillBonus,
-                    skill: selectedWeapon.skill,
-                    die: "1d6",
-                    modifier: skillBonus > 0 ? skillBonus : 0,
+                console.log(value);
+                handleAddWeapon(
+                  (data) => {
+                    const skillBonus: number = props.values[data.modifier];
+                    const skillRaw: string = data.modifier.replace(
+                      "Modifier",
+                      ""
+                    );
+                    const skill: string =
+                      skillRaw.charAt(0).toUpperCase() + skillRaw.slice(1);
+
+                    const newVal = {
+                      ...value,
+                      [`${data.name}-${data.modifier}-${data.die}`]: {
+                        name: `${data.name} (${skill})`,
+                        bonus: props.values["proficiencyModifier"] + skillBonus,
+                        skill: data.modifier,
+                        die: data.die,
+                        modifier: skillBonus > 0 ? skillBonus : 0,
+                      },
+                    };
+                    onChange(newVal);
                   },
-                };
-                onChange(newVal);
+                  (_err: any) => {}
+                )();
               }}
             />
-            <Dropdown
-              options={Object.values(WEAPONS).map((weapon) => {
-                return {
-                  key: weapon.name,
-                  text: weapon.name,
-                };
-              })}
-              styles={{
-                root: {
-                  width: "100%",
-                },
+            <Stack
+              horizontal
+              tokens={{
+                childrenGap: 10,
               }}
-              onChange={(_evt, op, _i) => {
-                if (op) setSelectedWeapon(WEAPONS[op.text]);
-              }}
-            />
+            >
+              <ControlledTextField
+                onError={() => console.log("error")}
+                label="Name"
+                autoComplete="off"
+                control={controlWeapon}
+                maxLength={12}
+                minLength={1}
+                style={{
+                  width: 125,
+                }}
+                name={nameof<WeaponForm>("name")}
+                rules={{
+                  pattern: {
+                    value: /^[a-zA-Z0-9]+$/i,
+                    message: "This is not a valid wepon name",
+                  },
+                  required: "Weapon name required",
+                }}
+              />
+
+              <ControlledDropdown
+                onError={() => console.log("error")}
+                label="Modifier"
+                control={controlWeapon}
+                name={nameof<WeaponForm>("modifier")}
+                options={[
+                  { key: "strengthModifier", text: "Strength" },
+                  { key: "dexterityModifier", text: "Dexterity" },
+                  { key: "constitutionModifier", text: "Constitution" },
+                  { key: "intelligenceModifier", text: "Intelligence" },
+                  { key: "wisdomModifier", text: "Wisdom" },
+                  { key: "charismaModifier", text: "Charisma" },
+                ]}
+                styles={{
+                  root: {
+                    width: 120,
+                    marginBottom: 20,
+                  },
+                }}
+                rules={{
+                  required: "This field is required",
+                }}
+              />
+
+              <ControlledDropdown
+                onError={() => console.log("error")}
+                label="Die"
+                control={controlWeapon}
+                name={nameof<WeaponForm>("die")}
+                options={[
+                  { key: "1d4", text: "1d4" },
+                  { key: "1d6", text: "1d6" },
+                  { key: "1d8", text: "1d8" },
+                  { key: "1d10", text: "1d10" },
+                  { key: "1d12", text: "1d12" },
+                  { key: "1d20", text: "1d20" },
+                  { key: "2d6", text: "2d6" },
+                ]}
+                styles={{
+                  root: {
+                    width: 75,
+                    marginBottom: 20,
+                  },
+                }}
+                rules={{
+                  required: "This field is required",
+                }}
+              />
+            </Stack>
           </Stack>
           {Object.keys(value).length > 0 && (
             <Stack

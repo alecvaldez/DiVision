@@ -23,7 +23,7 @@ export const ControlledTextField: React.FC<HookFormProps & ITextFieldProps> = (
               height: 80
             }
           }}
-          autoComplete={"on"}
+          autoComplete={props.autoComplete}
           onChange={onChange}
           value={value}
           onBlur={onBlur}

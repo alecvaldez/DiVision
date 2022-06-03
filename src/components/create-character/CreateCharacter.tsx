@@ -246,6 +246,7 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
 
   useEffect(() => {
     const weapons: WeaponMap = { ...getValues()["weapons"] };
+    console.log(weapons)
     Object.values(weapons).forEach((weapon) => {
       const val = getValues();
       const modifier = val[weapon.skill];
@@ -253,6 +254,9 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
       weapon.bonus = proficiencyModifier + modifier;
       weapon.modifier = modifier > 0 ? modifier : 0;
     });
+
+    console.log(weapons)
+
 
     setValue("weapons", weapons);
   }, [
@@ -315,8 +319,8 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
             ref={cardRef}
             style={{
               boxShadow: DefaultEffects.elevation16,
-              width: "clamp(20rem, 90vw, 60rem)",
-              overflowX: "auto"
+              width: "clamp(20rem, 90vw, 40rem)",
+              overflowX: "auto",
             }}
           >
             <Stack
@@ -384,7 +388,7 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                       marginTop: 32,
                       overflowY: "auto",
                       height: 280,
-                      width: 230
+                      width: 230,
                     }}
                   >
                     <Section
@@ -449,13 +453,7 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                     Weapons
                   </Text>
                   <ControlledList
-                    proficiencyModifier={getValues()["proficiencyModifier"]}
-                    strengthModifier={getValues()["strengthModifier"]}
-                    dexterityModifier={getValues()["dexterityModifier"]}
-                    constitutionModifier={getValues()["constitutionModifier"]}
-                    intelligenceModifier={getValues()["intelligenceModifier"]}
-                    wisdomModifier={getValues()["wisdomModifier"]}
-                    charismaModifier={getValues()["charismaModifier"]}
+                    values={getValues()}
                     name={nameof<CharacterForm>("weapons")}
                     backgroundColor={backgroundColor}
                     control={controlCharacter}

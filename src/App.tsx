@@ -54,11 +54,22 @@ export interface ProfileData {
   email: string | null | undefined;
 }
 
+export interface Enemy {
+  name: string;
+  hp: number;
+  ac: number;
+}
+
 export interface GameData {
   imgUrl: string;
   name: string;
+  selectedEnemy: string;
+  selectedPlayer: string;
+  selectedWeapon: string;
+  selectedRoll: string;
   gameMasterId: string;
   players: { [key: string]: CharacterForm };
+  enemies: {[key: string]: Enemy}
 }
 
 type RawGamesMap = { [key: string]: Array<string> };
@@ -142,6 +153,7 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
   }
 
   const getGames = (): void => {
+    setGames({});
     getUserGames().then((snapshot) => {
       if (snapshot.exists()) {
         const val = snapshot.val() as RawGamesMap;
@@ -308,7 +320,7 @@ const App: React.FC<AppProps> = ({ auth }: AppProps) => {
                     element={
                       <>
                         {userLoaded && (
-                          <Game backgroundColor={backgroundColor} user={currentUser} game={value} gameId={key} />
+                          <Game primaryColor={primaryColor} backgroundColor={backgroundColor} user={currentUser} game={value} gameId={key} />
                         )}
                       </>
                     }

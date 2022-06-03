@@ -33,17 +33,18 @@ const TitleBar: React.FC<TitleBarProps> = ({
   profileLoaded,
   primaryColor,
   setDefaultTheme,
-  clearGames
+  clearGames,
 }: TitleBarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [secondaryText, setSecondaryText] = useState(profile.descriptor === "" ? "User" : profile.descriptor)
+  const [secondaryText, setSecondaryText] = useState(
+    profile.descriptor === "" ? "User" : profile.descriptor
+  );
 
   useEffect(() => {
-    if(profile.descriptor !== undefined)
-    setSecondaryText(profile.descriptor)
-  }, [profile.descriptor])
+    if (profile.descriptor !== undefined) setSecondaryText(profile.descriptor);
+  }, [profile.descriptor]);
   const siginItems: IContextualMenuItem[] = [
     {
       key: "login",
@@ -83,7 +84,6 @@ const TitleBar: React.FC<TitleBarProps> = ({
       setMenuItems(siginItems);
     }
   }, [user, primaryColor]);
-
 
   const email = user?.email || "";
 
