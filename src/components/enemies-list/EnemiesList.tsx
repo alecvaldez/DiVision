@@ -170,7 +170,7 @@ const EnemiesList: React.FC<EnemiesListProps> = ({
                     variant={"medium"}
                     nowrap
                     style={{
-                      width: 185,
+                      width: "calc(100% * 0.63)",
                       lineHeight: "32px",
                     }}
                   >
@@ -180,7 +180,7 @@ const EnemiesList: React.FC<EnemiesListProps> = ({
                     variant={"medium"}
                     nowrap
                     style={{
-                      width: 45,
+                      width: "calc(100% * 0.2)",
                       lineHeight: "32px",
                     }}
                   >
@@ -190,7 +190,6 @@ const EnemiesList: React.FC<EnemiesListProps> = ({
                     variant={"medium"}
                     nowrap
                     style={{
-                      width: 24,
                       lineHeight: "32px",
                     }}
                   >
