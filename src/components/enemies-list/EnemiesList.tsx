@@ -134,6 +134,7 @@ const EnemiesList: React.FC<EnemiesListProps> = ({
         style={{
           height: 120,
           maxHeight: 120,
+          overflowY: "auto"
         }}
       >
         <List
