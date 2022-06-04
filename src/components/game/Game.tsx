@@ -13,16 +13,24 @@ import {
   Spinner,
   SpinnerSize,
   Stack,
+  TeachingBubble,
   Text,
 } from "@fluentui/react";
-import { useBoolean } from "@fluentui/react-hooks";
+import { useBoolean, useId } from "@fluentui/react-hooks";
 import { User } from "firebase/auth";
 import { DataSnapshot } from "firebase/database";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { GameData, getPersonaIntialsColor } from "../../App";
-import { getGame, getUserProfileById } from "../../firebase/FirebaseUtils";
+import {
+  getGame,
+  getUserProfileById,
+  setEnemyHP,
+  setRoll1,
+  setRoll2,
+  setRollTurn,
+} from "../../firebase/FirebaseUtils";
 import EnemiesList from "../enemies-list/EnemiesList";
 import MasterView from "../master-view/MasterView";
 import PlayerStats from "../player-stats/PlayerStats";
@@ -71,6 +79,7 @@ const Game: React.FC<GameProps> = ({
     email: "",
   });
 
+  console.log()
   const [players, setPlayers] = useState<PlayerMap>({});
 
   const primaryRef = useRef() as React.MutableRefObject<HTMLInputElement>;
@@ -85,6 +94,13 @@ const Game: React.FC<GameProps> = ({
     isEnemyModalOpen,
     { setTrue: showEnemyModal, setFalse: hideEnenmyModal },
   ] = useBoolean(false);
+
+  const playerRollId = useId("rollPlayer");
+
+  const [playerHitBubble, { toggle: togglePlayerHitBubble }] =
+    useBoolean(false);
+
+  const [playerHitValue, setPlayerHitValue] = useState("Hit");
 
   useEffect(() => {
     getUserProfileById(game.gameMasterId).then((snapshot) => {
@@ -183,13 +199,48 @@ const Game: React.FC<GameProps> = ({
           <>
             {user?.uid === game.gameMasterId && (
               <>
+                {playerHitBubble && (
+                  <TeachingBubble
+                    target={`#${playerRollId}`}
+                    onDismiss={togglePlayerHitBubble}
+                    headline={playerHitValue}
+                  />
+                )}
                 <RollModal
                   primaryColor={primaryColor}
                   name="Roll Player"
                   isModalOpen={isPlayerModalOpen}
                   hideModal={hidePlayerModal}
                   rollCallback={(roll) => {
-                    console.log(roll);
+                    if (game.players[game.selectedPlayer].rollTurn == 0) {
+                      const enemyAC = game.enemies[game.selectedEnemy].ac;
+                      const selectedWeapon = game.players[game.selectedPlayer].selectedWeapon;
+                      const hit = roll + game.players[game.selectedPlayer].weapons[selectedWeapon].bonus;
+                      setRoll1(gameId, hit, game.selectedPlayer);
+
+                      if (hit > enemyAC) {
+                        setRollTurn(gameId, 1, game.selectedPlayer);
+                        setPlayerHitValue("Enemy Hit");
+                      } else {
+                        setPlayerHitValue("Enemy Missed");
+                      }
+                    } else {
+                      const enemyHP = game.enemies[game.selectedEnemy].hp;
+                      const enemyName = game.enemies[game.selectedEnemy].name;
+                      const selectedWeapon = game.players[game.selectedPlayer].selectedWeapon;
+                      const hit = roll + game.players[game.selectedPlayer].weapons[selectedWeapon].modifier;
+
+                      setEnemyHP(gameId, game.selectedEnemy, enemyHP - hit);
+                      setRoll2(gameId, hit, game.selectedPlayer);
+                      setRollTurn(gameId, 0, game.selectedPlayer);
+                      setPlayerHitValue(
+                        `${enemyName} new health - ${enemyHP - hit}`
+                      );
+                    }
+                    togglePlayerHitBubble();
+                    setTimeout(() => {
+                      togglePlayerHitBubble();
+                    }, 5000)
                   }}
                 />
                 <RollModal
@@ -333,13 +384,15 @@ const Game: React.FC<GameProps> = ({
                           Rolls
                         </Text>
                         <Spinner
-                            style={{
-                              position: "absolute",
-                              transform: "translate(10px, 124px) scale(3) ",
-                            }}
-                            size={SpinnerSize.large}
-                          />
-                        {!game.playerRoll ? (
+                          style={{
+                            position: "absolute",
+                            transform: "translate(10px, 124px) scale(3) ",
+                          }}
+                          size={SpinnerSize.large}
+                        />
+                        {user.uid &&
+                        game.players[user.uid] &&
+                        !game.players[user.uid].roll1 ? (
                           <Spinner
                             style={{
                               position: "absolute",
@@ -369,11 +422,13 @@ const Game: React.FC<GameProps> = ({
                                 color: primaryColor,
                               }}
                             >
-                              {game.playerRoll}
+                              {game.players[user.uid].roll1}
                             </Text>
                           </Stack>
                         )}
-                        {!game.enemyRoll ? (
+                        {user.uid &&
+                        game.players[user.uid] &&
+                        !game.players[user.uid].roll2 ? (
                           <Spinner
                             style={{
                               position: "absolute",
@@ -402,7 +457,7 @@ const Game: React.FC<GameProps> = ({
                                 color: primaryColor,
                               }}
                             >
-                              {game.enemyRoll}
+                              {game.players[user.uid].roll2}
                             </Text>
                           </Stack>
                         )}
@@ -454,7 +509,6 @@ const Game: React.FC<GameProps> = ({
                     <MasterView
                       gameKey={gameId}
                       selectedPlayer={game.selectedPlayer}
-                      selectedRoll={game.selectedRoll}
                       primaryColor={primaryColor}
                       characters={game.players}
                       players={players}
@@ -471,8 +525,9 @@ const Game: React.FC<GameProps> = ({
                           !game.selectedPlayer ||
                           !game.players[game.selectedPlayer].selectedWeapon ||
                           !game.selectedEnemy ||
-                          !game.selectedRoll
+                          game.players[game.selectedPlayer].rollTurn == undefined
                         }
+                        id={playerRollId}
                         onClick={showPlayerModal}
                       >
                         Roll Player
@@ -482,7 +537,7 @@ const Game: React.FC<GameProps> = ({
                           !game.selectedPlayer ||
                           !game.players[game.selectedPlayer].selectedWeapon ||
                           !game.selectedEnemy ||
-                          !game.selectedRoll
+                          game.players[game.selectedPlayer].rollTurn == undefined
                         }
                         onClick={showEnemyModal}
                       >

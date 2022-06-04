@@ -63,6 +63,9 @@ export type CharacterForm = {
   charismaModifier: number;
   weapons: WeaponMap;
   selectedWeapon: string;
+  rollTurn: number;
+  roll1: number;
+  roll2: number;
 };
 
 const verticalGapStackTokens: IStackTokens = {
@@ -195,6 +198,7 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
       wisdomModifier: 0,
       charismaScore: 10,
       charismaModifier: 0,
+      rollTurn: 0,
       weapons: {},
     },
     reValidateMode: "onSubmit",

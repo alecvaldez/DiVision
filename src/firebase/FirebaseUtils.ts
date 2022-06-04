@@ -143,7 +143,6 @@ export const getUserProfileById = (userId: string): Promise<DataSnapshot> => {
 //   return get(dbRef(db, "users/" + userId));
 // };
 
-
 export const getUserGames = (): Promise<DataSnapshot> => {
   const db = getDatabase();
   const auth = getAuth();
@@ -182,7 +181,7 @@ export const createNewGame = (
             return set(dbRef(db, "games/" + key), {
               name: name,
               imgUrl: url,
-              gameMasterId: gameMasterId
+              gameMasterId: gameMasterId,
             }).then(() => {
               return key;
             });
@@ -228,7 +227,9 @@ export const addPlayerToGame = (gameKey: string): Promise<void> => {
   const auth = getAuth();
   const user = auth.currentUser;
 
-  return set(dbRef(db, "games/" + gameKey + "/players/" + user?.uid), [user?.uid]);
+  return set(dbRef(db, "games/" + gameKey + "/players/" + user?.uid), [
+    user?.uid,
+  ]);
 };
 
 export const removePlayerFromGame = (gameKey: string): Promise<void> => {
@@ -236,26 +237,35 @@ export const removePlayerFromGame = (gameKey: string): Promise<void> => {
   const auth = getAuth();
   const user = auth.currentUser;
 
-  get(dbRef(db, "games/" + gameKey + "/selectedPlayer")).then(snapshot => {
-    if(snapshot.exists()) {
-      if(snapshot.val() === user?.uid) {
+  get(dbRef(db, "games/" + gameKey + "/selectedPlayer")).then((snapshot) => {
+    if (snapshot.exists()) {
+      if (snapshot.val() === user?.uid) {
         remove(dbRef(db, "games/" + gameKey + "/selectedPlayer"));
       }
     }
-  })
+  });
 
   return remove(dbRef(db, "games/" + gameKey + "/players/" + user?.uid));
 };
 
-export const addCharacterToGame = (gameKey: string, character: CharacterForm): Promise<void> => {
+export const addCharacterToGame = (
+  gameKey: string,
+  character: CharacterForm
+): Promise<void> => {
   const db = getDatabase();
   const auth = getAuth();
   const user = auth.currentUser;
 
-  return set(dbRef(db, "games/" + gameKey + "/players/" + user?.uid), character);
+  return set(
+    dbRef(db, "games/" + gameKey + "/players/" + user?.uid),
+    character
+  );
 };
 
-export const addGameListener = (gameKey: string, callback: (snapshot: DataSnapshot) => void): void => {
+export const addGameListener = (
+  gameKey: string,
+  callback: (snapshot: DataSnapshot) => void
+): void => {
   const db = getDatabase();
   const auth = getAuth();
 
@@ -271,47 +281,109 @@ export const removeGameListener = (gameKey: string): void => {
   off(dbRef(db, "games/" + gameKey));
 };
 
-
 export const addEnemy = (gameKey: string, enemy: Enemy): Promise<void> => {
   const db = getDatabase();
   const auth = getAuth();
 
   return set(dbRef(db, "games/" + gameKey + "/enemies/" + enemy.name), enemy);
-}
+};
 
-export const deleteEnemy = (gameKey: string, enemyName: string): Promise<void> => {
+export const deleteEnemy = (
+  gameKey: string,
+  enemyName: string
+): Promise<void> => {
   const db = getDatabase();
   const auth = getAuth();
 
   return remove(dbRef(db, "games/" + gameKey + "/enemies/" + enemyName));
-}
+};
 
-export const setSelectedEnemy  = (gameKey: string, enemyName: string): Promise<void> => {
+export const setSelectedEnemy = (
+  gameKey: string,
+  enemyName: string
+): Promise<void> => {
   const db = getDatabase();
   const auth = getAuth();
 
   return set(dbRef(db, "games/" + gameKey + "/selectedEnemy"), enemyName);
-}
+};
 
-export const setSelectedWeapon  = (gameKey: string, weaponName: string, uid: string): Promise<void> => {
+export const setSelectedWeapon = (
+  gameKey: string,
+  weaponName: string,
+  uid: string
+): Promise<void> => {
   const db = getDatabase();
   const auth = getAuth();
 
-  return set(dbRef(db, "games/" + gameKey + "/players/" + uid + "/selectedWeapon"), weaponName);
-}
+  return set(
+    dbRef(db, "games/" + gameKey + "/players/" + uid + "/selectedWeapon"),
+    weaponName
+  );
+};
 
-
-export const setSelectedPlayer  = (gameKey: string, playerId: string): Promise<void> => {
+export const setSelectedPlayer = (
+  gameKey: string,
+  playerId: string
+): Promise<void> => {
   const db = getDatabase();
   const auth = getAuth();
 
   return set(dbRef(db, "games/" + gameKey + "/selectedPlayer"), playerId);
-}
+};
 
-export const setSelectedRoll = (gameKey: string, roll: string | number): Promise<void> => {
+export const setRollTurn = (
+  gameKey: string,
+  rollTurn: number,
+  uid: string
+): Promise<void> => {
   const db = getDatabase();
   const auth = getAuth();
 
-  return set(dbRef(db, "games/" + gameKey + "/selectedRoll"), roll);
-}
+  return set(
+    dbRef(db, "games/" + gameKey + "/players/" + uid + "/rollTurn"),
+    rollTurn
+  );
+};
 
+export const setRoll1 = (
+  gameKey: string,
+  roll1: number,
+  uid: string
+): Promise<void> => {
+  const db = getDatabase();
+  const auth = getAuth();
+
+  return set(
+    dbRef(db, "games/" + gameKey + "/players/" + uid + "/roll1"),
+    roll1
+  );
+};
+
+export const setRoll2 = (
+  gameKey: string,
+  roll2: number,
+  uid: string
+): Promise<void> => {
+  const db = getDatabase();
+  const auth = getAuth();
+
+  return set(
+    dbRef(db, "games/" + gameKey + "/players/" + uid + "/roll2"),
+    roll2
+  );
+};
+
+export const setEnemyHP = (
+  gameKey: string,
+  enemyName: string,
+  hp: number
+): Promise<void> => {
+  const db = getDatabase();
+  const auth = getAuth();
+
+  return set(
+    dbRef(db, "games/" + gameKey + "/enemies/" + enemyName + "/hp"),
+    hp
+  );
+};

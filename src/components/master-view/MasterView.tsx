@@ -1,27 +1,19 @@
 import {
-  Checkbox,
   Dropdown,
-  IDropdownOption,
-  IRenderFunction,
-  ISelectableOption,
-  List,
+  IDropdownOption, List,
   Persona,
   PersonaPresence,
   PersonaSize,
   Stack,
-  Text,
+  Text
 } from "@fluentui/react";
 import { ReactNode, useEffect, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
 import { getPersonaIntialsColor } from "../../App";
 import {
-  setSelectedPlayer,
-  setSelectedRoll,
-  setSelectedWeapon,
+  setSelectedPlayer, setSelectedWeapon
 } from "../../firebase/FirebaseUtils";
 import { CharacterForm } from "../create-character/CreateCharacter";
-import { Player, PlayerMap } from "../game/Game";
-import { ControlledDropdown } from "../textfield/ControlledDropdown";
+import { PlayerMap } from "../game/Game";
 
 interface PlayerStatsProps {
   characters: { [key: string]: CharacterForm };
@@ -29,7 +21,6 @@ interface PlayerStatsProps {
   backgroundColor: string;
   primaryColor: string;
   selectedPlayer: string;
-  selectedRoll: string;
   gameKey: string;
 }
 
@@ -117,7 +108,6 @@ const MasterView: React.FC<PlayerStatsProps> = ({
   primaryColor,
   backgroundColor,
   selectedPlayer,
-  selectedRoll,
   gameKey,
 }: PlayerStatsProps) => {
   const onChangeSelectCharacter = (
@@ -133,7 +123,6 @@ const MasterView: React.FC<PlayerStatsProps> = ({
     option?: IDropdownOption,
     index?: number
   ): void => {
-    if (option) setSelectedRoll(gameKey, option.key);
   };
 
   const characterSelection = useMemo(() => {
@@ -237,24 +226,17 @@ const MasterView: React.FC<PlayerStatsProps> = ({
               </Text>
               <Dropdown
                 onError={() => console.log("error")}
-                defaultSelectedKey={selectedRoll}
+                defaultSelectedKey={0}
                 options={
                   characters && characters[selectedPlayer].selectedWeapon
                     ? [
                         {
-                          key: `Roll 1 (+${
+                          key: 0,
+                          text: characters[selectedPlayer].rollTurn == 0 ? `Roll 1 (+${
                             characters[selectedPlayer].weapons[
                               characters[selectedPlayer].selectedWeapon
                             ].bonus
-                          })`,
-                          text: `Roll 1 (+${
-                            characters[selectedPlayer].weapons[
-                              characters[selectedPlayer].selectedWeapon
-                            ].bonus
-                          })`,
-                        },
-                        {
-                          key: `Roll 2 (${
+                          })` : `Roll 2 (${
                             characters[selectedPlayer].weapons[
                               characters[selectedPlayer].selectedWeapon
                             ].die
@@ -263,16 +245,7 @@ const MasterView: React.FC<PlayerStatsProps> = ({
                               characters[selectedPlayer].selectedWeapon
                             ].modifier
                           })`,
-                          text: `Roll 2 (${
-                            characters[selectedPlayer].weapons[
-                              characters[selectedPlayer].selectedWeapon
-                            ].die
-                          }+${
-                            characters[selectedPlayer].weapons[
-                              characters[selectedPlayer].selectedWeapon
-                            ].modifier
-                          })`,
-                        },
+                        }
                       ]
                     : []
                 }
