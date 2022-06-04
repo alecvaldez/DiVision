@@ -179,7 +179,7 @@ class Roboflow {
         prediction.confidence > 0.65 &&
         this.predictionCallback
       ) {
-        this.predictionCallback(prediction.class);
+        this.predictionCallback(parseInt(prediction.class));
       }
     }
   }

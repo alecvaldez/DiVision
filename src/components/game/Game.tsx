@@ -215,7 +215,10 @@ const Game: React.FC<GameProps> = ({
                     if (game.players[game.selectedPlayer].rollTurn == 0) {
                       const enemyAC = game.enemies[game.selectedEnemy].ac;
                       const selectedWeapon = game.players[game.selectedPlayer].selectedWeapon;
-                      const hit = roll + game.players[game.selectedPlayer].weapons[selectedWeapon].bonus;
+                      const bonus =  game.players[game.selectedPlayer].weapons[selectedWeapon].bonus;
+                      console.log(typeof roll);
+
+                      const hit = roll + bonus;
                       setRoll1(gameId, hit, game.selectedPlayer);
 
                       if (hit > enemyAC) {
@@ -229,12 +232,11 @@ const Game: React.FC<GameProps> = ({
                       const enemyName = game.enemies[game.selectedEnemy].name;
                       const selectedWeapon = game.players[game.selectedPlayer].selectedWeapon;
                       const hit = roll + game.players[game.selectedPlayer].weapons[selectedWeapon].modifier;
-
                       setEnemyHP(gameId, game.selectedEnemy, enemyHP - hit);
                       setRoll2(gameId, hit, game.selectedPlayer);
                       setRollTurn(gameId, 0, game.selectedPlayer);
                       setPlayerHitValue(
-                        `${enemyName} new health - ${enemyHP - hit}`
+                        `${enemyName} new health: ${enemyHP - hit}`
                       );
                     }
                     togglePlayerHitBubble();

@@ -66,39 +66,39 @@ export const StyledStack: React.FC<{
   selected,
   clickCallback,
 }) => {
-  const [hover, setHover] = useState(false);
+    const [hover, setHover] = useState(false);
 
-  return (
-    <Stack
-      onPointerOver={() => setHover(true)}
-      onPointerOut={() => setHover(false)}
-      horizontal
-      style={{
-        borderRadius: "2px",
-        height: "32px",
-        borderWidth: "1px",
-        borderStyle: "solid",
-        backgroundColor: hover
-          ? increase_brightness(backgroundColor, 10)
-          : backgroundColor,
-        marginBottom: 8,
-        marginLeft: "auto",
-        marginRight: "auto",
-        borderColor: selected
-          ? primaryColor
-          : backgroundColor === "#121212"
-          ? "rgb(234, 234, 234)"
-          : "rgb(55, 55, 55)",
-        width: width,
-        cursor: "pointer",
-        padding: padding,
-      }}
-      onClick={clickCallback}
-    >
-      {children}
-    </Stack>
-  );
-};
+    return (
+      <Stack
+        onPointerOver={() => setHover(true)}
+        onPointerOut={() => setHover(false)}
+        horizontal
+        style={{
+          borderRadius: "2px",
+          height: "32px",
+          borderWidth: "1px",
+          borderStyle: "solid",
+          backgroundColor: hover
+            ? increase_brightness(backgroundColor, 10)
+            : backgroundColor,
+          marginBottom: 8,
+          marginLeft: "auto",
+          marginRight: "auto",
+          borderColor: selected
+            ? primaryColor
+            : backgroundColor === "#121212"
+              ? "rgb(234, 234, 234)"
+              : "rgb(55, 55, 55)",
+          width: width,
+          cursor: "pointer",
+          padding: padding,
+        }}
+        onClick={clickCallback}
+      >
+        {children}
+      </Stack>
+    );
+  };
 
 export const nameof = <T extends {}>(name: keyof T) => name;
 
@@ -222,40 +222,37 @@ const MasterView: React.FC<PlayerStatsProps> = ({
                   fontWeight: 600,
                 }}
               >
-               Roll Turn
+                Roll Turn
               </Text>
               <StyledStack
-                  padding="0px 28px 0px 8px"
-                  width={"100%"}
-                  backgroundColor={backgroundColor}
-                  primaryColor={primaryColor}
-                  selected={
-                    false
-                  }
-                  clickCallback={() => {
-                    
-                  }}
-                >
-                  <Text variant="medium" style={{
-                    lineHeight: "32px"
-                  }}>
+                padding="0px 28px 0px 8px"
+                width={"100%"}
+                backgroundColor={backgroundColor}
+                primaryColor={primaryColor}
+                selected={
+                  false
+                }
+                clickCallback={() => {
 
-                  {characters[selectedPlayer].rollTurn == 0 ? `Roll 1 (+${
-                            characters[selectedPlayer].weapons[
-                              characters[selectedPlayer].selectedWeapon
-                            ].bonus
-                          })` : `Roll 2 (${
-                            characters[selectedPlayer].weapons[
-                              characters[selectedPlayer].selectedWeapon
-                            ].die
-                          }+${
-                            characters[selectedPlayer].weapons[
-                              characters[selectedPlayer].selectedWeapon
-                            ].modifier
-                          })`}
-                                            </Text>
+                }}
+              >
+                <Text variant="medium" style={{
+                  lineHeight: "32px"
+                }}>
 
-                  </StyledStack>
+                  {characters[selectedPlayer].rollTurn == 0 ? `Roll 1 (+${characters[selectedPlayer].weapons[
+                      characters[selectedPlayer].selectedWeapon
+                    ].bonus
+                    })` : `Roll 2 (${characters[selectedPlayer].weapons[
+                    characters[selectedPlayer].selectedWeapon
+                  ].die
+                  }+${characters[selectedPlayer].weapons[
+                    characters[selectedPlayer].selectedWeapon
+                  ].modifier
+                  })`}
+                </Text>
+
+              </StyledStack>
             </>
           )}
       </Stack>
