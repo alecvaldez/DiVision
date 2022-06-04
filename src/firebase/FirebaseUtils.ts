@@ -182,7 +182,7 @@ export const createNewGame = (
             return set(dbRef(db, "games/" + key), {
               name: name,
               imgUrl: url,
-              gameMasterId: gameMasterId,
+              gameMasterId: gameMasterId
             }).then(() => {
               return key;
             });

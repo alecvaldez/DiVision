@@ -147,10 +147,10 @@ const MasterView: React.FC<PlayerStatsProps> = ({
   }, [players, characters]);
 
   useEffect(() => {
-    if(characterSelection.length == 1) {
-        setSelectedPlayer(gameKey, characterSelection[0].key)
+    if (characterSelection.length == 1) {
+      setSelectedPlayer(gameKey, characterSelection[0].key);
     }
-  }, [characterSelection])
+  }, [characterSelection]);
 
   const onRenderOption = (props: any): JSX.Element => {
     return (
@@ -160,7 +160,9 @@ const MasterView: React.FC<PlayerStatsProps> = ({
             {...{
               imageUrl: props.data.imageUrl ? props.data.imageUrl : "",
               imageInitials: props.data.email.slice(0, 2).toUpperCase(),
-              initialsColor: props.data.email ? getPersonaIntialsColor(props.data.email) : 0
+              initialsColor: props.data.email
+                ? getPersonaIntialsColor(props.data.email)
+                : 0,
             }}
             presence={PersonaPresence.none}
             size={PersonaSize.size32}
@@ -219,45 +221,71 @@ const MasterView: React.FC<PlayerStatsProps> = ({
           onChange={onChangeSelectCharacter}
           onRenderOption={onRenderOption}
         />
-        {characters[selectedPlayer] && characters[selectedPlayer].selectedWeapon && (
-          <>
-            <Text
-              variant={"large"}
-              block
-              style={{
-                marginBottom: 8,
-                fontWeight: 600,
-              }}
-            >
-              Choose Roll
-            </Text>
-            <Dropdown
-              onError={() => console.log("error")}
-              defaultSelectedKey={selectedRoll}
-              options={
-                characters[selectedPlayer].selectedWeapon
-                  ? [
-                      {
-                        key: `Roll 1 (+${characters[selectedPlayer].weapons[characters[selectedPlayer].selectedWeapon].bonus})`,
-                        text: `Roll 1 (+${characters[selectedPlayer].weapons[characters[selectedPlayer].selectedWeapon].bonus})`,
-                      },
-                      {
-                        key: `Roll 2 (${characters[selectedPlayer].weapons[characters[selectedPlayer].selectedWeapon].die}+${characters[selectedPlayer].weapons[characters[selectedPlayer].selectedWeapon].modifier})`,
-                        text: `Roll 2 (${characters[selectedPlayer].weapons[characters[selectedPlayer].selectedWeapon].die}+${characters[selectedPlayer].weapons[characters[selectedPlayer].selectedWeapon].modifier})`,
-                      },
-                    ]
-                  : []
-              }
-              onChange={onChangeSelectRoll}
-              styles={{
-                root: {
-                  width: "100%",
-                  marginBottom: 20,
-                },
-              }}
-            />
-          </>
-        )}
+        {characters &&
+          characters[selectedPlayer] &&
+          characters[selectedPlayer].selectedWeapon && (
+            <>
+              <Text
+                variant={"large"}
+                block
+                style={{
+                  marginBottom: 8,
+                  fontWeight: 600,
+                }}
+              >
+                Choose Roll
+              </Text>
+              <Dropdown
+                onError={() => console.log("error")}
+                defaultSelectedKey={selectedRoll}
+                options={
+                  characters && characters[selectedPlayer].selectedWeapon
+                    ? [
+                        {
+                          key: `Roll 1 (+${
+                            characters[selectedPlayer].weapons[
+                              characters[selectedPlayer].selectedWeapon
+                            ].bonus
+                          })`,
+                          text: `Roll 1 (+${
+                            characters[selectedPlayer].weapons[
+                              characters[selectedPlayer].selectedWeapon
+                            ].bonus
+                          })`,
+                        },
+                        {
+                          key: `Roll 2 (${
+                            characters[selectedPlayer].weapons[
+                              characters[selectedPlayer].selectedWeapon
+                            ].die
+                          }+${
+                            characters[selectedPlayer].weapons[
+                              characters[selectedPlayer].selectedWeapon
+                            ].modifier
+                          })`,
+                          text: `Roll 2 (${
+                            characters[selectedPlayer].weapons[
+                              characters[selectedPlayer].selectedWeapon
+                            ].die
+                          }+${
+                            characters[selectedPlayer].weapons[
+                              characters[selectedPlayer].selectedWeapon
+                            ].modifier
+                          })`,
+                        },
+                      ]
+                    : []
+                }
+                onChange={onChangeSelectRoll}
+                styles={{
+                  root: {
+                    width: "100%",
+                    marginBottom: 20,
+                  },
+                }}
+              />
+            </>
+          )}
       </Stack>
 
       <Stack
@@ -281,7 +309,8 @@ const MasterView: React.FC<PlayerStatsProps> = ({
           style={{
             width: "100%",
             padding: "0px 28px 0px 8px",
-            visibility: selectedPlayer === "" ? "hidden" : "visible",
+            visibility:
+              selectedPlayer && selectedPlayer === "" ? "hidden" : "visible",
           }}
         >
           <Text
@@ -336,7 +365,11 @@ const MasterView: React.FC<PlayerStatsProps> = ({
                   width={"100%"}
                   backgroundColor={backgroundColor}
                   primaryColor={primaryColor}
-                  selected={item.name === characters[selectedPlayer].selectedWeapon}
+                  selected={
+                    characters
+                      ? item.name === characters[selectedPlayer].selectedWeapon
+                      : false
+                  }
                   clickCallback={() => {
                     setSelectedWeapon(gameKey, item.name, selectedPlayer);
                   }}
