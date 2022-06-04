@@ -103,9 +103,11 @@ const RollModal: React.FC<RollModalProps> = ({
         >
           <canvas
             style={{
-              height: 500,
-              width: 500,
+              marginTop: "auto",
+              marginBottom: "auto",
               position: "absolute",
+              top: 0,
+              bottom: 0,
               zIndex: 20000,
             }}
             ref={canvasRef}
@@ -122,12 +124,17 @@ const RollModal: React.FC<RollModalProps> = ({
           )}
           <video
             style={{
-              height: 500,
+              marginTop: "auto",
+              marginBottom: "auto",
+              top: 0,
+              bottom: 0,
+              // height: 500,
+              maxWidth: 500,
               borderRadius: 2,
-              width: 500,
+              // width: 500,
               zIndex: 100,
               position: "absolute",
-              objectFit: "cover",
+              objectFit: "contain",
               opacity: videoLoading ? 0.5 : 1,
             }}
             ref={(node) => {

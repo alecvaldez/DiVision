@@ -83,8 +83,20 @@ class Roboflow {
 
       Promise.all([startVideoStreamPromise, loadModelPromise]).then(() => {
         if (this.loadingCallback) this.loadingCallback(false);
+        this.resizeCanvas();
+
         this.detectFrame();
       });
+    }
+  }
+
+  public resizeCanvas() {
+    if (this.canvasRef && this.videoRef) {
+      this.ctx = this.canvasRef.getContext("2d");
+      const dimensions = this.videoDimensions(this.videoRef);
+
+      this.canvasRef.width = dimensions.width;
+      this.canvasRef.height = dimensions.height;
     }
   }
 
@@ -104,7 +116,6 @@ class Roboflow {
   }
 
   public pause() {
-    console.log(this.videoRef);
     if (this.videoRef) {
       this.videoRef.pause();
       this.stopped = true;
@@ -151,46 +162,15 @@ class Roboflow {
           // Draw the bounding box.
           this.ctx.strokeStyle = this.primaryColor;
           this.ctx.lineWidth = 1;
-
           this.ctx.strokeRect(
-            (x - width) / 2 + 0.5,
-            (y - height) / 2 + 0.5,
+            (x - width / 2 ),
+            (y - height / 2 ),
             width / scale,
             height / scale
           );
-
-          //   // Draw the label background.
-          //   this.ctx.fillStyle = prediction.color;
-          //   const textWidth = this.ctx.measureText(prediction.class).width;
-          //   const textHeight = parseInt(font, 10); // base 10
-          //   this.ctx.fillRect(
-          //     (x - width) / 2,
-          //     (y - height) / 2,
-          //     textWidth + 8,
-          //     textHeight + 4
-          //   );
         }
       });
 
-      //   predictions.forEach((prediction) => {
-      //     if (this.ctx) {
-      //       const x = prediction.bbox.x;
-      //       const y = prediction.bbox.y;
-
-      //       const width = prediction.bbox.width;
-      //       const height = prediction.bbox.height;
-
-      //       // Draw the text last to ensure it's on top.
-      //       this.ctx.font = "bold 8px Roboto";
-      //       this.ctx.textBaseline = "top";
-      //       this.ctx.fillStyle = "#000000";
-      //       this.ctx.fillText(
-      //         prediction.class,
-      //         (x - width) / 2 + 4,
-      //         (y - height) / 2 + 2
-      //       );
-      //     }
-      //   });
 
       const prediction = predictions[0];
       if (
