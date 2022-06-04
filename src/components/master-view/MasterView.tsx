@@ -222,17 +222,25 @@ const MasterView: React.FC<PlayerStatsProps> = ({
                   fontWeight: 600,
                 }}
               >
-                Choose Roll
+               Roll Turn
               </Text>
-              <Dropdown
-                onError={() => console.log("error")}
-                defaultSelectedKey={0}
-                options={
-                  characters && characters[selectedPlayer].selectedWeapon
-                    ? [
-                        {
-                          key: 0,
-                          text: characters[selectedPlayer].rollTurn == 0 ? `Roll 1 (+${
+              <StyledStack
+                  padding="0px 28px 0px 8px"
+                  width={"100%"}
+                  backgroundColor={backgroundColor}
+                  primaryColor={primaryColor}
+                  selected={
+                    false
+                  }
+                  clickCallback={() => {
+                    
+                  }}
+                >
+                  <Text variant="medium" style={{
+                    lineHeight: "32px"
+                  }}>
+
+                  {characters[selectedPlayer].rollTurn == 0 ? `Roll 1 (+${
                             characters[selectedPlayer].weapons[
                               characters[selectedPlayer].selectedWeapon
                             ].bonus
@@ -244,19 +252,10 @@ const MasterView: React.FC<PlayerStatsProps> = ({
                             characters[selectedPlayer].weapons[
                               characters[selectedPlayer].selectedWeapon
                             ].modifier
-                          })`,
-                        }
-                      ]
-                    : []
-                }
-                onChange={onChangeSelectRoll}
-                styles={{
-                  root: {
-                    width: "100%",
-                    marginBottom: 20,
-                  },
-                }}
-              />
+                          })`}
+                                            </Text>
+
+                  </StyledStack>
             </>
           )}
       </Stack>
