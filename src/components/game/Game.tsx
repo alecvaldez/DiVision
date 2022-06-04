@@ -216,8 +216,6 @@ const Game: React.FC<GameProps> = ({
                       const enemyAC = game.enemies[game.selectedEnemy].ac;
                       const selectedWeapon = game.players[game.selectedPlayer].selectedWeapon;
                       const bonus =  game.players[game.selectedPlayer].weapons[selectedWeapon].bonus;
-                      console.log(typeof roll);
-
                       const hit = roll + bonus;
                       setRoll1(gameId, hit, game.selectedPlayer);
 
