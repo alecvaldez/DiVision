@@ -29,7 +29,6 @@ interface PlayerStatsProps {
   backgroundColor: string;
   primaryColor: string;
   selectedPlayer: string;
-  selectedWeapon: string;
   selectedRoll: string;
   gameKey: string;
 }
@@ -38,7 +37,7 @@ type SelectForm = {
   character: string;
 };
 
-function increase_brightness(hex: string, percent: number) {
+export function increase_brightness(hex: string, percent: number) {
   // strip the leading # if it's there
   hex = hex.replace(/^\s*#|\s*$/g, "");
 
@@ -120,7 +119,6 @@ const MasterView: React.FC<PlayerStatsProps> = ({
   selectedPlayer,
   selectedRoll,
   gameKey,
-  selectedWeapon,
 }: PlayerStatsProps) => {
   const onChangeSelectCharacter = (
     event: React.FormEvent<HTMLDivElement>,
@@ -221,7 +219,7 @@ const MasterView: React.FC<PlayerStatsProps> = ({
           onChange={onChangeSelectCharacter}
           onRenderOption={onRenderOption}
         />
-        {selectedWeapon && characters[selectedPlayer] && (
+        {characters[selectedPlayer] && characters[selectedPlayer].selectedWeapon && (
           <>
             <Text
               variant={"large"}
@@ -237,15 +235,15 @@ const MasterView: React.FC<PlayerStatsProps> = ({
               onError={() => console.log("error")}
               defaultSelectedKey={selectedRoll}
               options={
-                selectedWeapon && characters[selectedPlayer].weapons[selectedWeapon]
+                characters[selectedPlayer].selectedWeapon
                   ? [
                       {
-                        key: `Roll 1 (+${characters[selectedPlayer].weapons[selectedWeapon].bonus})`,
-                        text: `Roll 1 (+${characters[selectedPlayer].weapons[selectedWeapon].bonus})`,
+                        key: `Roll 1 (+${characters[selectedPlayer].weapons[characters[selectedPlayer].selectedWeapon].bonus})`,
+                        text: `Roll 1 (+${characters[selectedPlayer].weapons[characters[selectedPlayer].selectedWeapon].bonus})`,
                       },
                       {
-                        key: `Roll 2 (${characters[selectedPlayer].weapons[selectedWeapon].die}+${characters[selectedPlayer].weapons[selectedWeapon].modifier})`,
-                        text: `Roll 2 (${characters[selectedPlayer].weapons[selectedWeapon].die}+${characters[selectedPlayer].weapons[selectedWeapon].modifier})`,
+                        key: `Roll 2 (${characters[selectedPlayer].weapons[characters[selectedPlayer].selectedWeapon].die}+${characters[selectedPlayer].weapons[characters[selectedPlayer].selectedWeapon].modifier})`,
+                        text: `Roll 2 (${characters[selectedPlayer].weapons[characters[selectedPlayer].selectedWeapon].die}+${characters[selectedPlayer].weapons[characters[selectedPlayer].selectedWeapon].modifier})`,
                       },
                     ]
                   : []
@@ -338,9 +336,9 @@ const MasterView: React.FC<PlayerStatsProps> = ({
                   width={"100%"}
                   backgroundColor={backgroundColor}
                   primaryColor={primaryColor}
-                  selected={item.name === selectedWeapon}
+                  selected={item.name === characters[selectedPlayer].selectedWeapon}
                   clickCallback={() => {
-                    setSelectedWeapon(gameKey, item.name);
+                    setSelectedWeapon(gameKey, item.name, selectedPlayer);
                   }}
                 >
                   <Text

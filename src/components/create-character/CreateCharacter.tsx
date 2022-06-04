@@ -62,6 +62,7 @@ export type CharacterForm = {
   charismaScore: number;
   charismaModifier: number;
   weapons: WeaponMap;
+  selectedWeapon: string;
 };
 
 const verticalGapStackTokens: IStackTokens = {

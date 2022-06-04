@@ -1,8 +1,5 @@
 import { CommandButton, IListProps, List, Stack, Text } from "@fluentui/react";
-import { Dropdown } from "@fluentui/react/lib/Dropdown";
-import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Weapon, WeaponMap } from "../create-character/CreateCharacter";
 import { ControlledDropdown } from "./ControlledDropdown";
 import { ControlledTextField } from "./ControlledTextField";
 import { HookFormProps } from "./HookFormProps";

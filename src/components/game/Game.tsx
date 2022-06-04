@@ -15,6 +15,7 @@ import {
   Stack,
   Text,
 } from "@fluentui/react";
+import { useBoolean } from "@fluentui/react-hooks";
 import { User } from "firebase/auth";
 import { DataSnapshot } from "firebase/database";
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -25,6 +26,7 @@ import { getGame, getUserProfileById } from "../../firebase/FirebaseUtils";
 import EnemiesList from "../enemies-list/EnemiesList";
 import MasterView from "../master-view/MasterView";
 import PlayerStats from "../player-stats/PlayerStats";
+import RollModal from "../roll-modal/RollModal";
 
 interface GameProps {
   user: User | null;
@@ -73,6 +75,16 @@ const Game: React.FC<GameProps> = ({
 
   const primaryRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const cardRef = useRef() as React.MutableRefObject<HTMLInputElement>;
+
+  const [
+    isPlayerModalOpen,
+    { setTrue: showPlayerModal, setFalse: hidePlayerModal },
+  ] = useBoolean(false);
+
+  const [
+    isEnemyModalOpen,
+    { setTrue: showEnemyModal, setFalse: hideEnenmyModal },
+  ] = useBoolean(false);
 
   useEffect(() => {
     getUserProfileById(game.gameMasterId).then((snapshot) => {
@@ -131,8 +143,8 @@ const Game: React.FC<GameProps> = ({
     return {
       personaName: "",
       initialsColor: players[game.selectedPlayer]
-      ? getPersonaIntialsColor(players[game.selectedPlayer].email)
-      : 0,
+        ? getPersonaIntialsColor(players[game.selectedPlayer].email)
+        : 0,
       imageUrl: players[game.selectedPlayer]
         ? players[game.selectedPlayer].photoUrl
         : "",
@@ -168,199 +180,348 @@ const Game: React.FC<GameProps> = ({
     <div className="primary-div" ref={primaryRef}>
       <div className="secondary-div">
         {user !== null && (
-          <div
-            className="card"
-            ref={cardRef}
-            style={{
-              boxShadow: DefaultEffects.elevation16,
-              width: "clamp(20rem, 90vw, 40rem)",
-              overflowX: "auto",
-            }}
-          >
-            <Stack
-              style={{ width: "100%", zIndex: 1000 }}
-              tokens={verticalGapStackTokens}
+          <>
+            {user?.uid === game.gameMasterId && (
+              <>
+                <RollModal
+                  primaryColor={primaryColor}
+                  name="Roll Player"
+                  isModalOpen={isPlayerModalOpen}
+                  hideModal={hidePlayerModal}
+                  rollCallback={(roll) => {
+                    console.log(roll);
+                  }}
+                />
+                <RollModal
+                  primaryColor={primaryColor}
+                  name="Roll Enemy"
+                  isModalOpen={isEnemyModalOpen}
+                  hideModal={hideEnenmyModal}
+                  rollCallback={(roll) => {
+                    console.log(roll);
+                  }}
+                />
+              </>
+            )}
+
+            <div
+              className="card"
+              ref={cardRef}
+              style={{
+                boxShadow: DefaultEffects.elevation16,
+                width: "clamp(20rem, 90vw, 40rem)",
+                overflowX: "auto",
+              }}
             >
-              <div
-                style={{
-                  display: "inline-block",
-                }}
-              >
-                <Text variant={"xxLarge"} nowrap>
-                  {game.name}
-                </Text>
-                <Text
-                  variant={"large"}
-                  nowrap
-                  style={{ float: "right", lineHeight: "37px" }}
-                >
-                  {gameId}
-                </Text>
-              </div>
               <Stack
-                horizontal
-                tokens={{
-                  childrenGap: 40,
-                }}
+                style={{ width: "100%", zIndex: 1000 }}
+                tokens={verticalGapStackTokens}
               >
                 <div
                   style={{
-                    width: "calc(100% / 2 - 100)",
+                    display: "inline-block",
                   }}
                 >
-                  <Text variant={"xLarge"} nowrap>
-                    Game Master
+                  <Text variant={"xxLarge"} nowrap>
+                    {game.name}
                   </Text>
-                  <Persona
-                    {...gameMaster}
-                    styles={{
-                      root: {
-                        marginTop: 20,
-                        marginBottom: 10,
-                        width: 0,
-                      },
-                    }}
-                    presence={PersonaPresence.none}
-                    imageAlt=""
-                    size={PersonaSize.size120}
-                  />
                   <Text
                     variant={"large"}
-                    block
                     nowrap
-                    style={{
-                      width: 120,
-                      textAlign: "center",
-                    }}
+                    style={{ float: "right", lineHeight: "37px" }}
                   >
-                    {master.alias ? master.alias : master.email}
+                    {gameId}
                   </Text>
                 </div>
-
-                <div
-                  style={{
-                    width: 100,                
+                <Stack
+                  horizontal
+                  tokens={{
+                    childrenGap: 40,
                   }}
                 >
-                  <Text variant={"xLarge"} nowrap>
-                    Players
-                  </Text>
-                  <Facepile
-                    personas={personas}
-                    maxDisplayablePersonas={14}
-                    overflowButtonType={OverflowButtonType.descriptive}
-                    // addButtonProps={addButtonProps}
-                    ariaDescription="To move through the items use left and right arrow keys."
-                    styles={{
-                      root: {
-                        marginTop: "20px",
-                      },
-                      members: {
-                        display: "flex",
-                        flexWrap: "wrap",
-                        width: "100%",
-                      },
-                    }}
-                  />
-                </div>
-
-                {user?.uid === game.gameMasterId ? (
                   <div
                     style={{
-                      width: "100%",
+                      width: "25%",
                     }}
                   >
                     <Text variant={"xLarge"} nowrap>
-                      Enemies
-                    </Text>
-                    <EnemiesList
-                      selectedEnemy={game.selectedEnemy}
-                      gameKey={gameId}
-                      backgroundColor={backgroundColor}
-                      primaryColor={primaryColor}
-                      enemies={game.enemies}
-                    />
-                  </div>
-                ) : (
-                  <div
-                    style={{
-                      width: "100%",
-                    }}>
-                    <Text variant={"xLarge"} nowrap>
-                      Current Roller
+                      Game Master
                     </Text>
                     <Persona
-                      {...currentRoller}
+                      {...gameMaster}
                       styles={{
                         root: {
-                          width: 0,
-                          // marginLeft: "auto",
                           marginTop: 20,
-                          display: "block",
+                          marginBottom: 10,
+                          width: 0,
                         },
                       }}
                       presence={PersonaPresence.none}
                       imageAlt=""
                       size={PersonaSize.size120}
                     />
-                    {players[game.selectedPlayer] && (
-                      <Text
-                        variant={"large"}
-                        block
-                        nowrap
+                    <Text
+                      variant={"large"}
+                      block
+                      nowrap
+                      style={{
+                        width: 120,
+                        textAlign: "center",
+                      }}
+                    >
+                      {master.alias ? master.alias : master.email}
+                    </Text>
+                  </div>
+
+                  <div
+                    style={{
+                      width: "25%",
+                    }}
+                  >
+                    <Text variant={"xLarge"} nowrap>
+                      Players
+                    </Text>
+                    <Facepile
+                      personas={personas}
+                      maxDisplayablePersonas={14}
+                      overflowButtonType={OverflowButtonType.descriptive}
+                      // addButtonProps={addButtonProps}
+                      ariaDescription="To move through the items use left and right arrow keys."
+                      styles={{
+                        root: {
+                          marginTop: "20px",
+                        },
+                        members: {
+                          display: "flex",
+                          flexWrap: "wrap",
+                          width: "100%",
+                        },
+                      }}
+                    />
+                  </div>
+
+                  {user?.uid === game.gameMasterId ? (
+                    <div
+                      style={{
+                        width: "100%",
+                      }}
+                    >
+                      <Text variant={"xLarge"} nowrap>
+                        Enemies
+                      </Text>
+                      <EnemiesList
+                        selectedEnemy={game.selectedEnemy}
+                        gameKey={gameId}
+                        backgroundColor={backgroundColor}
+                        primaryColor={primaryColor}
+                        enemies={game.enemies}
+                      />
+                    </div>
+                  ) : (
+                    <Stack
+                      horizontal
+                      style={{
+                        width: "50%",
+                      }}
+                    >
+                      <div
                         style={{
-                          width: 120,
-                          textAlign: "center",
-                          marginTop: 10
+                          width: "50%",
                         }}
                       >
-                        {players[game.selectedPlayer].alias
-                          ? players[game.selectedPlayer].alias
-                          : players[game.selectedPlayer].email}
-                      </Text>
-                    )}
-                  </div>
+                        <Text variant={"xLarge"} nowrap>
+                          Rolls
+                        </Text>
+                        <Spinner
+                            style={{
+                              position: "absolute",
+                              transform: "translate(10px, 124px) scale(3) ",
+                            }}
+                            size={SpinnerSize.large}
+                          />
+                        {!game.playerRoll ? (
+                          <Spinner
+                            style={{
+                              position: "absolute",
+                              transform: "translate(10px, 30px) scale(3) ",
+                            }}
+                            size={SpinnerSize.large}
+                          />
+                        ) : (
+                          <Stack
+                            style={{
+                              padding: 0,
+                              width: 84,
+                              height: 84,
+                              position: "absolute",
+                              transform: "translate(-17px, 2px)",
+                              border: `5px solid ${primaryColor}`,
+                              borderRadius: 84,
+                            }}
+                          >
+                            <Text
+                              variant={"xxLarge"}
+                              style={{
+                                lineHeight: "84px",
+                                width: "100%",
+                                textAlign: "center",
+                                transform: "translateY(-5px)",
+                                color: primaryColor,
+                              }}
+                            >
+                              {game.playerRoll}
+                            </Text>
+                          </Stack>
+                        )}
+                        {!game.enemyRoll ? (
+                          <Spinner
+                            style={{
+                              position: "absolute",
+                              transform: "translate(10px, 124px) scale(3) ",
+                            }}
+                            size={SpinnerSize.large}
+                          />
+                        ) : (
+                          <Stack
+                            style={{
+                              padding: 0,
+                              width: 84,
+                              height: 84,
+                              border: `5px solid ${primaryColor}`,
+                              transform: "translate(-17px, 96px)",
+                              borderRadius: 84,
+                            }}
+                          >
+                            <Text
+                              variant={"xxLarge"}
+                              style={{
+                                lineHeight: "84px",
+                                width: "100%",
+                                textAlign: "center",
+                                transform: "translateY(-5px)",
+                                color: primaryColor,
+                              }}
+                            >
+                              {game.enemyRoll}
+                            </Text>
+                          </Stack>
+                        )}
+                      </div>
+                      <div
+                        style={{
+                          width: "50%",
+                        }}
+                      >
+                        <Text variant={"xLarge"} nowrap>
+                          Current Roller
+                        </Text>
+                        <Persona
+                          {...currentRoller}
+                          styles={{
+                            root: {
+                              width: 0,
+                              // marginLeft: "auto",
+                              marginTop: 20,
+                              display: "block",
+                            },
+                          }}
+                          presence={PersonaPresence.none}
+                          imageAlt=""
+                          size={PersonaSize.size120}
+                        />
+                        {players[game.selectedPlayer] && (
+                          <Text
+                            variant={"large"}
+                            block
+                            nowrap
+                            style={{
+                              width: 120,
+                              textAlign: "center",
+                              marginTop: 10,
+                            }}
+                          >
+                            {players[game.selectedPlayer].alias
+                              ? players[game.selectedPlayer].alias
+                              : players[game.selectedPlayer].email}
+                          </Text>
+                        )}
+                      </div>
+                    </Stack>
+                  )}
+                </Stack>
+                {user?.uid === game.gameMasterId ? (
+                  <>
+                    <MasterView
+                      gameKey={gameId}
+                      selectedPlayer={game.selectedPlayer}
+                      selectedRoll={game.selectedRoll}
+                      primaryColor={primaryColor}
+                      characters={game.players}
+                      players={players}
+                      backgroundColor={backgroundColor}
+                    />
+                    <Stack
+                      horizontal
+                      tokens={{
+                        childrenGap: 10,
+                      }}
+                    >
+                      <PrimaryButton
+                        disabled={
+                          !game.selectedPlayer ||
+                          !game.players[game.selectedPlayer].selectedWeapon ||
+                          !game.selectedEnemy ||
+                          !game.selectedRoll
+                        }
+                        onClick={showPlayerModal}
+                      >
+                        Roll Player
+                      </PrimaryButton>
+                      <PrimaryButton
+                        disabled={
+                          !game.selectedPlayer ||
+                          !game.players[game.selectedPlayer].selectedWeapon ||
+                          !game.selectedEnemy ||
+                          !game.selectedRoll
+                        }
+                        onClick={showEnemyModal}
+                      >
+                        Roll Enemy
+                      </PrimaryButton>
+                    </Stack>
+                  </>
+                ) : (
+                  <PlayerStats
+                    primaryColor={primaryColor}
+                    gameKey={gameId}
+                    uid={user?.uid}
+                    character={game.players[user?.uid]}
+                    backgroundColor={backgroundColor}
+                  />
                 )}
-              </Stack>
-              {user?.uid === game.gameMasterId ? (
-                <MasterView
-                  gameKey={gameId}
-                  selectedPlayer={game.selectedPlayer}
-                  selectedWeapon={game.selectedWeapon}
-                  selectedRoll={game.selectedRoll}
-                  primaryColor={primaryColor}
-                  characters={game.players}
-                  players={players}
-                  backgroundColor={backgroundColor}
-                />
-              ) : (
-                <PlayerStats
-                  character={game.players[user?.uid]}
-                  backgroundColor={backgroundColor}
-                />
-              )}
 
-              <Stack
-                horizontal
-                style={{
-                  marginTop: 30,
-                  height: "auto",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  bottom: 0,
-                }}
-                tokens={{
-                  childrenGap: 10,
-                }}
-              >
-                <CommandButton
-                  iconProps={{ iconName: "SkypeArrow" }}
-                  text="Back"
-                  onClick={goBack}
-                />
+                <Stack
+                  horizontal
+                  style={{
+                    marginTop: 30,
+                    height: "auto",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    bottom: 0,
+                  }}
+                  tokens={{
+                    childrenGap: 10,
+                  }}
+                >
+                  <CommandButton
+                    iconProps={{ iconName: "SkypeArrow" }}
+                    text="Back"
+                    onClick={goBack}
+                  />
+                </Stack>
               </Stack>
-            </Stack>
-          </div>
+            </div>
+          </>
         )}
       </div>
     </div>

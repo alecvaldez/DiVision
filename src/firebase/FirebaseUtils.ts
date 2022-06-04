@@ -293,11 +293,11 @@ export const setSelectedEnemy  = (gameKey: string, enemyName: string): Promise<v
   return set(dbRef(db, "games/" + gameKey + "/selectedEnemy"), enemyName);
 }
 
-export const setSelectedWeapon  = (gameKey: string, weaponName: string): Promise<void> => {
+export const setSelectedWeapon  = (gameKey: string, weaponName: string, uid: string): Promise<void> => {
   const db = getDatabase();
   const auth = getAuth();
 
-  return set(dbRef(db, "games/" + gameKey + "/selectedWeapon"), weaponName);
+  return set(dbRef(db, "games/" + gameKey + "/players/" + uid + "/selectedWeapon"), weaponName);
 }
 
 

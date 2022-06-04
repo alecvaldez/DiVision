@@ -65,9 +65,10 @@ export interface GameData {
   name: string;
   selectedEnemy: string;
   selectedPlayer: string;
-  selectedWeapon: string;
   selectedRoll: string;
   gameMasterId: string;
+  playerRoll: number;
+  enemyRoll: number;
   players: { [key: string]: CharacterForm };
   enemies: {[key: string]: Enemy}
 }

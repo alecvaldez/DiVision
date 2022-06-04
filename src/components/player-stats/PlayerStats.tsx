@@ -1,23 +1,29 @@
 import { List, Stack, Text } from "@fluentui/react";
 import { ReactElement, ReactNode } from "react";
+import { setSelectedWeapon } from "../../firebase/FirebaseUtils";
 import { CharacterForm } from "../create-character/CreateCharacter";
+import {StyledStack as SS } from "../master-view/MasterView";
 
 interface PlayerStatsProps {
   character: CharacterForm;
   backgroundColor: string;
+  primaryColor: string;
+  gameKey: string;
+  uid: string;
 }
 
-const StyledStack: React.FC<{
+export const StyledStack: React.FC<{
   children: ReactNode;
   backgroundColor: string;
   width: string;
+  height: string;
   padding: string;
-}> = ({ children, backgroundColor, width, padding }) => (
+}> = ({ children, backgroundColor, width, padding, height }) => (
   <Stack
     horizontal
     style={{
       borderRadius: "2px",
-      height: "32px",
+      height: height,
       borderWidth: "1px",
       borderStyle: "solid",
       backgroundColor: backgroundColor,
@@ -36,12 +42,14 @@ const StyledStack: React.FC<{
   </Stack>
 );
 
+
+
 const Section: React.FC<{
   backgroundColor: string;
   name: string;
   modifier: number;
   score: number;
-}> = ({ backgroundColor, name, modifier, score }) => (
+}> = ({ backgroundColor, name, modifier, score}) => (
   <>
     <Text
       variant={"large"}
@@ -74,7 +82,7 @@ const Section: React.FC<{
         >
           Score
         </Text>
-        <StyledStack padding="0" width="32px" backgroundColor={backgroundColor}>
+        <StyledStack padding="0" width="32px" height="32px" backgroundColor={backgroundColor}>
           <Text
             variant={"small"}
             style={{
@@ -96,7 +104,7 @@ const Section: React.FC<{
         >
           Modifier
         </Text>
-        <StyledStack padding="0" width="32px" backgroundColor={backgroundColor}>
+        <StyledStack padding="0" width="32px" height="32px" backgroundColor={backgroundColor}>
           <Text
             variant={"small"}
             style={{
@@ -116,6 +124,9 @@ const Section: React.FC<{
 const PlayerStats: React.FC<PlayerStatsProps> = ({
   character,
   backgroundColor,
+  primaryColor,
+  gameKey,
+  uid
 }: PlayerStatsProps) => {
   return (
       <Stack tokens={{
@@ -227,11 +238,16 @@ const PlayerStats: React.FC<PlayerStatsProps> = ({
             _index: number | undefined
           ): JSX.Element => {
             return (
-              <StyledStack
-                padding="0px 28px 0px 8px"
-                width={"100%"}
-                backgroundColor={backgroundColor}
-              >
+              <SS
+              padding="0px 28px 0px 8px"
+              width={"100%"}
+              backgroundColor={backgroundColor}
+              primaryColor={primaryColor}
+              selected={item.name === character.selectedWeapon}
+              clickCallback={() => {
+                setSelectedWeapon(gameKey, item.name, uid);
+              }}
+            >
                 <Text
                   variant={"medium"}
                   nowrap
@@ -262,7 +278,7 @@ const PlayerStats: React.FC<PlayerStatsProps> = ({
                 >
                   {item.die}+{item.modifier}
                 </Text>
-              </StyledStack>
+              </SS>
             );
           }}
           items={Array.from(Object.values(character.weapons))}
