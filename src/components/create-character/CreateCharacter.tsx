@@ -422,6 +422,12 @@ const CreateCharacter: React.FC<CreateCharacterProps> = ({
                     />
                     <Section
                       control={controlCharacter}
+                      form1={"wisdomScore"}
+                      name={"Wisdom"}
+                      form2={"wisdomModifier"}
+                    />
+                    <Section
+                      control={controlCharacter}
                       form1={"charismaScore"}
                       name={"Charisma"}
                       form2={"charismaModifier"}

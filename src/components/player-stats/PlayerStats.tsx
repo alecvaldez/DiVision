@@ -174,6 +174,12 @@ const PlayerStats: React.FC<PlayerStatsProps> = ({
         />
         <Section
           backgroundColor={backgroundColor}
+          score={character.wisdomScore}
+          modifier={character.wisdomModifier}
+          name={"Wisdom"}
+        />
+        <Section
+          backgroundColor={backgroundColor}
           score={character.charismaScore}
           modifier={character.charismaModifier}
           name={"Charisma"}
