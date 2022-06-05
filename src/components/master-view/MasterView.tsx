@@ -10,6 +10,7 @@ import {
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { getPersonaIntialsColor } from "../../App";
 import {
+  resetPlayerRolls,
   setSelectedPlayer, setSelectedWeapon
 } from "../../firebase/FirebaseUtils";
 import { CharacterForm } from "../create-character/CreateCharacter";
@@ -115,6 +116,9 @@ const MasterView: React.FC<PlayerStatsProps> = ({
     option?: IDropdownOption,
     index?: number
   ): void => {
+    if(selectedPlayer) {
+      resetPlayerRolls(gameKey, selectedPlayer);
+    }
     setSelectedPlayer(gameKey, option?.data.uid);
   };
 

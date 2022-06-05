@@ -387,3 +387,11 @@ export const setEnemyHP = (
     hp
   );
 };
+
+export const resetPlayerRolls = (gameKey: string, uid: string): Promise<void> => {
+  const db = getDatabase();
+  const auth = getAuth();
+
+  remove(dbRef(db, "games/" + gameKey + "/players/" + uid + "/roll2"));
+  return remove(dbRef(db, "games/" + gameKey + "/players/" + uid + "/roll1"));
+};

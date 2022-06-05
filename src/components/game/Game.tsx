@@ -215,7 +215,7 @@ const Game: React.FC<GameProps> = ({
                     if (game.players[game.selectedPlayer].rollTurn == 0) {
                       const enemyAC = game.enemies[game.selectedEnemy].ac;
                       const selectedWeapon = game.players[game.selectedPlayer].selectedWeapon;
-                      const bonus =  game.players[game.selectedPlayer].weapons[selectedWeapon].bonus;
+                      const bonus = game.players[game.selectedPlayer].weapons[selectedWeapon].bonus;
                       const hit = roll + bonus;
                       setRoll1(gameId, hit, game.selectedPlayer);
 
@@ -383,16 +383,9 @@ const Game: React.FC<GameProps> = ({
                         <Text variant={"xLarge"} nowrap>
                           Rolls
                         </Text>
-                        <Spinner
-                          style={{
-                            position: "absolute",
-                            transform: "translate(10px, 124px) scale(3) ",
-                          }}
-                          size={SpinnerSize.large}
-                        />
                         {user.uid &&
-                        game.players[user.uid] &&
-                        !game.players[user.uid].roll1 ? (
+                          game.players[user.uid] &&
+                          !game.players[user.uid].roll1 ? (
                           <Spinner
                             style={{
                               position: "absolute",
@@ -427,8 +420,8 @@ const Game: React.FC<GameProps> = ({
                           </Stack>
                         )}
                         {user.uid &&
-                        game.players[user.uid] &&
-                        !game.players[user.uid].roll2 ? (
+                          game.players[user.uid] &&
+                          !game.players[user.uid].roll2 ? (
                           <Spinner
                             style={{
                               position: "absolute",
